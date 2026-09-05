@@ -149,7 +149,7 @@
   \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.3)$) {
     {\color{white!85!black}\fontsize{11}{14}\selectfont
      Construcción visual de un flujo de Machine Learning en KnowledgeFlow\\
-     para clasificar el dataset Iris con tres algoritmos distintos}
+     para clasificar el dataset Iris con cuatro algoritmos distintos}
   };
 
   \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
@@ -191,6 +191,7 @@ Para desarrollar esta práctica utilicé:
   \raggedright
   \item[\textcolor{cCyan}{\faDesktop}] \textbf{Weka 3.8.6} -- \url{https://www.cs.waikato.ac.nz/ml/weka} (instalado en Linux vía AUR)
   \item[\textcolor{cCyan}{\faSitemap}] \textbf{KnowledgeFlow Environment} -- editor visual de pipelines de Weka
+  \item[\textcolor{cCyan}{\faTerminal}] \textbf{Simple CLI} -- línea de comandos de Weka, usada para el cuarto clasificador (ver Sección~\ref{sec:naivebayes})
   \item[\textcolor{cCyan}{\faDatabase}] \textbf{Dataset:} \texttt{iris.arff} -- 150 instancias, 4 atributos numéricos + clase (\texttt{Iris-setosa}, \texttt{Iris-versicolor}, \texttt{Iris-virginica})
 \end{itemize}
 
@@ -228,7 +229,7 @@ El siguiente gráfico deja ver con claridad que el tamaño del \textbf{pétalo} 
 
 \figuraMarcada{img/grafico-distribucion-por-especie.png}{0.98}{Distribución (mínimo, cuartiles, mediana y máximo) del largo y ancho de pétalo, por especie.}
 
-Estas cajas muestran visualmente lo mismo que ya sugería la correlación: \textit{Iris-setosa} ocupa un rango de valores completamente separado del resto (sin solaparse ni un poco), mientras que las cajas de \textit{versicolor} y \textit{virginica} sí se superponen parcialmente -- exactamente donde después aparecieron los errores de clasificación de los tres algoritmos.
+Estas cajas muestran visualmente lo mismo que ya sugería la correlación: \textit{Iris-setosa} ocupa un rango de valores completamente separado del resto (sin solaparse ni un poco), mientras que las cajas de \textit{versicolor} y \textit{virginica} sí se superponen parcialmente -- exactamente donde después aparecieron los errores de clasificación de los cuatro algoritmos.
 
 \subsection{\faSitemap\ \ Construcción del pipeline visual}
 En el KnowledgeFlow armé el siguiente flujo:
@@ -237,40 +238,63 @@ En el KnowledgeFlow armé el siguiente flujo:
   \item \textbf{ArffLoader} -- cargó el archivo \texttt{iris.arff}.
   \item \textbf{ClassAssigner} -- designó la columna \texttt{class} como la etiqueta a predecir.
   \item \textbf{CrossValidationFoldMaker} -- dividió los datos en 10 pliegues para entrenar y evaluar de forma honesta (nunca examinando al modelo con los mismos datos que usó para aprender).
-  \item Tres ramas paralelas, una por cada \textbf{algoritmo de clasificación} (detallados en la siguiente sección), cada una con su propio \textbf{ClassifierPerformanceEvaluator} y \textbf{TextViewer} para revisar sus métricas por separado.
+  \item Cuatro ramas paralelas, una por cada \textbf{algoritmo de clasificación} (detallados en la siguiente sección), cada una con su propio \textbf{ClassifierPerformanceEvaluator} y \textbf{TextViewer} para revisar sus métricas por separado.
 \end{enumerate}
 
-\figuraMarcada{img/pipeline-completo.png}{0.98}{Pipeline completo armado en KnowledgeFlow: un origen de datos, validación cruzada, y tres algoritmos de clasificación evaluados en paralelo.}
+\figuraMarcada{img/pipeline-completo.png}{0.98}{Pipeline completo armado en KnowledgeFlow: un origen de datos, validación cruzada, y cuatro algoritmos de clasificación evaluados en paralelo.}
 
 \subsection{\faCogs\ \ Algoritmos de clasificación evaluados}
-Ejecuté y comparé tres algoritmos con enfoques muy distintos:
+Ejecuté y comparé \textbf{cuatro} algoritmos con enfoques muy distintos entre sí:
 
 \begin{itemize}[leftmargin=1.9em, itemsep=6pt]
   \raggedright
   \item[\textcolor{cTealDeep}{\faTree}] \textbf{J48:} construye un único árbol de decisión, con reglas del tipo ``si el pétalo mide menos de X, entonces es tal especie''.
   \item[\textcolor{cTealDeep}{\faLayerGroup}] \textbf{Random Forest:} entrena 100 árboles distintos sobre porciones aleatorias de los datos, y decide la especie por votación mayoritaria entre todos ellos.
   \item[\textcolor{cTealDeep}{\faBrain}] \textbf{Multilayer Perceptron:} una red neuronal que ajusta sus pesos internos durante 500 iteraciones para aprender fronteras de decisión más complejas.
+  \item[\textcolor{cTealDeep}{\faDice}] \textbf{Naive Bayes:} un clasificador probabilístico -- calcula, para cada especie, qué tan probable es observar esas 4 medidas, y elige la especie más probable. Es el único de los cuatro que no aprende reglas ni pesos, sino una distribución estadística por atributo.
 \end{itemize}
 
 \figuraMarcada{img/resultado-random-forest.png}{0.95}{Resultado de Random Forest: 95.33\% de precisión (143/150 instancias correctas).}
 
 \figuraMarcada{img/resultado-j48.png}{0.95}{Resultado de J48: 96\% de precisión (144/150 instancias correctas).}
 
-\figuraMarcada{img/resultado-multilayer-perceptron.png}{0.95}{Resultado de Multilayer Perceptron: 97.33\% de precisión (146/150 instancias correctas), el mejor de los tres.}
+\figuraMarcada{img/resultado-multilayer-perceptron.png}{0.95}{Resultado de Multilayer Perceptron: 97.33\% de precisión (146/150 instancias correctas), el mejor de los cuatro.}
+
+\subsubsection{Cuarto clasificador: Naive Bayes}
+\label{sec:naivebayes}
+Agregué \textbf{NaiveBayes} (\texttt{Classifiers → bayes}) al mismo pipeline visual, conectado igual que los otros tres a la salida de \texttt{CrossValidationFoldMaker}. Antes de correrlo en KnowledgeFlow, verifiqué el algoritmo por la \textbf{Simple CLI} de Weka (\texttt{NaiveBayes -t iris.arff -x 10}, otra de las 4 aplicaciones oficiales de Weka) -- el resultado del pipeline visual coincidió exactamente con la CLI, confirmando que ambas vías evalúan con la misma metodología.
+
+\figuraMarcada{img/resultado-naive-bayes.png}{0.95}{Resultado de Naive Bayes: 96\% de precisión (144/150 instancias correctas), empatado con J48.}
 
 \subsection{\faChartBar\ \ Comparación de resultados}
-Reuniendo las métricas de los tres algoritmos:
+Reuniendo las métricas de los cuatro algoritmos:
 
-\figuraMarcada{img/grafico-comparacion-precision.png}{0.95}{Precisión global de los tres algoritmos evaluados con validación cruzada de 10 pliegues.}
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Algoritmo} & \textbf{Correctas} & \textbf{Precisión} & \textbf{Kappa} & \textbf{MAE} & \textbf{RMSE} \\
+\midrule
+Random Forest          & 143/150 & 95.33\,\% & 0.93 & 0.0408 & 0.1621 \\
+J48                     & 144/150 & 96.00\,\% & 0.94 & 0.0350 & 0.1586 \\
+Multilayer Perceptron   & \textbf{146/150} & \textbf{97.33\,\%} & \textbf{0.96} & \textbf{0.0327} & \textbf{0.1291} \\
+Naive Bayes             & 144/150 & 96.00\,\% & 0.94 & 0.0342 & 0.1550 \\
+\bottomrule
+\end{tabular}
+\caption{Tabla comparativa del rendimiento de los 4 algoritmos de clasificación (validación cruzada, 10 pliegues).}
+\end{table}
 
-La diferencia entre los tres es pequeña (menos de 2 puntos porcentuales), pero la matriz de confusión de cada uno revela \emph{dónde} se equivoca cada algoritmo:
+\figuraMarcada{img/grafico-comparacion-precision.png}{0.95}{Precisión global de los cuatro algoritmos evaluados con validación cruzada de 10 pliegues.}
+
+La diferencia entre los cuatro es pequeña (menos de 2 puntos porcentuales), pero la matriz de confusión de cada uno revela \emph{dónde} se equivoca cada algoritmo:
 
 \figuraMarcada{img/grafico-errores-por-clase.png}{0.95}{Errores de clasificación por especie. Ningún algoritmo confunde jamás \texttt{Iris-setosa} con otra especie; todos los errores ocurren entre \texttt{versicolor} y \texttt{virginica}.}
 
-Esto no es casualidad: el propio dataset documenta que \textit{setosa} es linealmente separable de las otras dos especies, mientras que \textit{versicolor} y \textit{virginica} no lo son entre sí. Los tres algoritmos ``descubrieron'' ese mismo patrón de forma independiente.
+Esto no es casualidad: el propio dataset documenta que \textit{setosa} es linealmente separable de las otras dos especies, mientras que \textit{versicolor} y \textit{virginica} no lo son entre sí. Los cuatro algoritmos ``descubrieron'' ese mismo patrón de forma independiente, sin importar su enfoque (árbol, ensamble, red neuronal o probabilístico).
 
 \subsection{\faTree\ \ Visualización del árbol J48}
-De los tres algoritmos, solo J48 se puede dibujar como un árbol simple (Random Forest son 100 árboles combinados, y la red neuronal son pesos numéricos, no reglas). Usé el componente \textbf{GraphViewer} conectado a la salida \texttt{graph} de J48 para visualizarlo:
+De los cuatro algoritmos, solo J48 se puede dibujar como un árbol simple (Random Forest son 100 árboles combinados, la red neuronal son pesos numéricos, y Naive Bayes es una tabla de probabilidades -- ninguno es un árbol único). Usé el componente \textbf{GraphViewer} conectado a la salida \texttt{graph} de J48 para visualizarlo:
 
 \figuraMarcada{img/arbol-j48-graphviewer.png}{0.85}{Árbol de decisión generado por J48 en uno de los 10 pliegues de validación cruzada.}
 
@@ -287,7 +311,7 @@ Intenté conectar la salida \texttt{graph} también en Random Forest y en Multil
 % -------------------- 6. EVIDENCIA --------------------
 \section{\faFileArchive\ \ Evidencia de ejecución}
 \begin{evidenciabox}
-Ejecuté el pipeline completo de principio a fin sin errores: los 12 componentes del flujo (carga, asignación de clase, validación cruzada, 3 clasificadores, 3 evaluadores, 3 visores de texto y el GraphViewer) terminaron correctamente.
+Ejecuté el pipeline completo de principio a fin sin errores: los 16 componentes del flujo (carga, asignación de clase, validación cruzada, 4 clasificadores, 4 evaluadores, 4 visores de texto y el GraphViewer) terminaron correctamente.
 \end{evidenciabox}
 
 \figuraMarcada{img/evidencia-ejecucion-completa.png}{0.85}{Registro de estado (Status) de KnowledgeFlow: todos los componentes del pipeline terminaron con \texttt{Finished.}}
@@ -298,9 +322,11 @@ Ejecuté el pipeline completo de principio a fin sin errores: los 12 componentes
   \raggedright
   \item[\textcolor{cMint}{\faCheckCircle}] Construí un pipeline visual completo de ciencia de datos en KnowledgeFlow, desde la carga de datos hasta la comparación de múltiples modelos, sin escribir una sola línea de código.
   \item[\textcolor{cMint}{\faCheckCircle}] La validación cruzada de 10 pliegues me permitió comparar los algoritmos de forma honesta, evaluando cada uno con datos que nunca usó para entrenar.
-  \item[\textcolor{cMint}{\faCheckCircle}] \textbf{Multilayer Perceptron} obtuvo la mejor precisión (97.33\%), seguido de \textbf{J48} (96\%) y \textbf{Random Forest} (95.33\%) -- aunque la red neuronal fue notablemente más lenta de entrenar.
-  \item[\textcolor{cMint}{\faCheckCircle}] Las estadísticas descriptivas (correlación de atributos), el árbol de J48 y las matrices de confusión de los tres algoritmos contaron exactamente la misma historia de forma independiente: el tamaño del pétalo es lo que realmente distingue a las especies, y \textit{Iris-setosa} es trivialmente separable mientras que \textit{versicolor} y \textit{virginica} se solapan.
-  \item[\textcolor{cMint}{\faCheckCircle}] Entendí una limitación real de las herramientas de visualización de modelos: no todo algoritmo se puede dibujar como árbol, y reconocer por qué (ensamble vs. red neuronal vs. árbol único) es tan importante como saber usar la herramienta.
+  \item[\textcolor{cMint}{\faCheckCircle}] \textbf{Multilayer Perceptron} obtuvo la mejor precisión (97.33\%), seguido de un empate entre \textbf{J48} y \textbf{Naive Bayes} (96\% cada uno) y \textbf{Random Forest} (95.33\%) -- aunque la red neuronal fue notablemente más lenta de entrenar.
+  \item[\textcolor{cMint}{\faCheckCircle}] Que J48 (un árbol de reglas) y Naive Bayes (probabilidades) empaten en precisión, pese a ser enfoques completamente distintos, muestra que para un dataset simple y bien separado como Iris, la elección del algoritmo importa menos que la calidad de los datos mismos.
+  \item[\textcolor{cMint}{\faCheckCircle}] Las estadísticas descriptivas (correlación de atributos), el árbol de J48 y las matrices de confusión de los cuatro algoritmos contaron exactamente la misma historia de forma independiente: el tamaño del pétalo es lo que realmente distingue a las especies, y \textit{Iris-setosa} es trivialmente separable mientras que \textit{versicolor} y \textit{virginica} se solapan.
+  \item[\textcolor{cMint}{\faCheckCircle}] Entendí una limitación real de las herramientas de visualización de modelos: no todo algoritmo se puede dibujar como árbol, y reconocer por qué (ensamble, red neuronal, probabilístico vs. árbol único) es tan importante como saber usar la herramienta.
+  \item[\textcolor{cMint}{\faCheckCircle}] Aprendí que Weka no es solo KnowledgeFlow: usé la Simple CLI para verificar rápido un cuarto algoritmo con la misma metodología (validación cruzada de 10 pliegues) antes de integrarlo también al pipeline visual, confirmando que ambas vías dan el mismo resultado.
 \end{itemize}
 
 % -------------------- REFERENCIAS --------------------
