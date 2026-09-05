@@ -1,0 +1,70 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.Python
+build/
+dist/
+*.egg
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- R ---
+.Rhistory
+.RData
+.Rproj.user/
+
+# --- Datos y archivos pesados ---
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.db
+*.sqlite
+data/raw/
+data/interim/
+
+# --- Power BI ---
+*.pbix.bak
+
+# --- Credenciales / configuración local ---
+.env
+*.env.local
+secrets.*
+credentials.*
+
+# --- Sistema operativo ---
+.DS_Store
+Thumbs.db
+
+# --- Editores / IDEs ---
+.vscode/
+.idea/
+*.swp
+
+# --- Logs ---
+*.log
+
+# --- LaTeX ---
+*.aux
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb

@@ -1,0 +1,314 @@
+% ============================================================
+%  Basado en la plantilla de la Práctica 2 (mismos colores/estilos)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}
+\definecolor{cTealDeep}{HTML}{064B5A}
+\definecolor{cTeal}{HTML}{097289}
+\definecolor{cBlue}{HTML}{0FC5ED}
+\definecolor{cCyan}{HTML}{0FC5ED}
+\definecolor{cMint}{HTML}{44FFB1}
+\definecolor{cPurple}{HTML}{A277FF}
+\definecolor{cRed}{HTML}{E52E2E}
+\definecolor{cBg}{HTML}{EAF6F8}
+\definecolor{cText}{HTML}{01111E}
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Práctica 3 -- Pipeline de Clasificación con Weka},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Práctica 3 -- Weka}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------- Cajas reutilizables ----------
+\newtcolorbox{objetivobox}{
+  colback=cBg, colframe=cCyan, boxrule=0.9pt, arc=2mm,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\faBullseye\ \ Objetivo}, coltitle=white,
+  colbacktitle=cTealDeep, fonttitle=\bfseries,
+  before upper={\raggedright\color{cText}}
+}
+
+\newtcolorbox{incidenciabox}{
+  colback=white, colframe=cRed, boxrule=1pt, arc=1mm,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\faExclamationTriangle\ \ Hallazgo técnico}, coltitle=white,
+  colbacktitle=cRed, fonttitle=\bfseries,
+  before upper={\raggedright\color{cText}}
+}
+
+\newtcolorbox{evidenciabox}{
+  colback=cBg, colframe=cMint, boxrule=0.9pt, arc=2mm,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\faFileArchive\ \ Evidencia de ejecución}, coltitle=white,
+  colbacktitle=cTealDeep, fonttitle=\bfseries,
+  before upper={\raggedright\color{cText}}
+}
+
+% ---------- Figura sin marco ----------
+\newcommand{\figuraMarcada}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#2\linewidth]{#1}
+    \caption{#3}
+  \end{figure}
+}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ============================================================
+\begin{document}
+
+% -------------------- PORTADA --------------------
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  % ---- Icono insignia ----
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{30}{30}\selectfont\faBrain};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{40}{44}\selectfont Práctica 3}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{20}{24}\selectfont \faSitemap\ Pipeline de Clasificación con Weka}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.55)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.3)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     Construcción visual de un flujo de Machine Learning en KnowledgeFlow\\
+     para clasificar el dataset Iris con tres algoritmos distintos}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Curso: & \color{white} Introducción a Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Edgar Sarmiento Calisaya \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 05 de septiembre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+
+% -------------------- ÍNDICE --------------------
+\tableofcontents
+\thispagestyle{fancy}
+\newpage
+
+% -------------------- 1. INTRODUCCIÓN --------------------
+\section{\faLightbulb\ \ Introducción}
+Un proyecto de ciencia de datos no termina en limpiar datos: el siguiente paso suele ser construir un \textbf{modelo} que aprenda un patrón a partir de ejemplos ya etiquetados, para luego predecir la etiqueta de casos nuevos. A esto se le llama \textbf{clasificación}, uno de los problemas centrales del \textit{Machine Learning}.
+
+En esta práctica utilicé \textbf{Weka} (\textit{Waikato Environment for Knowledge Analysis}), una herramienta de código abierto para minería de datos, y específicamente su entorno \textbf{KnowledgeFlow}: un editor visual donde en vez de escribir código se arrastran componentes y se conectan con flechas para armar un flujo de procesamiento, de forma parecida a como armé el flujo ETL de Power BI en la práctica anterior.
+
+Trabajé con el dataset clásico \textbf{Iris} (Fisher, 1936): 150 flores de 3 especies distintas, descritas por 4 medidas numéricas. El objetivo fue construir un pipeline que cargue estos datos, los explore, entrene varios algoritmos de clasificación y compare qué tan bien predicen la especie correcta.
+
+% -------------------- 2. OBJETIVO --------------------
+\section{\faBullseye\ \ Objetivo}
+\begin{objetivobox}
+Entender las etapas de un proyecto de ciencia de datos a través de la construcción de un pipeline visual para clasificar un conjunto de datos usando Weka.
+\end{objetivobox}
+
+% -------------------- 3. HERRAMIENTAS --------------------
+\section{\faToolbox\ \ Herramientas y fuentes de datos}
+Para desarrollar esta práctica utilicé:
+\begin{itemize}[leftmargin=1.6em, itemsep=5pt]
+  \raggedright
+  \item[\textcolor{cCyan}{\faDesktop}] \textbf{Weka 3.8.6} -- \url{https://www.cs.waikato.ac.nz/ml/weka} (instalado en Linux vía AUR)
+  \item[\textcolor{cCyan}{\faSitemap}] \textbf{KnowledgeFlow Environment} -- editor visual de pipelines de Weka
+  \item[\textcolor{cCyan}{\faDatabase}] \textbf{Dataset:} \texttt{iris.arff} -- 150 instancias, 4 atributos numéricos + clase (\texttt{Iris-setosa}, \texttt{Iris-versicolor}, \texttt{Iris-virginica})
+\end{itemize}
+
+% -------------------- 4. DESARROLLO --------------------
+\section{\faCogs\ \ Desarrollo}
+
+\subsection{\faSearch\ \ Exploración del dataset}
+Antes de clasificar, analicé los 4 atributos numéricos del dataset (\texttt{sepallength}, \texttt{sepalwidth}, \texttt{petallength}, \texttt{petalwidth}, todos de tipo \textbf{REAL}) junto con la clase (\texttt{class}, tipo \textbf{nominal}, 3 categorías). El dataset tiene \textbf{150 instancias}, sin valores nulos, con la clase perfectamente balanceada (50 por especie). Sí detecté \textbf{3 filas exactamente duplicadas}, un detalle normal en este dataset tan estudiado (singularidad).
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Atributo} & \textbf{Rango} & \textbf{Media} & \textbf{Var.} & \textbf{Desv. Est.} & \textbf{Correl. con clase} \\
+\midrule
+sepal length & 4.3 -- 7.9 & 5.84 & 0.68 & 0.83 & 0.78 \\
+sepal width  & 2.0 -- 4.4 & 3.05 & 0.19 & 0.43 & -0.42 \\
+petal length & 1.0 -- 6.9 & 3.76 & 3.09 & 1.76 & \textbf{0.95} \\
+petal width  & 0.1 -- 2.5 & 1.20 & 0.58 & 0.76 & \textbf{0.96} \\
+\bottomrule
+\end{tabular}
+\caption{Estadísticas descriptivas de los 4 atributos numéricos del dataset Iris.}
+\end{table}
+
+El siguiente gráfico deja ver con claridad que el tamaño del \textbf{pétalo} (largo y ancho) predice la especie mucho mejor que el tamaño del \textbf{sépalo} -- un dato que después confirmé al revisar el árbol de decisión del clasificador J48.
+
+\figuraMarcada{img/grafico-correlacion-atributos.png}{0.95}{Correlación de cada atributo con la especie de iris. Los atributos del pétalo dominan claramente sobre los del sépalo.}
+
+\textbf{Relaciones entre pares de atributos.} Más allá de qué tan bien predice cada atributo la especie, también es útil ver cómo se relacionan los atributos \emph{entre sí}. La matriz de correlación siguiente muestra que \texttt{petallength} y \texttt{petalwidth} están fuertemente correlacionados entre ellos (0.96) -- tiene sentido, ambos crecen juntos según el tamaño general de la flor -- y que \texttt{sepalwidth} es el único atributo que se correlaciona negativamente con todos los demás.
+
+\figuraMarcada{img/grafico-correlacion-pares.png}{0.85}{Matriz de correlación entre los 4 atributos numéricos (relaciones entre pares).}
+
+\textbf{Distribución de valores por especie.} Para entender mejor cómo se distribuyen los valores de los atributos clave (pétalo), separé sus valores por especie:
+
+\figuraMarcada{img/grafico-distribucion-por-especie.png}{0.98}{Distribución (mínimo, cuartiles, mediana y máximo) del largo y ancho de pétalo, por especie.}
+
+Estas cajas muestran visualmente lo mismo que ya sugería la correlación: \textit{Iris-setosa} ocupa un rango de valores completamente separado del resto (sin solaparse ni un poco), mientras que las cajas de \textit{versicolor} y \textit{virginica} sí se superponen parcialmente -- exactamente donde después aparecieron los errores de clasificación de los tres algoritmos.
+
+\subsection{\faSitemap\ \ Construcción del pipeline visual}
+En el KnowledgeFlow armé el siguiente flujo:
+
+\begin{enumerate}[leftmargin=1.6em, itemsep=3pt, label=\textcolor{cTealDeep}{\textbf{\arabic*.}}]
+  \item \textbf{ArffLoader} -- cargó el archivo \texttt{iris.arff}.
+  \item \textbf{ClassAssigner} -- designó la columna \texttt{class} como la etiqueta a predecir.
+  \item \textbf{CrossValidationFoldMaker} -- dividió los datos en 10 pliegues para entrenar y evaluar de forma honesta (nunca examinando al modelo con los mismos datos que usó para aprender).
+  \item Tres ramas paralelas, una por cada \textbf{algoritmo de clasificación} (detallados en la siguiente sección), cada una con su propio \textbf{ClassifierPerformanceEvaluator} y \textbf{TextViewer} para revisar sus métricas por separado.
+\end{enumerate}
+
+\figuraMarcada{img/pipeline-completo.png}{0.98}{Pipeline completo armado en KnowledgeFlow: un origen de datos, validación cruzada, y tres algoritmos de clasificación evaluados en paralelo.}
+
+\subsection{\faCogs\ \ Algoritmos de clasificación evaluados}
+Ejecuté y comparé tres algoritmos con enfoques muy distintos:
+
+\begin{itemize}[leftmargin=1.9em, itemsep=6pt]
+  \raggedright
+  \item[\textcolor{cTealDeep}{\faTree}] \textbf{J48:} construye un único árbol de decisión, con reglas del tipo ``si el pétalo mide menos de X, entonces es tal especie''.
+  \item[\textcolor{cTealDeep}{\faLayerGroup}] \textbf{Random Forest:} entrena 100 árboles distintos sobre porciones aleatorias de los datos, y decide la especie por votación mayoritaria entre todos ellos.
+  \item[\textcolor{cTealDeep}{\faBrain}] \textbf{Multilayer Perceptron:} una red neuronal que ajusta sus pesos internos durante 500 iteraciones para aprender fronteras de decisión más complejas.
+\end{itemize}
+
+\figuraMarcada{img/resultado-random-forest.png}{0.95}{Resultado de Random Forest: 95.33\% de precisión (143/150 instancias correctas).}
+
+\figuraMarcada{img/resultado-j48.png}{0.95}{Resultado de J48: 96\% de precisión (144/150 instancias correctas).}
+
+\figuraMarcada{img/resultado-multilayer-perceptron.png}{0.95}{Resultado de Multilayer Perceptron: 97.33\% de precisión (146/150 instancias correctas), el mejor de los tres.}
+
+\subsection{\faChartBar\ \ Comparación de resultados}
+Reuniendo las métricas de los tres algoritmos:
+
+\figuraMarcada{img/grafico-comparacion-precision.png}{0.95}{Precisión global de los tres algoritmos evaluados con validación cruzada de 10 pliegues.}
+
+La diferencia entre los tres es pequeña (menos de 2 puntos porcentuales), pero la matriz de confusión de cada uno revela \emph{dónde} se equivoca cada algoritmo:
+
+\figuraMarcada{img/grafico-errores-por-clase.png}{0.95}{Errores de clasificación por especie. Ningún algoritmo confunde jamás \texttt{Iris-setosa} con otra especie; todos los errores ocurren entre \texttt{versicolor} y \texttt{virginica}.}
+
+Esto no es casualidad: el propio dataset documenta que \textit{setosa} es linealmente separable de las otras dos especies, mientras que \textit{versicolor} y \textit{virginica} no lo son entre sí. Los tres algoritmos ``descubrieron'' ese mismo patrón de forma independiente.
+
+\subsection{\faTree\ \ Visualización del árbol J48}
+De los tres algoritmos, solo J48 se puede dibujar como un árbol simple (Random Forest son 100 árboles combinados, y la red neuronal son pesos numéricos, no reglas). Usé el componente \textbf{GraphViewer} conectado a la salida \texttt{graph} de J48 para visualizarlo:
+
+\figuraMarcada{img/arbol-j48-graphviewer.png}{0.85}{Árbol de decisión generado por J48 en uno de los 10 pliegues de validación cruzada.}
+
+El árbol confirma exactamente lo que ya había visto en la correlación de atributos: \textbf{nunca usa \texttt{sepallength} ni \texttt{sepalwidth}} para decidir -- todas sus preguntas son sobre \texttt{petalwidth} y \texttt{petallength}. La primera pregunta (¿\texttt{petalwidth} $\leq$ 0.6?) separa \textit{setosa} del resto sin ningún error; las preguntas siguientes van afinando la frontera entre \textit{versicolor} y \textit{virginica}.
+
+% -------------------- 5. HALLAZGO TÉCNICO --------------------
+\section{\faExclamationTriangle\ \ Hallazgo técnico}
+\begin{incidenciabox}
+Intenté conectar la salida \texttt{graph} también en Random Forest y en Multilayer Perceptron para visualizarlos igual que a J48, pero esa opción de conexión \textbf{no aparece} en el menú contextual de ninguno de los dos (solo ofrecen \texttt{batchClassifier}, \texttt{text} e \texttt{info}).
+
+\textbf{Explicación:} la visualización tipo árbol solo está disponible para clasificadores que implementan la interfaz \texttt{Drawable} de Weka como un único árbol. Random Forest son 100 árboles combinados (no uno solo) y Multilayer Perceptron es una red de pesos numéricos -- ninguno de los dos se puede representar como un árbol de decisión simple, así que Weka correctamente no ofrece esa opción para ellos.
+\end{incidenciabox}
+
+% -------------------- 6. EVIDENCIA --------------------
+\section{\faFileArchive\ \ Evidencia de ejecución}
+\begin{evidenciabox}
+Ejecuté el pipeline completo de principio a fin sin errores: los 12 componentes del flujo (carga, asignación de clase, validación cruzada, 3 clasificadores, 3 evaluadores, 3 visores de texto y el GraphViewer) terminaron correctamente.
+\end{evidenciabox}
+
+\figuraMarcada{img/evidencia-ejecucion-completa.png}{0.85}{Registro de estado (Status) de KnowledgeFlow: todos los componentes del pipeline terminaron con \texttt{Finished.}}
+
+% -------------------- 7. CONCLUSIONES --------------------
+\section{\faCheckCircle\ \ Conclusiones}
+\begin{itemize}[leftmargin=1.6em, itemsep=6pt]
+  \raggedright
+  \item[\textcolor{cMint}{\faCheckCircle}] Construí un pipeline visual completo de ciencia de datos en KnowledgeFlow, desde la carga de datos hasta la comparación de múltiples modelos, sin escribir una sola línea de código.
+  \item[\textcolor{cMint}{\faCheckCircle}] La validación cruzada de 10 pliegues me permitió comparar los algoritmos de forma honesta, evaluando cada uno con datos que nunca usó para entrenar.
+  \item[\textcolor{cMint}{\faCheckCircle}] \textbf{Multilayer Perceptron} obtuvo la mejor precisión (97.33\%), seguido de \textbf{J48} (96\%) y \textbf{Random Forest} (95.33\%) -- aunque la red neuronal fue notablemente más lenta de entrenar.
+  \item[\textcolor{cMint}{\faCheckCircle}] Las estadísticas descriptivas (correlación de atributos), el árbol de J48 y las matrices de confusión de los tres algoritmos contaron exactamente la misma historia de forma independiente: el tamaño del pétalo es lo que realmente distingue a las especies, y \textit{Iris-setosa} es trivialmente separable mientras que \textit{versicolor} y \textit{virginica} se solapan.
+  \item[\textcolor{cMint}{\faCheckCircle}] Entendí una limitación real de las herramientas de visualización de modelos: no todo algoritmo se puede dibujar como árbol, y reconocer por qué (ensamble vs. red neuronal vs. árbol único) es tan importante como saber usar la herramienta.
+\end{itemize}
+
+% -------------------- REFERENCIAS --------------------
+\section{\faLink\ \ Referencias}
+\begin{itemize}[leftmargin=1.6em, itemsep=4pt]
+  \raggedright
+  \item[\textcolor{cCyan}{\faLink}] Weka -- \url{https://www.cs.waikato.ac.nz/ml/weka}
+  \item[\textcolor{cCyan}{\faLink}] Fisher, R.A. (1936). \textit{The use of multiple measurements in taxonomic problems} -- fuente original del dataset Iris.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,270 @@
+% ============================================================
+%  PLANTILLA DE INFORME — Maestría en Ciencia de Datos
+%  Reutilizable: copia esta carpeta, cambia el contenido de las
+%  secciones y las imágenes en img/. Los colores y estilos ya
+%  están definidos arriba, no hace falta tocarlos.
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}      % fondo real de tu terminal (portada)
+\definecolor{cTealDeep}{HTML}{064B5A}  % títulos de sección (azul de terminal oscurecido)
+\definecolor{cTeal}{HTML}{097289}      % subtítulos
+\definecolor{cBlue}{HTML}{0FC5ED}      % enlaces / detalles (azul de terminal)
+\definecolor{cCyan}{HTML}{0FC5ED}      % acento brillante (azul de terminal)
+\definecolor{cMint}{HTML}{44FFB1}      % verde de terminal (éxito / checks)
+\definecolor{cPurple}{HTML}{A277FF}    % púrpura de terminal (detalle portada)
+\definecolor{cRed}{HTML}{E52E2E}       % rojo de terminal (incidencias / errores)
+\definecolor{cBg}{HTML}{EAF6F8}        % fondo claro de cajas
+\definecolor{cText}{HTML}{01111E}      % texto de cuerpo (oscuro, legible)
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Práctica 2 -- ETL y Visualización con Power BI},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Práctica 2 -- ETL con Power BI}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+% NOTA: cada color debe ir en su propio grupo {..}; si no, el color
+% se "escapa" hacia el texto normal de las páginas siguientes.
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------- Cajas reutilizables ----------
+\newtcolorbox{objetivobox}{
+  colback=cBg, colframe=cCyan, boxrule=0.9pt, arc=2mm,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\faBullseye\ \ Objetivo}, coltitle=white,
+  colbacktitle=cTealDeep, fonttitle=\bfseries,
+  before upper={\raggedright\color{cText}}
+}
+
+\newtcolorbox{incidenciabox}{
+  colback=white, colframe=cRed, boxrule=1pt, arc=1mm,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\faExclamationTriangle\ \ Incidencia y solución}, coltitle=white,
+  colbacktitle=cRed, fonttitle=\bfseries,
+  before upper={\raggedright\color{cText}}
+}
+
+\newtcolorbox{evidenciabox}{
+  colback=cBg, colframe=cMint, boxrule=0.9pt, arc=2mm,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\faFileArchive\ \ Evidencia del archivo final}, coltitle=white,
+  colbacktitle=cTealDeep, fonttitle=\bfseries,
+  before upper={\raggedright\color{cText}}
+}
+
+% ---------- Figura sin marco ----------
+\newcommand{\figuraMarcada}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#2\linewidth]{#1}
+    \caption{#3}
+  \end{figure}
+}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ============================================================
+\begin{document}
+
+% -------------------- PORTADA --------------------
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  % ---- Icono insignia ----
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{30}{30}\selectfont\faChartBar};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{40}{44}\selectfont Práctica 2}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{20}{24}\selectfont \faDatabase\ ETL y Visualización de Datos con Power BI}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.55)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.3)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     Integración de datos de un libro de Excel y un feed OData (Northwind)\\
+     para construir un modelo de Business Intelligence de extremo a extremo}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Curso: & \color{white} Introducción a Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Edgar Sarmiento Calisaya \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 05 de septiembre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+
+% -------------------- ÍNDICE --------------------
+\tableofcontents
+\thispagestyle{fancy}
+\newpage
+
+% -------------------- 1. INTRODUCCIÓN --------------------
+\section{\faLightbulb\ \ Introducción}
+El \textbf{Business Intelligence} (BI) reúne los procesos, herramientas y tecnologías que permiten transformar datos operativos en información útil para tomar decisiones. Con esta práctica entendí que un flujo de trabajo típico de BI sigue el proceso \textbf{ETL} (\textit{Extract, Transform, Load}): se \textbf{extraen} datos de una o más fuentes, se \textbf{transforman} (limpieza, tipado, combinación) y finalmente se \textbf{cargan} en un modelo listo para el análisis.
+
+En esta práctica construí una solución de BI de extremo a extremo usando \textbf{Power BI Desktop}. Combiné dos fuentes de datos de naturaleza distinta: un archivo Excel local con información de productos, y un feed \textbf{OData} remoto con los pedidos de la base de datos de ejemplo \textit{Northwind}, siguiendo el tutorial oficial de Microsoft.
+
+% -------------------- 2. OBJETIVO --------------------
+\section{\faBullseye\ \ Objetivo}
+\begin{objetivobox}
+Mi objetivo con esta práctica fue entender los fundamentos y el flujo de trabajo de una solución de Business Intelligence para transformar datos brutos en información relevante que apoye la toma de decisiones en la gestión empresarial, construyendo de forma práctica un modelo ETL en Power BI Desktop.
+\end{objetivobox}
+
+% -------------------- 3. HERRAMIENTAS --------------------
+\section{\faToolbox\ \ Herramientas y fuentes de datos}
+Para desarrollar esta práctica utilicé las siguientes herramientas y fuentes de datos:
+\begin{itemize}[leftmargin=1.6em, itemsep=5pt]
+  \raggedright
+  \item[\textcolor{cCyan}{\faDesktop}] \textbf{Power BI Desktop} -- \url{https://powerbi.microsoft.com/es-es/desktop/}
+  \item[\textcolor{cCyan}{\faBookOpen}] \textbf{Tutorial guía} -- \url{https://learn.microsoft.com/es-es/power-bi/connect-data/desktop-tutorial-analyzing-sales-data-from-excel-and-an-odata-feed}
+  \item[\textcolor{cCyan}{\faFileExcel}] \textbf{Fuente 1 (Excel):} \texttt{Products.xlsx} -- catálogo de productos.\newline
+        \footnotesize Columnas usadas: \texttt{ProductID}, \texttt{ProductName}, \texttt{QuantityPerUnit}, \texttt{UnitsInStock}\normalsize
+  \item[\textcolor{cCyan}{\faCloud}] \textbf{Fuente 2 (OData):} feed \textit{Northwind} -- \url{https://services.odata.org/V3/Northwind/Northwind.svc/}, tabla \texttt{Orders}
+\end{itemize}
+
+% -------------------- 4. DESARROLLO --------------------
+\section{\faCogs\ \ Desarrollo}
+
+\subsection{\faIcon{cloud-download-alt}\ \ Extracción (Get Data)}
+Conecté Power BI Desktop a las dos fuentes de datos usando la opción \textbf{Obtener datos}: primero cargué el libro \texttt{Products.xlsx} (conector de Excel) y luego el feed OData de Northwind, apuntando a la tabla \texttt{Orders}.
+
+\figuraMarcada{img/tutorial-get_odata2.png}{0.55}{Conexión al feed OData de Northwind mediante su URL de servicio (referencia del tutorial oficial).}
+
+\subsection{\faFilter\ \ Transformación (Power Query Editor)}
+Dentro del \textbf{Power Query Editor} apliqué las siguientes transformaciones:
+
+\begin{itemize}[leftmargin=1.9em, itemsep=6pt]
+  \raggedright
+  \item[\textcolor{cTealDeep}{\faBroom}] \textbf{Limpié las columnas:} en \texttt{Products} conservé únicamente \texttt{ProductID}, \texttt{ProductName}, \texttt{QuantityPerUnit} y \texttt{UnitsInStock}, y eliminé el resto.
+  \item[\textcolor{cTealDeep}{\faIcon{expand-arrows-alt}}] \textbf{Expandí una tabla anidada:} la columna \texttt{Order\_Details} de \texttt{Orders} contenía una tabla relacionada; la expandí para extraer \texttt{ProductID}, \texttt{UnitPrice} y \texttt{Quantity} como columnas propias.
+  \item[\textcolor{cTealDeep}{\faCalculator}] \textbf{Creé una columna calculada:} generé el campo \texttt{LineTotal} = \texttt{UnitPrice} $\times$ \texttt{Quantity}, y la tipé como número decimal fijo.
+  \item[\textcolor{cTealDeep}{\faSortAmountDown}] \textbf{Ordené y renombré columnas:} eliminé las que no iba a usar y renombré los campos heredados del \textit{expand} para que quedaran más legibles.
+\end{itemize}
+
+\figuraMarcada{img/tutorial-expand-drop-down-menu.png}{0.5}{Selección de columnas al expandir la tabla anidada \texttt{Order\_Details} (referencia del tutorial oficial).}
+
+\figuraMarcada{img/tutorial-custom-column-dialog-box.png}{0.55}{Creación de la columna calculada \texttt{LineTotal} en el Power Query Editor (referencia del tutorial oficial).}
+
+\subsection{\faProjectDiagram\ \ Modelado (relación entre tablas)}
+Al cargar ambas consultas al modelo, noté que Power BI Desktop detectó automáticamente la relación entre \texttt{Products} y \texttt{Orders} a través del campo compartido \texttt{ProductID}. Esto me permitió cruzar información de ambas fuentes dentro de un mismo informe.
+
+\subsection{\faChartBar\ \ Carga y visualización}
+Con el modelo ya relacionado, construí tres visualizaciones, una por cada página del informe:
+
+\figuraMarcada{img/grafico-cantidad-por-producto.png}{0.92}{Página 1 -- Gráfico de barras que armé para mostrar la cantidad total pedida (\texttt{Quantity}) por producto (\texttt{ProductName}).}
+
+\figuraMarcada{img/grafico-ventas-por-fecha.png}{0.92}{Página 2 -- Gráfico de columnas que armé para mostrar el monto total de ventas (\texttt{LineTotal}) a lo largo del tiempo (\texttt{OrderDate}).}
+
+\figuraMarcada{img/mapa-ventas-por-pais.png}{0.92}{Página 3 -- Mapa que armé para mostrar la distribución geográfica del monto de ventas (\texttt{LineTotal}) por país de envío (\texttt{ShipCountry}).}
+
+% -------------------- 5. INCIDENCIAS --------------------
+\section{\faExclamationTriangle\ \ Incidencias y solución}
+\begin{incidenciabox}
+Al insertar el visual de mapa me apareció el error \textit{``Los objetos visuales de mapa y de mapa relleno están deshabilitados''}, consecuencia del retiro progresivo de Bing Maps como proveedor cartográfico por defecto.
+
+\textbf{Cómo lo solucioné:} fui a \texttt{Archivo → Opciones y configuración → Opciones → Características de versión preliminar} y activé la casilla \texttt{Dar forma a objeto visual de mapa}, luego reinicié Power BI Desktop. Tras el reinicio, el visual de mapa quedó disponible y pude completar la página 3 de mi informe.
+\end{incidenciabox}
+
+% -------------------- 6. EVIDENCIA --------------------
+\section{\faFileArchive\ \ Evidencia del archivo final}
+\begin{evidenciabox}
+Guardé el informe como archivo nativo de Power BI (\texttt{.pbix}), lo que evidencia que mi modelo, mis consultas y las tres páginas de visualización quedaron persistidas en un único entregable portable.
+\end{evidenciabox}
+
+\figuraMarcada{img/evidencia-archivo-final.png}{0.55}{Transferencia de mi archivo final \texttt{practica-power-bi.pbix} (110.3 KB) como evidencia del entregable completo.}
+
+% -------------------- 7. CONCLUSIONES --------------------
+\section{\faCheckCircle\ \ Conclusiones}
+\begin{itemize}[leftmargin=1.6em, itemsep=6pt]
+  \item[\textcolor{cMint}{\faCheckCircle}] Logré combinar dos fuentes de datos heterogéneas (un archivo local y un feed remoto) en un único modelo analítico, aplicando el flujo ETL completo dentro de una sola herramienta.
+  \item[\textcolor{cMint}{\faCheckCircle}] Entendí que el Power Query Editor me permite depurar y enriquecer los datos (columnas, tipos, campos calculados) sin necesitar herramientas externas.
+  \item[\textcolor{cMint}{\faCheckCircle}] Comprobé que la relación automática entre \texttt{Products} y \texttt{Orders} habilita visualizaciones cruzadas e interactivas (filtrado cruzado entre mapa, barras y línea de tiempo).
+  \item[\textcolor{cMint}{\faCheckCircle}] Aprendí a diagnosticar y resolver una limitación real de la plataforma (el retiro de Bing Maps), lo que me hizo valorar más la importancia de saber solucionar errores de herramientas de BI en un entorno real.
+\end{itemize}
+
+% -------------------- REFERENCIAS --------------------
+\section{\faLink\ \ Referencias}
+\begin{itemize}[leftmargin=1.6em, itemsep=4pt]
+  \item[\textcolor{cCyan}{\faLink}] Business Intelligence -- \url{https://powerbi.microsoft.com/es-es/what-is-business-intelligence/}
+  \item[\textcolor{cCyan}{\faLink}] Power BI -- \url{https://www.microsoft.com/es-es/power-platform/products/power-bi}
+  \item[\textcolor{cCyan}{\faLink}] Tutorial: Combine data from Excel and an OData feed -- \url{https://learn.microsoft.com/es-es/power-bi/connect-data/desktop-tutorial-analyzing-sales-data-from-excel-and-an-odata-feed}
+\end{itemize}
+
+\end{document}
