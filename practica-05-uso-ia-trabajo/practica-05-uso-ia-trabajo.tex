@@ -1,0 +1,188 @@
+% !TeX program = xelatex
+\documentclass[aspectratio=43]{beamer}
+\usepackage{../plantilla-diapositivas/tema-maestria}
+\usepackage{graphicx}
+\usepackage[spanish]{babel}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+% ---------------- Navegacion y pie de esta presentacion ----------------
+\setnav{5}{{Introducción},{Mi Empresa},{Uso de IA},{Resultados},{Conclusiones}}
+\setfootizq{Maestría en Ciencia de Datos}
+\setfootder{Uso de la IA en el Trabajo}
+
+\title{Uso de la Inteligencia Artificial en mi Trabajo}
+\author{Miguel Angel Deza Cuela}
+\date{Septiembre, 2026}
+
+\begin{document}
+
+% ============================================================
+% 1. PORTADA
+% ============================================================
+\activarnav{1}
+\begin{frame}
+  \vspace{0.15cm}
+  \portadapill{¿Cómo uso la Inteligencia Artificial\\ en mi trabajo?}
+
+  \vspace{0.35cm}
+  \begin{center}
+    {\bfseries\large Presentado por:}\\[2pt]
+    {\large Miguel Angel Deza Cuela}
+  \end{center}
+
+  \vspace{0.3cm}
+  \begin{center}
+  \begin{tabular}{@{}l l@{}}
+    \textcolor{cNavy}{\faIcon{graduation-cap}} & Maestría en Ciencia de Datos -- UNSA \\[4pt]
+    \textcolor{cNavy}{\faIcon{chalkboard-teacher}} & Docente: Yessenia Deysi Yari Ramos \\[4pt]
+    \textcolor{cNavy}{\faIcon{map-marker-alt}} & Arequipa, Perú \\[4pt]
+    \textcolor{cNavy}{\faIcon{calendar-alt}} & Septiembre, 2026 \\
+  \end{tabular}
+  \end{center}
+\end{frame}
+
+% ============================================================
+% 2. MI EMPRESA
+% ============================================================
+\activarnav{2}
+\begin{frame}
+  \seccionpill{\faIcon{industry}\ \ ¿En qué empresa trabajo?}
+  \vspace{0.2cm}
+
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+      {\large\bfseries\color{cNavy} PROMEDIMSA S.R.L.}\\[4pt]
+      {\small Empresa arequipeña de \textbf{ingeniería electromecánica e instalaciones
+      eléctricas}, que además vende \textbf{materiales de construcción} bajo la marca
+      \textit{Promedimsa Virtual} (promedimsa.pe).}
+
+      \vspace{5pt}
+      \itemcheck{Mi rol}{Full-Stack Developer: sistemas internos de cotizaciones,
+        facturación e inventario (React/TypeScript + Python/FastAPI, AWS).}
+      \itemcheck{Dónde aplico la IA}{Además del desarrollo de software, apoyo al área
+        comercial generando el contenido de \textbf{Instagram y Facebook} de la empresa
+        con ayuda de IA.}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \node[circle, fill=cNavy, minimum size=2.2cm, inner sep=0pt]
+          {\textcolor{white}{\Huge\faIcon{industry}}};
+      \end{tikzpicture}\\[8pt]
+      \begin{tikzpicture}
+        \node[circle, fill=cLimeDark, minimum size=1.4cm, inner sep=0pt]
+          {\textcolor{white}{\Large\faIcon{bolt}}};
+      \end{tikzpicture}
+      \hspace{5pt}
+      \begin{tikzpicture}
+        \node[circle, fill=cLimeDark, minimum size=1.4cm, inner sep=0pt]
+          {\textcolor{white}{\Large\faIcon{hard-hat}}};
+      \end{tikzpicture}
+      \hspace{5pt}
+      \begin{tikzpicture}
+        \node[circle, fill=cLimeDark, minimum size=1.4cm, inner sep=0pt]
+          {\textcolor{white}{\Large\faIcon{cogs}}};
+      \end{tikzpicture}\\[3pt]
+      {\scriptsize\color{cNavy} Ingeniería \textperiodcentered\ Materiales}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+% 3. COMO USO LA IA (flujo)
+% ============================================================
+\activarnav{3}
+\begin{frame}
+  \seccionpill{\faIcon{robot}\ \ ¿Cómo uso la IA?}
+  \vspace{0.15cm}
+
+  {\footnotesize Genero el contenido de redes sociales de PROMEDIMSA combinando \textbf{dos
+  asistentes de IA}, cada uno con un rol distinto:}
+
+  \vspace{2pt}
+  \begin{center}
+  \begin{tabular}{@{}c c c@{}}
+    \begin{tikzpicture}
+      \node[circle, fill=cNavy, minimum size=1.0cm, inner sep=0pt]
+        {\textcolor{white}{\small\faIcon{terminal}}};
+    \end{tikzpicture}
+    &
+    \begin{tikzpicture}
+      \node[fill=none] {\textcolor{cLimeDark}{\faIcon{arrow-right}}};
+    \end{tikzpicture}
+    &
+    \begin{tikzpicture}
+      \node[circle, fill=cNavy, minimum size=1.0cm, inner sep=0pt]
+        {\textcolor{white}{\small\faIcon{image}}};
+    \end{tikzpicture}
+    \\
+    {\scriptsize\bfseries Claude Code} & & {\scriptsize\bfseries ChatGPT}\\
+    {\scriptsize redacta caption + prompt} & & {\scriptsize genera la imagen final}\\
+  \end{tabular}
+  \end{center}
+
+  \vspace{1pt}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \itemcheck{1. Reviso lo ya publicado}{Consulto un índice de publicaciones anteriores
+        para no repetir tema, título ni íconos.}
+      \itemcheck{2. Uso datos reales}{Un archivo con los datos verificados de la empresa
+        evita que la IA invente teléfonos, certificaciones o servicios.}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \itemcheck{3. Genero caption + prompt}{Claude Code escribe el texto y el prompt de
+        imagen siguiendo reglas fijas de tono y formato.}
+      \itemcheck{4. Genero y publico}{ChatGPT crea la imagen sobre la plantilla de marca
+        y yo la publico en redes.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+% 4. RESULTADOS
+% ============================================================
+\activarnav{4}
+\begin{frame}
+  \seccionpill{\faIcon{chart-line}\ \ Resultados concretos}
+  \vspace{0.15cm}
+
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \centering
+      \includegraphics[width=0.95\linewidth]{img/ejemplo-plantilla-promedimsa.png}\\
+      {\scriptsize\color{cNavy} Plantilla de marca usada en cada publicación}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \itemcheck{20 publicaciones}{Generadas entre el 5 y el 18 de septiembre de 2026
+        (dos semanas), alternando ingeniería, materiales de construcción y contenido
+        institucional.}
+      \itemcheck{Control de calidad}{Cada error detectado (íconos faltantes, frases
+        repetitivas, datos no confirmados) se convirtió en una regla explícita para la
+        IA, evitando que se repita.}
+      \itemcheck{Sin inventar información}{La IA solo usa los servicios, RUC y dirección
+        que yo confirmé -- nunca datos que no pueda verificar.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+% 5. CONCLUSIONES
+% ============================================================
+\activarnav{5}
+\begin{frame}
+  \seccionpill{\faIcon{lightbulb}\ \ Conclusiones}
+  \vspace{0.15cm}
+
+  \itemcheck{La IA es un asistente, no un reemplazo}{Necesita supervisión humana
+    constante: yo verifico cada caption y cada imagen antes de publicar.}
+  \itemcheck{Las reglas explícitas evitan errores}{Documentar qué SÍ y qué NO debe hacer
+    la IA (datos reales, tono, formato) reduce alucinaciones de forma medible.}
+  \itemcheck{Ahorro de tiempo real}{Lo que antes tomaba horas de diseño y redacción por
+    publicación, ahora toma minutos, sin perder consistencia de marca.}
+
+  \vspace{0.1cm}
+  \portadapill{\normalsize ¡Gracias!}
+\end{frame}
+
+\end{document}

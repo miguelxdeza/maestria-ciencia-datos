@@ -1,0 +1,369 @@
+% ============================================================
+%  Basado en la plantilla de la Practica 6 (mismos colores/estilos)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{listings}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}
+\definecolor{cTealDeep}{HTML}{064B5A}
+\definecolor{cTeal}{HTML}{097289}
+\definecolor{cBlue}{HTML}{0FC5ED}
+\definecolor{cCyan}{HTML}{0FC5ED}
+\definecolor{cMint}{HTML}{44FFB1}
+\definecolor{cPurple}{HTML}{A277FF}
+\definecolor{cRed}{HTML}{E52E2E}
+\definecolor{cBg}{HTML}{EAF6F8}
+\definecolor{cText}{HTML}{01111E}
+\definecolor{cOutBg}{HTML}{F4F4F4}
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Práctica 7 -- Algoritmos de Clasificación en R},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Práctica 7 -- Clasificación en R}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------- Figura sin marco ----------
+\newcommand{\figuraMarcada}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#2\linewidth]{#1}
+    \caption{#3}
+  \end{figure}
+}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ---------- Bloques de código R y salida de consola ----------
+\lstdefinestyle{styleR}{
+  language=R,
+  backgroundcolor=\color{cBg},
+  basicstyle=\ttfamily\small\color{cText},
+  keywordstyle=\color{cTealDeep}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{cTeal},
+  numbers=none,
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cCyan},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=6pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\lstdefinestyle{styleOut}{
+  backgroundcolor=\color{cOutBg},
+  basicstyle=\ttfamily\scriptsize\color{cText},
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cTealDeep},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=2pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\newcommand{\codigoR}[1]{\lstinputlisting[style=styleR]{#1}}
+
+% ============================================================
+\begin{document}
+
+% -------------------- PORTADA --------------------
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  % ---- Icono insignia ----
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{28}{28}\selectfont\faIcon{r-project}};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{40}{44}\selectfont Práctica 7}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{20}{24}\selectfont \faIcon{r-project}\ Algoritmos de Clasificación en R}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.55)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.3)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     LDA, CART, kNN, SVM lineal y Random Forest sobre niveles de obesidad\\
+     en personas de México, Perú y Colombia (Kaggle), comparados con \textbf{caret}}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Curso: & \color{white} Introducción a Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Yessenia Deysi Yari Ramos \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 21 de septiembre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+
+% -------------------- DESARROLLO --------------------
+\section{\faCogs\ \ Desarrollo}
+
+\subsection{\faBoxOpen\ \ 1. Cargar las bibliotecas necesarias}
+\begin{lstlisting}[style=styleR]
+library(caret)
+library(MASS)          # LDA
+library(rpart)          # CART
+library(rpart.plot)
+library(e1071)           # SVM (y soporte interno de caret)
+library(kernlab)          # motor de SVM lineal usado por caret
+library(randomForest)
+library(corrplot)
+library(ggplot2)
+\end{lstlisting}
+Todo cargó bien.
+
+\subsection{\faFileImport\ \ 2. Cargar el conjunto de datos (CSV)}
+Busqué en \url{https://www.kaggle.com/datasets?tags=13302-Classification} un dataset de mi interés e inicié sesión en Kaggle para descargarlo directamente. Elegí \textbf{Obesity Levels} (\texttt{fatemehmehrparvar/obesity-levels}): estimación del nivel de obesidad de personas de \textbf{México, Perú y Colombia} según hábitos alimenticios y actividad física.
+\begin{lstlisting}[style=styleR]
+datos <- read.csv("obesidad.csv", stringsAsFactors = TRUE)
+niveles_obesidad <- c("Insufficient_Weight", "Normal_Weight",
+                       "Overweight_Level_I", "Overweight_Level_II",
+                       "Obesity_Type_I", "Obesity_Type_II", "Obesity_Type_III")
+datos$NObeyesdad <- factor(datos$NObeyesdad, levels = niveles_obesidad)
+str(datos)
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+'data.frame': 2111 obs. of  17 variables:
+ $ Age                           : num  21 21 23 27 22 29 23 22 24 22 ...
+ $ Gender                        : Factor w/ 2 levels "Female","Male"
+ $ Height                        : num  1.62 1.52 1.8 1.8 1.78 ...
+ $ Weight                        : num  64 56 77 87 89.8 53 55 53 64 68 ...
+ $ CALC                          : Factor w/ 4 levels "Always","Frequently",...
+ $ FAVC                          : Factor w/ 2 levels "no","yes"
+ $ FCVC                          : num  2 3 2 3 2 2 3 2 3 2 ...
+ $ NCP                           : num  3 3 3 3 1 3 3 3 3 3 ...
+ $ SCC                           : Factor w/ 2 levels "no","yes"
+ $ SMOKE                         : Factor w/ 2 levels "no","yes"
+ $ CH2O                          : num  2 3 2 2 2 2 2 2 2 2 ...
+ $ family_history_with_overweight: Factor w/ 2 levels "no","yes"
+ $ FAF                           : num  0 3 2 2 0 0 1 3 1 1 ...
+ $ TUE                           : num  1 0 1 0 0 0 0 0 1 1 ...
+ $ CAEC                          : Factor w/ 4 levels "Always","Frequently",...
+ $ MTRANS                        : Factor w/ 5 levels "Automobile","Bike",...
+ $ NObeyesdad                    : Factor w/ 7 levels "Insufficient_Weight",...
+\end{lstlisting}
+2111 personas, 16 predictores (edad, género, altura, peso, hábitos de alimentación/actividad física y transporte) y la clase \texttt{NObeyesdad} con 7 niveles de obesidad.
+
+\subsection{\faSearch\ \ 3. Análisis exploratorio de datos}
+\begin{lstlisting}[style=styleR]
+summary(datos)
+table(datos$NObeyesdad)
+colSums(is.na(datos))
+cor(datos[, c("Age","Height","Weight","FCVC","NCP","CH2O","FAF","TUE")])
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+Balance de clases:
+Insufficient_Weight       Normal_Weight  Overweight_Level_I Overweight_Level_II
+                272                 287                 290                 290
+     Obesity_Type_I     Obesity_Type_II    Obesity_Type_III
+                351                 297                 324
+
+Proporcion (%): 12.9  13.6  13.7  13.7  16.6  14.1  15.3
+
+Valores faltantes: 0 en las 17 columnas
+\end{lstlisting}
+Clase \textbf{bien balanceada} (12.9\%--16.6\% por nivel) y \textbf{sin valores faltantes}. En la correlación entre numéricas, \texttt{Height}--\texttt{Weight} es la más fuerte (0.46), seguida de \texttt{Height}--\texttt{FAF} (0.29) y \texttt{Age}--\texttt{TUE}, la única negativa relevante (-0.30: las personas mayores usan menos dispositivos electrónicos).
+
+\subsection{\faChartBar\ \ 4. Visualizar el conjunto de datos}
+\figuraMarcada{img/grafico-balance-clases.png}{0.72}{Balance de clases. Uso una paleta secuencial (no categórica) porque \texttt{NObeyesdad} es ordinal: a mayor nivel, más obesidad.}
+
+\figuraMarcada{img/grafico-boxplots-variables.png}{0.95}{Peso por nivel de obesidad: la relación es perfectamente monótona, tal como debe ser por construcción de las categorías.}
+
+\figuraMarcada{img/grafico-correlacion.png}{0.62}{Correlación entre los 8 predictores numéricos.}
+
+\subsection{\faTools\ \ 5. Preprocesar los datos}
+\begin{lstlisting}[style=styleR]
+set.seed(7)
+idx_train <- createDataPartition(datos$NObeyesdad, p = 0.80, list = FALSE)
+train <- datos[idx_train, ]
+test  <- datos[-idx_train, ]
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+Filas train / test:
+train  test
+ 1691   420
+\end{lstlisting}
+No hizo falta imputar nada (sin NA). Las 8 columnas categóricas (\texttt{Gender}, \texttt{CALC}, \texttt{FAVC}, \texttt{SCC}, \texttt{SMOKE}, \texttt{family\_history\_with\_overweight}, \texttt{CAEC}, \texttt{MTRANS}) ya quedaron como \texttt{factor}; \texttt{train()} las convierte a variables \textit{dummy} automáticamente vía la fórmula. Centré y escalé las numéricas dentro de cada \texttt{train()} (\texttt{preProcess = c("center","scale")}) porque kNN y SVM son sensibles a la escala.
+
+\subsection{\faPlay\ \ 6. Ejecutar los algoritmos}
+\begin{lstlisting}[style=styleR]
+control <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+metric  <- "Accuracy"
+prep    <- c("center", "scale")
+
+fit.lda  <- train(NObeyesdad ~ ., data = train, method = "lda",
+                   metric = metric, trControl = control, preProcess = prep)
+fit.cart <- train(NObeyesdad ~ ., data = train, method = "rpart",
+                   metric = metric, trControl = control, tuneLength = 8)
+fit.knn  <- train(NObeyesdad ~ ., data = train, method = "knn",
+                   metric = metric, trControl = control, preProcess = prep, tuneLength = 10)
+fit.svm  <- train(NObeyesdad ~ ., data = train, method = "svmLinear",
+                   metric = metric, trControl = control, preProcess = prep)
+fit.rf   <- train(NObeyesdad ~ ., data = train, method = "rf",
+                   metric = metric, trControl = control)
+\end{lstlisting}
+Los cinco modelos usan la misma validación cruzada: \textbf{10 pliegues $\times$ 3 repeticiones}. Al entrenar LDA, R avisó \texttt{"variables are collinear"} -- con 8 columnas categóricas convertidas a \textit{dummies} (algunas con niveles muy raros, como \texttt{CALC="Always"} con solo 1 caso), el sistema de ecuaciones de LDA queda casi singular; no impide el ajuste, pero es una limitación real de LDA frente a datos con muchas variables \textit{dummy} poco frecuentes.
+
+\subsection{\faChartBar\ \ 7. Evaluar los algoritmos}
+\begin{lstlisting}[style=styleR]
+resultados <- resamples(list(LDA=fit.lda, CART=fit.cart, kNN=fit.knn,
+                              SVM=fit.svm, RF=fit.rf))
+summary(resultados)
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+Accuracy (media de 30 evaluaciones)
+LDA  0.8965   CART 0.7765   kNN 0.7905   SVM 0.9515   RF 0.9645
+Kappa (media)
+LDA  0.8791   CART 0.7392   kNN 0.7553   SVM 0.9433   RF 0.9585
+\end{lstlisting}
+\figuraMarcada{img/grafico-comparacion-cv.png}{0.85}{Accuracy y Kappa de las 30 evaluaciones de validación cruzada, por algoritmo. Jerarquía clara: RF $>$ SVM $>$ LDA $>$ kNN $>$ CART.}
+
+\begin{lstlisting}[style=styleR]
+pred.lda <- predict(fit.lda, test); pred.rf <- predict(fit.rf, test)
+confusionMatrix(pred.lda, test$NObeyesdad)
+# ... (una matriz de confusion 7x7 por modelo)
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Modelo} & \textbf{Accuracy CV} & \textbf{Accuracy test} & \textbf{Kappa test} & \textbf{Sensib. macro} & \textbf{Especif. macro} \\
+\midrule
+LDA            & 0.896 & 0.879          & 0.858          & 0.875 & 0.980 \\
+CART           & 0.777 & 0.783          & 0.747          & 0.789 & 0.964 \\
+kNN            & 0.790 & 0.819          & 0.789          & 0.815 & 0.970 \\
+SVM lineal     & 0.951 & 0.943          & 0.933          & 0.941 & 0.991 \\
+Random Forest  & \textbf{0.965} & \textbf{0.969} & \textbf{0.964} & \textbf{0.969} & \textbf{0.995} \\
+\bottomrule
+\end{tabular}
+\caption{Tabla comparativa final sobre el conjunto de prueba (420 personas). Sensibilidad/especificidad son el promedio macro de las 7 clases.}
+\end{table}
+
+\textbf{Random Forest es claramente el mejor} (96.9\% de accuracy en prueba, Kappa 0.964), seguido de SVM lineal (94.3\%). CART, el modelo más simple, es el más débil (78.3\%) -- señal de que las fronteras entre niveles de obesidad no son un solo corte rectangular, sino que se benefician de un ensamble de árboles o un margen lineal de alta dimensión.
+
+\figuraMarcada{img/grafico-arbol-cart.png}{0.98}{Árbol CART final: 6 niveles de profundidad, dividiendo primero por \texttt{Weight} y luego por \texttt{Height} y \texttt{Gender}.}
+
+\figuraMarcada{img/grafico-importancia-rf.png}{0.85}{Importancia de variables (Random Forest, \textit{Mean Decrease Gini}): \texttt{Weight} y \texttt{Height} dominan por un margen amplio.}
+
+Tanto el árbol CART como Random Forest coinciden en que \texttt{Weight} y \texttt{Height} son los predictores más fuertes -- razonable, dado que la clase \texttt{NObeyesdad} está construida a partir del IMC (peso/altura$^2$).
+
+\subsection{\faMagic\ \ 8. Hacer predicciones}
+Con Random Forest (mejor modelo), sobre una muestra del set de prueba:
+\begin{lstlisting}[style=styleR]
+muestra <- test[sample(nrow(test), 6), ]
+predict(fit.rf, muestra)
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+                 Real          Prediccion
+1      Obesity_Type_I      Obesity_Type_I
+2    Obesity_Type_III    Obesity_Type_III
+3 Insufficient_Weight Insufficient_Weight
+4 Overweight_Level_II Overweight_Level_II
+5      Obesity_Type_I      Obesity_Type_I
+6 Overweight_Level_II Overweight_Level_II
+\end{lstlisting}
+6 de 6 aciertos.
+
+Y sobre una persona nueva (hipotética, perfil peruano típico):
+\begin{lstlisting}[style=styleR]
+persona_nueva <- data.frame(
+  Age = 27, Gender = "Male", Height = 1.72, Weight = 88,
+  CALC = "Sometimes", FAVC = "yes", FCVC = 2, NCP = 3, SCC = "no", SMOKE = "no",
+  CH2O = 2, family_history_with_overweight = "yes", FAF = 1, TUE = 2,
+  CAEC = "Sometimes", MTRANS = "Public_Transportation")
+predict(fit.rf, persona_nueva)
+predict(fit.rf, persona_nueva, type = "prob")
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+[1] Overweight_Level_II
+  Insufficient_Weight Normal_Weight Overweight_Level_I Overweight_Level_II
+1                   0         0.002               0.07               0.854
+  Obesity_Type_I Obesity_Type_II Obesity_Type_III
+1          0.074               0                0
+\end{lstlisting}
+Con 1.72\,m y 88\,kg (IMC $\approx$ 29.7), el modelo predice \texttt{Overweight\_Level\_II} con 85.4\% de probabilidad -- consistente con el rango de IMC de esa categoría.
+
+\end{document}

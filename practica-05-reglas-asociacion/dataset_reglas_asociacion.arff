@@ -1,0 +1,12 @@
+@relation reglas_asociacion
+
+@attribute A {SI,NO}
+@attribute B {SI,NO}
+@attribute C {SI,NO}
+@attribute E {SI,NO}
+
+@data
+SI,SI,SI,NO
+NO,SI,SI,SI
+SI,SI,SI,SI
+NO,SI,NO,SI

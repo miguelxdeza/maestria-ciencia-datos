@@ -1,0 +1,316 @@
+% ============================================================
+%  Basado en la plantilla de la Practica 5 (mismos colores/estilos)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{listings}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}
+\definecolor{cTealDeep}{HTML}{064B5A}
+\definecolor{cTeal}{HTML}{097289}
+\definecolor{cBlue}{HTML}{0FC5ED}
+\definecolor{cCyan}{HTML}{0FC5ED}
+\definecolor{cMint}{HTML}{44FFB1}
+\definecolor{cPurple}{HTML}{A277FF}
+\definecolor{cRed}{HTML}{E52E2E}
+\definecolor{cBg}{HTML}{EAF6F8}
+\definecolor{cText}{HTML}{01111E}
+\definecolor{cOutBg}{HTML}{F4F4F4}
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Práctica 6 -- Reglas de Asociación en R},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Práctica 6 -- Reglas en R}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------- Figura sin marco ----------
+\newcommand{\figuraMarcada}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#2\linewidth]{#1}
+    \caption{#3}
+  \end{figure}
+}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ---------- Bloques de codigo R y salida de consola ----------
+\lstdefinestyle{styleR}{
+  language=R,
+  backgroundcolor=\color{cBg},
+  basicstyle=\ttfamily\small\color{cText},
+  keywordstyle=\color{cTealDeep}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{cTeal},
+  numbers=none,
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cCyan},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=6pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\lstdefinestyle{styleOut}{
+  backgroundcolor=\color{cOutBg},
+  basicstyle=\ttfamily\scriptsize\color{cText},
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cTealDeep},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=2pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\newcommand{\codigoR}[1]{\lstinputlisting[style=styleR]{#1}}
+
+% ============================================================
+\begin{document}
+
+% -------------------- PORTADA --------------------
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  % ---- Icono insignia ----
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{28}{28}\selectfont\faIcon{r-project}};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{40}{44}\selectfont Práctica 6}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{20}{24}\selectfont \faIcon{r-project}\ Reglas de Asociación en R}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.55)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.3)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     Minería de reglas de asociación con el paquete \textbf{arules} en R:\\
+     carga, EDA, Apriori y visualización (minsup $\geq$ 0.5, minconf $\geq$ 0.6)}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Curso: & \color{white} Introducción a Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Yessenia Deysi Yari Ramos \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 19 de septiembre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+
+% -------------------- 1. DESARROLLO --------------------
+\section{\faCogs\ \ Desarrollo}
+
+\subsection{\faBoxOpen\ \ 1. Cargar las bibliotecas necesarias}
+\begin{lstlisting}[style=styleR]
+library(arules)
+library(arulesViz)
+\end{lstlisting}
+Ambos paquetes cargaron sin errores (\texttt{arules} para minar itemsets/reglas, \texttt{arulesViz} para graficarlas).
+
+\subsection{\faFileImport\ \ 2. Cargar la data (CSV)}
+\begin{lstlisting}[style=styleR]
+datos <- read.csv("dataset_reglas_asociacion.csv", stringsAsFactors = TRUE)
+print(datos)
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+  Transaccion  A  B  C  E
+1           1 SI SI SI NO
+2           2 NO SI SI SI
+3           3 SI SI SI SI
+4           4 NO SI NO SI
+\end{lstlisting}
+
+\subsection{\faSearch\ \ 3. Análisis exploratorio de datos}
+\begin{lstlisting}[style=styleR]
+str(datos)
+summary(datos)
+sapply(datos[, c("A", "B", "C", "E")], table)
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+'data.frame': 4 obs. of  5 variables:
+ $ Transaccion: int  1 2 3 4
+ $ A: Factor w/ 2 levels "NO","SI": 2 1 2 1
+ $ B: Factor w/ 1 level "SI": 1 1 1 1
+ $ C: Factor w/ 2 levels "NO","SI": 2 2 2 1
+ $ E: Factor w/ 2 levels "NO","SI": 1 2 2 2
+
+$A
+NO SI
+ 2  2
+$B
+SI
+ 4
+$C
+NO SI
+ 1  3
+$E
+NO SI
+ 1  3
+\end{lstlisting}
+El atributo \textbf{B} tiene un solo nivel (siempre ``SI''): no varía entre transacciones. \textbf{A} está balanceado 50/50, mientras que \textbf{C} y \textbf{E} son ``SI'' en el 75\% de los casos.
+
+\subsection{\faTools\ \ 4. Preprocesar los datos}
+Se descarta el ID de transacción (no es un ítem) y se convierte SI/NO a lógico -- \texttt{TRUE} indica que el ítem está presente -- para poder construir el objeto \texttt{transactions} que usa \texttt{arules}.
+\begin{lstlisting}[style=styleR]
+datos_log <- datos[, c("A", "B", "C", "E")]
+datos_log <- as.data.frame(lapply(datos_log, function(x) x == "SI"))
+transacciones <- as(datos_log, "transactions")
+summary(transacciones)
+inspect(transacciones)
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+transactions as itemMatrix in sparse format with
+ 4 rows (elements/itemsets/transactions) and
+ 4 columns (items) and a density of 0.75
+
+most frequent items:
+  B   C   E   A (Other)
+  4   3   3   2       0
+
+    items        transactionID
+[1] {A, B, C}    1
+[2] {B, C, E}    2
+[3] {A, B, C, E} 3
+[4] {B, E}       4
+\end{lstlisting}
+\figuraMarcada{img/frecuencia-items.png}{0.75}{Frecuencia relativa (soporte individual) de cada ítem.}
+
+\subsection{\faMagic\ \ 5. Generar las reglas de asociación}
+\begin{lstlisting}[style=styleR]
+reglas <- apriori(transacciones,
+                   parameter = list(supp = 0.5, conf = 0.6, target = "rules"))
+inspect(sort(reglas, by = "confidence"))
+
+itemsets <- apriori(transacciones,
+                     parameter = list(supp = 0.5, target = "frequent itemsets"))
+inspect(sort(itemsets, by = "support"))
+\end{lstlisting}
+\begin{lstlisting}[style=styleOut]
+     lhs       rhs support confidence coverage lift      count
+[1]  {}     => {B} 1.00    1.0000000  1.00     1.0000000 4
+[2]  {A}    => {C} 0.50    1.0000000  0.50     1.3333333 2
+[3]  {A}    => {B} 0.50    1.0000000  0.50     1.0000000 2
+[4]  {E}    => {B} 0.75    1.0000000  0.75     1.0000000 3
+[5]  {C}    => {B} 0.75    1.0000000  0.75     1.0000000 3
+[6]  {A, C} => {B} 0.50    1.0000000  0.50     1.0000000 2
+[7]  {A, B} => {C} 0.50    1.0000000  0.50     1.3333333 2
+[8]  {C, E} => {B} 0.50    1.0000000  0.50     1.0000000 2
+[9]  {}     => {E} 0.75    0.7500000  1.00     1.0000000 3
+[10] {}     => {C} 0.75    0.7500000  1.00     1.0000000 3
+[11] {B}    => {E} 0.75    0.7500000  1.00     1.0000000 3
+[12] {B}    => {C} 0.75    0.7500000  1.00     1.0000000 3
+[13] {C}    => {A} 0.50    0.6666667  0.75     1.3333333 2
+[14] {E}    => {C} 0.50    0.6666667  0.75     0.8888889 2
+[15] {C}    => {E} 0.50    0.6666667  0.75     0.8888889 2
+[16] {B, C} => {A} 0.50    0.6666667  0.75     1.3333333 2
+[17] {B, E} => {C} 0.50    0.6666667  0.75     0.8888889 2
+[18] {B, C} => {E} 0.50    0.6666667  0.75     0.8888889 2
+
+     items     support count
+[1]  {B}       1.00    4
+[2]  {E}       0.75    3
+[3]  {C}       0.75    3
+[4]  {B, E}    0.75    3
+[5]  {B, C}    0.75    3
+[6]  {A}       0.50    2
+[7]  {A, C}    0.50    2
+[8]  {A, B}    0.50    2
+[9]  {C, E}    0.50    2
+[10] {A, B, C} 0.50    2
+[11] {B, C, E} 0.50    2
+\end{lstlisting}
+Con \texttt{supp $\geq$ 0.5} y \texttt{conf $\geq$ 0.6}, \texttt{arules} encontró \textbf{11 itemsets frecuentes} y \textbf{18 reglas}. A diferencia del conteo manual, el algoritmo de \texttt{arules} genera por defecto solo reglas con \textbf{un ítem en el consecuente} (por eso no aparecen reglas del tipo A $\to$ \{B,C\}) y sí incluye 3 reglas con antecedente vacío (\texttt{\{\} => \{B\}}, etc.), que representan simplemente el soporte individual de cada ítem frecuente.
+
+\subsection{\faChartBar\ \ 6. Visualizar las reglas generadas}
+\begin{lstlisting}[style=styleR]
+plot(reglas, measure = c("support", "confidence"), shading = "lift")
+plot(reglas, method = "graph", engine = "igraph")
+plot(reglas, method = "grouped")
+\end{lstlisting}
+
+\figuraMarcada{img/reglas-scatter.png}{0.75}{Soporte vs. confianza de las 18 reglas, coloreadas por lift.}
+
+\figuraMarcada{img/reglas-grafo.png}{0.85}{Grafo de reglas: el tamaño del nodo es el soporte, el color el lift.}
+
+\figuraMarcada{img/reglas-agrupadas.png}{0.85}{Matriz agrupada: reglas agrupadas por antecedente (columnas) y consecuente (filas).}
+
+\end{document}

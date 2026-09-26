@@ -1,0 +1,5 @@
+Transaccion,A,B,C,E
+1,SI,SI,SI,NO
+2,NO,SI,SI,SI
+3,SI,SI,SI,SI
+4,NO,SI,NO,SI

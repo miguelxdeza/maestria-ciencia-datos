@@ -1,0 +1,833 @@
+# Log de ejecucion - Practica 7: Algoritmos de Clasificacion en R
+# Miguel Deza - Maestria en Ciencia de Datos
+# Generado: 2026-09-25 20:22 con R version 4.6.1 (2026-06-24) -- "Happy Hop"
+
+> # =============================================================
+> # Practica 7 - Algoritmos de Clasificacion en Lenguaje R
+> # Dataset: Obesity Levels (Kaggle, fatemehmehrparvar/obesity-levels)
+> # Personas de Mexico, Peru y Colombia - 2111 filas, 17 columnas
+> # Algoritmos: LDA, CART, kNN, SVM lineal, Random Forest
+> # =============================================================
+> 
+> set.seed(7)
+> 
+> # ---- 1. Cargar las bibliotecas/paquetes necesarias ----
+> library(caret)
+Loading required package: ggplot2
+Loading required package: lattice
+> library(MASS)          # LDA
+> library(rpart)          # CART
+> library(rpart.plot)
+> library(e1071)           # SVM (y soporte interno de caret)
+
+Attaching package: ‘e1071’
+
+The following object is masked from ‘package:ggplot2’:
+
+    element
+
+> library(kernlab)          # motor de SVM lineal usado por caret
+
+Attaching package: ‘kernlab’
+
+The following object is masked from ‘package:ggplot2’:
+
+    alpha
+
+> library(randomForest)
+randomForest 4.7-1.2
+Type rfNews() to see new features/changes/bug fixes.
+
+Attaching package: ‘randomForest’
+
+The following object is masked from ‘package:ggplot2’:
+
+    margin
+
+> library(corrplot)
+corrplot 0.95 loaded
+> library(ggplot2)
+> 
+> # ---- 2. Cargar el conjunto de datos (CSV, descargado de Kaggle) ----
+> datos <- read.csv("obesidad.csv", stringsAsFactors = TRUE)
+> 
+> niveles_obesidad <- c("Insufficient_Weight", "Normal_Weight",
++                        "Overweight_Level_I", "Overweight_Level_II",
++                        "Obesity_Type_I", "Obesity_Type_II", "Obesity_Type_III")
+> datos$NObeyesdad <- factor(datos$NObeyesdad, levels = niveles_obesidad)
+> 
+> str(datos)
+'data.frame':	2111 obs. of  17 variables:
+ $ Age                           : num  21 21 23 27 22 29 23 22 24 22 ...
+ $ Gender                        : Factor w/ 2 levels "Female","Male": 1 1 2 2 2 2 1 2 2 2 ...
+ $ Height                        : num  1.62 1.52 1.8 1.8 1.78 1.62 1.5 1.64 1.78 1.72 ...
+ $ Weight                        : num  64 56 77 87 89.8 53 55 53 64 68 ...
+ $ CALC                          : Factor w/ 4 levels "Always","Frequently",..: 3 4 2 2 4 4 4 4 2 3 ...
+ $ FAVC                          : Factor w/ 2 levels "no","yes": 1 1 1 1 1 2 2 1 2 2 ...
+ $ FCVC                          : num  2 3 2 3 2 2 3 2 3 2 ...
+ $ NCP                           : num  3 3 3 3 1 3 3 3 3 3 ...
+ $ SCC                           : Factor w/ 2 levels "no","yes": 1 2 1 1 1 1 1 1 1 1 ...
+ $ SMOKE                         : Factor w/ 2 levels "no","yes": 1 2 1 1 1 1 1 1 1 1 ...
+ $ CH2O                          : num  2 3 2 2 2 2 2 2 2 2 ...
+ $ family_history_with_overweight: Factor w/ 2 levels "no","yes": 2 2 2 1 1 1 2 1 2 2 ...
+ $ FAF                           : num  0 3 2 2 0 0 1 3 1 1 ...
+ $ TUE                           : num  1 0 1 0 0 0 0 0 1 1 ...
+ $ CAEC                          : Factor w/ 4 levels "Always","Frequently",..: 4 4 4 4 4 4 4 4 4 4 ...
+ $ MTRANS                        : Factor w/ 5 levels "Automobile","Bike",..: 4 4 4 5 4 1 3 4 4 4 ...
+ $ NObeyesdad                    : Factor w/ 7 levels "Insufficient_Weight",..: 2 2 2 3 4 2 2 2 2 2 ...
+> dim(datos)
+[1] 2111   17
+> head(datos)
+  Age Gender Height Weight       CALC FAVC FCVC NCP SCC SMOKE CH2O
+1  21 Female   1.62   64.0         no   no    2   3  no    no    2
+2  21 Female   1.52   56.0  Sometimes   no    3   3 yes   yes    3
+3  23   Male   1.80   77.0 Frequently   no    2   3  no    no    2
+4  27   Male   1.80   87.0 Frequently   no    3   3  no    no    2
+5  22   Male   1.78   89.8  Sometimes   no    2   1  no    no    2
+6  29   Male   1.62   53.0  Sometimes  yes    2   3  no    no    2
+  family_history_with_overweight FAF TUE      CAEC                MTRANS
+1                            yes   0   1 Sometimes Public_Transportation
+2                            yes   3   0 Sometimes Public_Transportation
+3                            yes   2   1 Sometimes Public_Transportation
+4                             no   2   0 Sometimes               Walking
+5                             no   0   0 Sometimes Public_Transportation
+6                             no   0   0 Sometimes            Automobile
+           NObeyesdad
+1       Normal_Weight
+2       Normal_Weight
+3       Normal_Weight
+4  Overweight_Level_I
+5 Overweight_Level_II
+6       Normal_Weight
+> 
+> # ---- 3. Analisis exploratorio de datos ----
+> summary(datos)
+      Age           Gender         Height          Weight      
+ Min.   :14.00   Female:1043   Min.   :1.450   Min.   : 39.00  
+ 1st Qu.:19.95   Male  :1068   1st Qu.:1.630   1st Qu.: 65.47  
+ Median :22.78                 Median :1.700   Median : 83.00  
+ Mean   :24.31                 Mean   :1.702   Mean   : 86.59  
+ 3rd Qu.:26.00                 3rd Qu.:1.768   3rd Qu.:107.43  
+ Max.   :61.00                 Max.   :1.980   Max.   :173.00  
+                                                               
+         CALC       FAVC           FCVC            NCP         SCC      
+ Always    :   1   no : 245   Min.   :1.000   Min.   :1.000   no :2015  
+ Frequently:  70   yes:1866   1st Qu.:2.000   1st Qu.:2.659   yes:  96  
+ no        : 639              Median :2.386   Median :3.000             
+ Sometimes :1401              Mean   :2.419   Mean   :2.686             
+                              3rd Qu.:3.000   3rd Qu.:3.000             
+                              Max.   :3.000   Max.   :4.000             
+                                                                        
+ SMOKE           CH2O       family_history_with_overweight      FAF        
+ no :2067   Min.   :1.000   no : 385                       Min.   :0.0000  
+ yes:  44   1st Qu.:1.585   yes:1726                       1st Qu.:0.1245  
+            Median :2.000                                  Median :1.0000  
+            Mean   :2.008                                  Mean   :1.0103  
+            3rd Qu.:2.477                                  3rd Qu.:1.6667  
+            Max.   :3.000                                  Max.   :3.0000  
+                                                                           
+      TUE                 CAEC                        MTRANS    
+ Min.   :0.0000   Always    :  53   Automobile           : 457  
+ 1st Qu.:0.0000   Frequently: 242   Bike                 :   7  
+ Median :0.6253   no        :  51   Motorbike            :  11  
+ Mean   :0.6579   Sometimes :1765   Public_Transportation:1580  
+ 3rd Qu.:1.0000                     Walking              :  56  
+ Max.   :2.0000                                                 
+                                                                
+               NObeyesdad 
+ Insufficient_Weight:272  
+ Normal_Weight      :287  
+ Overweight_Level_I :290  
+ Overweight_Level_II:290  
+ Obesity_Type_I     :351  
+ Obesity_Type_II    :297  
+ Obesity_Type_III   :324  
+> 
+> cat("\nBalance de clases:\n")
+
+Balance de clases:
+> print(table(datos$NObeyesdad))
+
+Insufficient_Weight       Normal_Weight  Overweight_Level_I Overweight_Level_II 
+                272                 287                 290                 290 
+     Obesity_Type_I     Obesity_Type_II    Obesity_Type_III 
+                351                 297                 324 
+> print(round(prop.table(table(datos$NObeyesdad)) * 100, 1))
+
+Insufficient_Weight       Normal_Weight  Overweight_Level_I Overweight_Level_II 
+               12.9                13.6                13.7                13.7 
+     Obesity_Type_I     Obesity_Type_II    Obesity_Type_III 
+               16.6                14.1                15.3 
+> 
+> cat("\nValores faltantes por columna:\n")
+
+Valores faltantes por columna:
+> print(colSums(is.na(datos)))
+                           Age                         Gender 
+                             0                              0 
+                        Height                         Weight 
+                             0                              0 
+                          CALC                           FAVC 
+                             0                              0 
+                          FCVC                            NCP 
+                             0                              0 
+                           SCC                          SMOKE 
+                             0                              0 
+                          CH2O family_history_with_overweight 
+                             0                              0 
+                           FAF                            TUE 
+                             0                              0 
+                          CAEC                         MTRANS 
+                             0                              0 
+                    NObeyesdad 
+                             0 
+> 
+> numericas <- c("Age", "Height", "Weight", "FCVC", "NCP", "CH2O", "FAF", "TUE")
+> cat("\nCorrelacion entre predictores numericos:\n")
+
+Correlacion entre predictores numericos:
+> print(round(cor(datos[, numericas]), 2))
+         Age Height Weight  FCVC   NCP  CH2O   FAF   TUE
+Age     1.00  -0.03   0.20  0.02 -0.04 -0.05 -0.14 -0.30
+Height -0.03   1.00   0.46 -0.04  0.24  0.21  0.29  0.05
+Weight  0.20   0.46   1.00  0.22  0.11  0.20 -0.05 -0.07
+FCVC    0.02  -0.04   0.22  1.00  0.04  0.07  0.02 -0.10
+NCP    -0.04   0.24   0.11  0.04  1.00  0.06  0.13  0.04
+CH2O   -0.05   0.21   0.20  0.07  0.06  1.00  0.17  0.01
+FAF    -0.14   0.29  -0.05  0.02  0.13  0.17  1.00  0.06
+TUE    -0.30   0.05  -0.07 -0.10  0.04  0.01  0.06  1.00
+> 
+> # ---- 4. Visualizar el conjunto de datos ----
+> # Paleta secuencial (cBg -> cTeal -> cTealDeep) porque NObeyesdad es una
+> # variable ORDINAL (a mas nivel, mas obesidad), no categorica sin orden.
+> paleta_seq <- colorRampPalette(c("#EAF6F8", "#097289", "#064B5A"))(7)
+> names(paleta_seq) <- niveles_obesidad
+> 
+> png("img/grafico-balance-clases.png", width = 950, height = 650, res = 130)
+> print(
++   ggplot(datos, aes(x = NObeyesdad, fill = NObeyesdad)) +
++     geom_bar(width = 0.6) +
++     geom_text(stat = "count", aes(label = after_stat(count)), vjust = -0.4, size = 3.6) +
++     scale_fill_manual(values = paleta_seq) +
++     scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
++     labs(title = "Balance de la variable de clase (NObeyesdad)", x = NULL, y = "Numero de personas") +
++     theme_minimal(base_size = 12) +
++     theme(legend.position = "none", plot.title = element_text(face = "bold"),
++           axis.text.x = element_text(angle = 30, hjust = 1))
++ )
+> dev.off()
+null device 
+          1 
+> 
+> png("img/grafico-boxplots-variables.png", width = 1100, height = 500, res = 130)
+> print(
++   ggplot(datos, aes(x = NObeyesdad, y = Weight, fill = NObeyesdad)) +
++     geom_boxplot() +
++     scale_fill_manual(values = paleta_seq) +
++     labs(title = "Peso (kg) por nivel de obesidad", x = NULL, y = "Peso (kg)") +
++     theme_minimal(base_size = 12) +
++     theme(legend.position = "none", plot.title = element_text(face = "bold"),
++           axis.text.x = element_text(angle = 30, hjust = 1))
++ )
+> dev.off()
+null device 
+          1 
+> 
+> m_cor <- cor(datos[, numericas])
+> png("img/grafico-correlacion.png", width = 750, height = 750, res = 130)
+> corrplot(m_cor, method = "color", type = "upper",
++          tl.col = "#064B5A", tl.srt = 45, addCoef.col = "#01111E", number.cex = 0.8,
++          col.lim = c(min(m_cor), 1),
++          col = colorRampPalette(c("#F4F4F4", "#097289", "#064B5A"))(200))
+Warning message:
+In ind1:ind2 : numerical expression has 3 elements: only the first used
+> dev.off()
+null device 
+          1 
+> 
+> # ---- 5. Preprocesar los datos ----
+> # No hay valores faltantes. Las columnas categoricas (Gender, CALC, FAVC,
+> # SCC, SMOKE, family_history_with_overweight, CAEC, MTRANS) ya quedaron
+> # como factor con read.csv(stringsAsFactors=TRUE); train() las convierte
+> # a variables dummy automaticamente via la formula. Centro/escalo las
+> # numericas en el propio train() porque kNN y SVM son sensibles a escala.
+> set.seed(7)
+> idx_train <- createDataPartition(datos$NObeyesdad, p = 0.80, list = FALSE)
+> train <- datos[idx_train, ]
+> test  <- datos[-idx_train, ]
+> cat("\nFilas train / test:\n"); print(c(train = nrow(train), test = nrow(test)))
+
+Filas train / test:
+train  test 
+ 1691   420 
+> 
+> # ---- 6. Ejecutar los algoritmos ----
+> control <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+> metric  <- "Accuracy"
+> prep    <- c("center", "scale")
+> 
+> set.seed(7); fit.lda  <- train(NObeyesdad ~ ., data = train, method = "lda",       metric = metric, trControl = control, preProcess = prep)
+Warning messages:
+1: In lda.default(x, grouping, ...) : variables are collinear
+2: In lda.default(x, grouping, ...) : variables are collinear
+3: In lda.default(x, grouping, ...) : variables are collinear
+> set.seed(7); fit.cart <- train(NObeyesdad ~ ., data = train, method = "rpart",     metric = metric, trControl = control, tuneLength = 8)
+> set.seed(7); fit.knn  <- train(NObeyesdad ~ ., data = train, method = "knn",       metric = metric, trControl = control, preProcess = prep, tuneLength = 10)
+> set.seed(7); fit.svm  <- train(NObeyesdad ~ ., data = train, method = "svmLinear", metric = metric, trControl = control, preProcess = prep)
+> set.seed(7); fit.rf   <- train(NObeyesdad ~ ., data = train, method = "rf",        metric = metric, trControl = control)
+> 
+> # ---- 7. Evaluar los algoritmos ----
+> resultados <- resamples(list(LDA = fit.lda, CART = fit.cart, kNN = fit.knn,
++                               SVM = fit.svm, RF = fit.rf))
+> cat("\nResumen de precision por validacion cruzada (10-fold x 3 repeticiones):\n")
+
+Resumen de precision por validacion cruzada (10-fold x 3 repeticiones):
+> print(summary(resultados))
+
+Call:
+summary.resamples(object = resultados)
+
+Models: LDA, CART, kNN, SVM, RF 
+Number of resamples: 30 
+
+Accuracy 
+          Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+LDA  0.8284024 0.8757396 0.8961327 0.8964552 0.9171598 0.9532164    0
+CART 0.7159763 0.7455621 0.7705803 0.7765028 0.8035503 0.8571429    0
+kNN  0.7396450 0.7800877 0.7899408 0.7904966 0.8047337 0.8343195    0
+SVM  0.9112426 0.9408284 0.9497199 0.9514851 0.9688550 0.9822485    0
+RF   0.9349112 0.9526627 0.9587017 0.9645055 0.9764358 0.9940828    0
+
+Kappa 
+          Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+LDA  0.7997303 0.8549208 0.8787611 0.8791153 0.9032825 0.9453827    0
+CART 0.6691140 0.7028936 0.7323513 0.7391963 0.7705341 0.8331057    0
+kNN  0.6957198 0.7431091 0.7545416 0.7552511 0.7719298 0.8062641    0
+SVM  0.8964334 0.9309147 0.9412913 0.9433465 0.9636179 0.9792697    0
+RF   0.9239859 0.9447080 0.9517675 0.9585409 0.9724836 0.9930891    0
+
+> 
+> png("img/grafico-comparacion-cv.png", width = 950, height = 600, res = 130)
+> print(bwplot(resultados, main = "Comparacion de algoritmos (Accuracy / Kappa, CV)",
++              col = "#097289", fill = "#0FC5ED"))
+> dev.off()
+null device 
+          1 
+> 
+> pred.lda  <- predict(fit.lda, test)
+> pred.cart <- predict(fit.cart, test)
+> pred.knn  <- predict(fit.knn, test)
+> pred.svm  <- predict(fit.svm, test)
+> pred.rf   <- predict(fit.rf, test)
+> 
+> cm.lda  <- confusionMatrix(pred.lda,  test$NObeyesdad)
+> cm.cart <- confusionMatrix(pred.cart, test$NObeyesdad)
+> cm.knn  <- confusionMatrix(pred.knn,  test$NObeyesdad)
+> cm.svm  <- confusionMatrix(pred.svm,  test$NObeyesdad)
+> cm.rf   <- confusionMatrix(pred.rf,   test$NObeyesdad)
+> 
+> cat("\n--- LDA ---\n");  print(cm.lda)
+
+--- LDA ---
+Confusion Matrix and Statistics
+
+                     Reference
+Prediction            Insufficient_Weight Normal_Weight Overweight_Level_I
+  Insufficient_Weight                  52            11                  0
+  Normal_Weight                         2            36                  2
+  Overweight_Level_I                    0             9                 45
+  Overweight_Level_II                   0             1                 11
+  Obesity_Type_I                        0             0                  0
+  Obesity_Type_II                       0             0                  0
+  Obesity_Type_III                      0             0                  0
+                     Reference
+Prediction            Overweight_Level_II Obesity_Type_I Obesity_Type_II
+  Insufficient_Weight                   0              0               0
+  Normal_Weight                         0              0               0
+  Overweight_Level_I                    7              0               0
+  Overweight_Level_II                  50              3               0
+  Obesity_Type_I                        1             67               1
+  Obesity_Type_II                       0              0              58
+  Obesity_Type_III                      0              0               0
+                     Reference
+Prediction            Obesity_Type_III
+  Insufficient_Weight                0
+  Normal_Weight                      0
+  Overweight_Level_I                 0
+  Overweight_Level_II                0
+  Obesity_Type_I                     0
+  Obesity_Type_II                    3
+  Obesity_Type_III                  61
+
+Overall Statistics
+                                          
+               Accuracy : 0.8786          
+                 95% CI : (0.8434, 0.9082)
+    No Information Rate : 0.1667          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.8582          
+                                          
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: Insufficient_Weight Class: Normal_Weight
+Sensitivity                              0.9630              0.63158
+Specificity                              0.9699              0.98898
+Pos Pred Value                           0.8254              0.90000
+Neg Pred Value                           0.9944              0.94474
+Prevalence                               0.1286              0.13571
+Detection Rate                           0.1238              0.08571
+Detection Prevalence                     0.1500              0.09524
+Balanced Accuracy                        0.9665              0.81028
+                     Class: Overweight_Level_I Class: Overweight_Level_II
+Sensitivity                             0.7759                     0.8621
+Specificity                             0.9558                     0.9586
+Pos Pred Value                          0.7377                     0.7692
+Neg Pred Value                          0.9638                     0.9775
+Prevalence                              0.1381                     0.1381
+Detection Rate                          0.1071                     0.1190
+Detection Prevalence                    0.1452                     0.1548
+Balanced Accuracy                       0.8658                     0.9103
+                     Class: Obesity_Type_I Class: Obesity_Type_II
+Sensitivity                         0.9571                 0.9831
+Specificity                         0.9943                 0.9917
+Pos Pred Value                      0.9710                 0.9508
+Neg Pred Value                      0.9915                 0.9972
+Prevalence                          0.1667                 0.1405
+Detection Rate                      0.1595                 0.1381
+Detection Prevalence                0.1643                 0.1452
+Balanced Accuracy                   0.9757                 0.9874
+                     Class: Obesity_Type_III
+Sensitivity                           0.9531
+Specificity                           1.0000
+Pos Pred Value                        1.0000
+Neg Pred Value                        0.9916
+Prevalence                            0.1524
+Detection Rate                        0.1452
+Detection Prevalence                  0.1452
+Balanced Accuracy                     0.9766
+> cat("\n--- CART ---\n"); print(cm.cart)
+
+--- CART ---
+Confusion Matrix and Statistics
+
+                     Reference
+Prediction            Insufficient_Weight Normal_Weight Overweight_Level_I
+  Insufficient_Weight                  52             6                  0
+  Normal_Weight                         2            38                  3
+  Overweight_Level_I                    0            13                 45
+  Overweight_Level_II                   0             0                  9
+  Obesity_Type_I                        0             0                  1
+  Obesity_Type_II                       0             0                  0
+  Obesity_Type_III                      0             0                  0
+                     Reference
+Prediction            Overweight_Level_II Obesity_Type_I Obesity_Type_II
+  Insufficient_Weight                   0              0               0
+  Normal_Weight                         0              0               0
+  Overweight_Level_I                   13              1               0
+  Overweight_Level_II                  36              8               0
+  Obesity_Type_I                        7             37               2
+  Obesity_Type_II                       2             24              57
+  Obesity_Type_III                      0              0               0
+                     Reference
+Prediction            Obesity_Type_III
+  Insufficient_Weight                0
+  Normal_Weight                      0
+  Overweight_Level_I                 0
+  Overweight_Level_II                0
+  Obesity_Type_I                     0
+  Obesity_Type_II                    0
+  Obesity_Type_III                  64
+
+Overall Statistics
+                                          
+               Accuracy : 0.7833          
+                 95% CI : (0.7408, 0.8218)
+    No Information Rate : 0.1667          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.7474          
+                                          
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: Insufficient_Weight Class: Normal_Weight
+Sensitivity                              0.9630              0.66667
+Specificity                              0.9836              0.98623
+Pos Pred Value                           0.8966              0.88372
+Neg Pred Value                           0.9945              0.94960
+Prevalence                               0.1286              0.13571
+Detection Rate                           0.1238              0.09048
+Detection Prevalence                     0.1381              0.10238
+Balanced Accuracy                        0.9733              0.82645
+                     Class: Overweight_Level_I Class: Overweight_Level_II
+Sensitivity                             0.7759                    0.62069
+Specificity                             0.9254                    0.95304
+Pos Pred Value                          0.6250                    0.67925
+Neg Pred Value                          0.9626                    0.94005
+Prevalence                              0.1381                    0.13810
+Detection Rate                          0.1071                    0.08571
+Detection Prevalence                    0.1714                    0.12619
+Balanced Accuracy                       0.8506                    0.78686
+                     Class: Obesity_Type_I Class: Obesity_Type_II
+Sensitivity                         0.5286                 0.9661
+Specificity                         0.9714                 0.9280
+Pos Pred Value                      0.7872                 0.6867
+Neg Pred Value                      0.9115                 0.9941
+Prevalence                          0.1667                 0.1405
+Detection Rate                      0.0881                 0.1357
+Detection Prevalence                0.1119                 0.1976
+Balanced Accuracy                   0.7500                 0.9470
+                     Class: Obesity_Type_III
+Sensitivity                           1.0000
+Specificity                           1.0000
+Pos Pred Value                        1.0000
+Neg Pred Value                        1.0000
+Prevalence                            0.1524
+Detection Rate                        0.1524
+Detection Prevalence                  0.1524
+Balanced Accuracy                     1.0000
+> cat("\n--- kNN ---\n");  print(cm.knn)
+
+--- kNN ---
+Confusion Matrix and Statistics
+
+                     Reference
+Prediction            Insufficient_Weight Normal_Weight Overweight_Level_I
+  Insufficient_Weight                  48             7                  2
+  Normal_Weight                         4            32                  3
+  Overweight_Level_I                    2            10                 43
+  Overweight_Level_II                   0             5                  4
+  Obesity_Type_I                        0             2                  6
+  Obesity_Type_II                       0             1                  0
+  Obesity_Type_III                      0             0                  0
+                     Reference
+Prediction            Overweight_Level_II Obesity_Type_I Obesity_Type_II
+  Insufficient_Weight                   0              0               1
+  Normal_Weight                         3              2               1
+  Overweight_Level_I                    4              0               1
+  Overweight_Level_II                  42              1               0
+  Obesity_Type_I                        6             60               1
+  Obesity_Type_II                       2              7              55
+  Obesity_Type_III                      1              0               0
+                     Reference
+Prediction            Obesity_Type_III
+  Insufficient_Weight                0
+  Normal_Weight                      0
+  Overweight_Level_I                 0
+  Overweight_Level_II                0
+  Obesity_Type_I                     0
+  Obesity_Type_II                    0
+  Obesity_Type_III                  64
+
+Overall Statistics
+                                          
+               Accuracy : 0.819           
+                 95% CI : (0.7788, 0.8547)
+    No Information Rate : 0.1667          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.7886          
+                                          
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: Insufficient_Weight Class: Normal_Weight
+Sensitivity                              0.8889              0.56140
+Specificity                              0.9727              0.96419
+Pos Pred Value                           0.8276              0.71111
+Neg Pred Value                           0.9834              0.93333
+Prevalence                               0.1286              0.13571
+Detection Rate                           0.1143              0.07619
+Detection Prevalence                     0.1381              0.10714
+Balanced Accuracy                        0.9308              0.76280
+                     Class: Overweight_Level_I Class: Overweight_Level_II
+Sensitivity                             0.7414                     0.7241
+Specificity                             0.9530                     0.9724
+Pos Pred Value                          0.7167                     0.8077
+Neg Pred Value                          0.9583                     0.9565
+Prevalence                              0.1381                     0.1381
+Detection Rate                          0.1024                     0.1000
+Detection Prevalence                    0.1429                     0.1238
+Balanced Accuracy                       0.8472                     0.8483
+                     Class: Obesity_Type_I Class: Obesity_Type_II
+Sensitivity                         0.8571                 0.9322
+Specificity                         0.9571                 0.9723
+Pos Pred Value                      0.8000                 0.8462
+Neg Pred Value                      0.9710                 0.9887
+Prevalence                          0.1667                 0.1405
+Detection Rate                      0.1429                 0.1310
+Detection Prevalence                0.1786                 0.1548
+Balanced Accuracy                   0.9071                 0.9523
+                     Class: Obesity_Type_III
+Sensitivity                           1.0000
+Specificity                           0.9972
+Pos Pred Value                        0.9846
+Neg Pred Value                        1.0000
+Prevalence                            0.1524
+Detection Rate                        0.1524
+Detection Prevalence                  0.1548
+Balanced Accuracy                     0.9986
+> cat("\n--- SVM ---\n");  print(cm.svm)
+
+--- SVM ---
+Confusion Matrix and Statistics
+
+                     Reference
+Prediction            Insufficient_Weight Normal_Weight Overweight_Level_I
+  Insufficient_Weight                  52             4                  0
+  Normal_Weight                         2            49                  3
+  Overweight_Level_I                    0             4                 50
+  Overweight_Level_II                   0             0                  5
+  Obesity_Type_I                        0             0                  0
+  Obesity_Type_II                       0             0                  0
+  Obesity_Type_III                      0             0                  0
+                     Reference
+Prediction            Overweight_Level_II Obesity_Type_I Obesity_Type_II
+  Insufficient_Weight                   0              0               0
+  Normal_Weight                         0              0               0
+  Overweight_Level_I                    3              0               0
+  Overweight_Level_II                  55              1               0
+  Obesity_Type_I                        0             69               2
+  Obesity_Type_II                       0              0              57
+  Obesity_Type_III                      0              0               0
+                     Reference
+Prediction            Obesity_Type_III
+  Insufficient_Weight                0
+  Normal_Weight                      0
+  Overweight_Level_I                 0
+  Overweight_Level_II                0
+  Obesity_Type_I                     0
+  Obesity_Type_II                    0
+  Obesity_Type_III                  64
+
+Overall Statistics
+                                         
+               Accuracy : 0.9429         
+                 95% CI : (0.9162, 0.963)
+    No Information Rate : 0.1667         
+    P-Value [Acc > NIR] : < 2.2e-16      
+                                         
+                  Kappa : 0.9333         
+                                         
+ Mcnemar's Test P-Value : NA             
+
+Statistics by Class:
+
+                     Class: Insufficient_Weight Class: Normal_Weight
+Sensitivity                              0.9630               0.8596
+Specificity                              0.9891               0.9862
+Pos Pred Value                           0.9286               0.9074
+Neg Pred Value                           0.9945               0.9781
+Prevalence                               0.1286               0.1357
+Detection Rate                           0.1238               0.1167
+Detection Prevalence                     0.1333               0.1286
+Balanced Accuracy                        0.9760               0.9229
+                     Class: Overweight_Level_I Class: Overweight_Level_II
+Sensitivity                             0.8621                     0.9483
+Specificity                             0.9807                     0.9834
+Pos Pred Value                          0.8772                     0.9016
+Neg Pred Value                          0.9780                     0.9916
+Prevalence                              0.1381                     0.1381
+Detection Rate                          0.1190                     0.1310
+Detection Prevalence                    0.1357                     0.1452
+Balanced Accuracy                       0.9214                     0.9659
+                     Class: Obesity_Type_I Class: Obesity_Type_II
+Sensitivity                         0.9857                 0.9661
+Specificity                         0.9943                 1.0000
+Pos Pred Value                      0.9718                 1.0000
+Neg Pred Value                      0.9971                 0.9945
+Prevalence                          0.1667                 0.1405
+Detection Rate                      0.1643                 0.1357
+Detection Prevalence                0.1690                 0.1357
+Balanced Accuracy                   0.9900                 0.9831
+                     Class: Obesity_Type_III
+Sensitivity                           1.0000
+Specificity                           1.0000
+Pos Pred Value                        1.0000
+Neg Pred Value                        1.0000
+Prevalence                            0.1524
+Detection Rate                        0.1524
+Detection Prevalence                  0.1524
+Balanced Accuracy                     1.0000
+> cat("\n--- RF ---\n");   print(cm.rf)
+
+--- RF ---
+Confusion Matrix and Statistics
+
+                     Reference
+Prediction            Insufficient_Weight Normal_Weight Overweight_Level_I
+  Insufficient_Weight                  53             0                  0
+  Normal_Weight                         1            56                  3
+  Overweight_Level_I                    0             1                 53
+  Overweight_Level_II                   0             0                  2
+  Obesity_Type_I                        0             0                  0
+  Obesity_Type_II                       0             0                  0
+  Obesity_Type_III                      0             0                  0
+                     Reference
+Prediction            Overweight_Level_II Obesity_Type_I Obesity_Type_II
+  Insufficient_Weight                   0              0               0
+  Normal_Weight                         0              0               0
+  Overweight_Level_I                    0              0               0
+  Overweight_Level_II                  56              1               0
+  Obesity_Type_I                        2             68               2
+  Obesity_Type_II                       0              1              57
+  Obesity_Type_III                      0              0               0
+                     Reference
+Prediction            Obesity_Type_III
+  Insufficient_Weight                0
+  Normal_Weight                      0
+  Overweight_Level_I                 0
+  Overweight_Level_II                0
+  Obesity_Type_I                     0
+  Obesity_Type_II                    0
+  Obesity_Type_III                  64
+
+Overall Statistics
+                                          
+               Accuracy : 0.969           
+                 95% CI : (0.9477, 0.9834)
+    No Information Rate : 0.1667          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.9638          
+                                          
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: Insufficient_Weight Class: Normal_Weight
+Sensitivity                              0.9815               0.9825
+Specificity                              1.0000               0.9890
+Pos Pred Value                           1.0000               0.9333
+Neg Pred Value                           0.9973               0.9972
+Prevalence                               0.1286               0.1357
+Detection Rate                           0.1262               0.1333
+Detection Prevalence                     0.1262               0.1429
+Balanced Accuracy                        0.9907               0.9857
+                     Class: Overweight_Level_I Class: Overweight_Level_II
+Sensitivity                             0.9138                     0.9655
+Specificity                             0.9972                     0.9917
+Pos Pred Value                          0.9815                     0.9492
+Neg Pred Value                          0.9863                     0.9945
+Prevalence                              0.1381                     0.1381
+Detection Rate                          0.1262                     0.1333
+Detection Prevalence                    0.1286                     0.1405
+Balanced Accuracy                       0.9555                     0.9786
+                     Class: Obesity_Type_I Class: Obesity_Type_II
+Sensitivity                         0.9714                 0.9661
+Specificity                         0.9886                 0.9972
+Pos Pred Value                      0.9444                 0.9828
+Neg Pred Value                      0.9943                 0.9945
+Prevalence                          0.1667                 0.1405
+Detection Rate                      0.1619                 0.1357
+Detection Prevalence                0.1714                 0.1381
+Balanced Accuracy                   0.9800                 0.9817
+                     Class: Obesity_Type_III
+Sensitivity                           1.0000
+Specificity                           1.0000
+Pos Pred Value                        1.0000
+Neg Pred Value                        1.0000
+Prevalence                            0.1524
+Detection Rate                        0.1524
+Detection Prevalence                  0.1524
+Balanced Accuracy                     1.0000
+> 
+> tabla_comparativa <- data.frame(
++   Modelo         = c("LDA", "CART", "kNN", "SVM lineal", "Random Forest"),
++   Accuracy_CV    = round(c(max(fit.lda$results$Accuracy), max(fit.cart$results$Accuracy),
++                             max(fit.knn$results$Accuracy), max(fit.svm$results$Accuracy),
++                             max(fit.rf$results$Accuracy)), 3),
++   Accuracy_test  = round(c(cm.lda$overall["Accuracy"], cm.cart$overall["Accuracy"],
++                             cm.knn$overall["Accuracy"], cm.svm$overall["Accuracy"],
++                             cm.rf$overall["Accuracy"]), 3),
++   Kappa_test     = round(c(cm.lda$overall["Kappa"], cm.cart$overall["Kappa"],
++                             cm.knn$overall["Kappa"], cm.svm$overall["Kappa"],
++                             cm.rf$overall["Kappa"]), 3),
++   Sensib_macro   = round(c(mean(cm.lda$byClass[,"Sensitivity"]), mean(cm.cart$byClass[,"Sensitivity"]),
++                             mean(cm.knn$byClass[,"Sensitivity"]), mean(cm.svm$byClass[,"Sensitivity"]),
++                             mean(cm.rf$byClass[,"Sensitivity"])), 3),
++   Especif_macro  = round(c(mean(cm.lda$byClass[,"Specificity"]), mean(cm.cart$byClass[,"Specificity"]),
++                             mean(cm.knn$byClass[,"Specificity"]), mean(cm.svm$byClass[,"Specificity"]),
++                             mean(cm.rf$byClass[,"Specificity"])), 3)
++ )
+> cat("\nTabla comparativa final:\n")
+
+Tabla comparativa final:
+> print(tabla_comparativa)
+         Modelo Accuracy_CV Accuracy_test Kappa_test Sensib_macro Especif_macro
+1           LDA       0.896         0.879      0.858        0.875         0.980
+2          CART       0.777         0.783      0.747        0.789         0.964
+3           kNN       0.790         0.819      0.789        0.815         0.970
+4    SVM lineal       0.951         0.943      0.933        0.941         0.991
+5 Random Forest       0.965         0.969      0.964        0.969         0.995
+> write.csv(tabla_comparativa, "tabla-comparativa.csv", row.names = FALSE)
+> 
+> png("img/grafico-arbol-cart.png", width = 1300, height = 850, res = 130)
+> rpart.plot(fit.cart$finalModel, type = 2, extra = 104, cex = 0.6,
++            box.palette = as.list(paleta_seq),
++            shadow.col = "gray85", main = "Arbol CART final")
+> dev.off()
+null device 
+          1 
+> 
+> png("img/grafico-importancia-rf.png", width = 850, height = 650, res = 130)
+> imp <- importance(fit.rf$finalModel)
+> imp_df <- data.frame(Variable = rownames(imp), MeanDecreaseGini = imp[, "MeanDecreaseGini"])
+> imp_df <- imp_df[order(imp_df$MeanDecreaseGini), ]
+> imp_df$Variable <- factor(imp_df$Variable, levels = imp_df$Variable)
+> print(
++   ggplot(imp_df, aes(x = Variable, y = MeanDecreaseGini)) +
++     geom_segment(aes(xend = Variable, y = 0, yend = MeanDecreaseGini), col = "#097289", linewidth = 1) +
++     geom_point(size = 3.5, col = "#064B5A") +
++     coord_flip() +
++     labs(title = "Importancia de variables - Random Forest", x = NULL, y = "Mean Decrease Gini") +
++     theme_minimal(base_size = 11) + theme(plot.title = element_text(face = "bold"))
++ )
+> dev.off()
+null device 
+          1 
+> 
+> # ---- 8. Hacer algunas predicciones ----
+> set.seed(7)
+> muestra_idx <- sample(nrow(test), 6)
+> muestra <- test[muestra_idx, ]
+> pred_muestra <- predict(fit.rf, muestra)
+> tabla_muestra <- data.frame(Real = muestra$NObeyesdad, Prediccion = pred_muestra)
+> cat("\nPredicciones (Random Forest) sobre 6 personas del set de prueba:\n")
+
+Predicciones (Random Forest) sobre 6 personas del set de prueba:
+> print(tabla_muestra)
+                 Real          Prediccion
+1      Obesity_Type_I      Obesity_Type_I
+2    Obesity_Type_III    Obesity_Type_III
+3 Insufficient_Weight Insufficient_Weight
+4 Overweight_Level_II Overweight_Level_II
+5      Obesity_Type_I      Obesity_Type_I
+6 Overweight_Level_II Overweight_Level_II
+> 
+> persona_nueva <- data.frame(
++   Age = 27, Gender = "Male", Height = 1.72, Weight = 88,
++   CALC = "Sometimes", FAVC = "yes", FCVC = 2, NCP = 3, SCC = "no", SMOKE = "no",
++   CH2O = 2, family_history_with_overweight = "yes", FAF = 1, TUE = 2,
++   CAEC = "Sometimes", MTRANS = "Public_Transportation"
++ )
+> pred_nueva <- predict(fit.rf, persona_nueva)
+> prob_nueva <- predict(fit.rf, persona_nueva, type = "prob")
+> cat("\nPrediccion Random Forest para persona nueva:\n")
+
+Prediccion Random Forest para persona nueva:
+> print(pred_nueva)
+[1] Overweight_Level_II
+7 Levels: Insufficient_Weight Normal_Weight ... Obesity_Type_III
+> print(round(prob_nueva, 3))
+  Insufficient_Weight Normal_Weight Overweight_Level_I Overweight_Level_II
+1                   0         0.002               0.07               0.854
+  Obesity_Type_I Obesity_Type_II Obesity_Type_III
+1          0.074               0                0
+> 
+m
