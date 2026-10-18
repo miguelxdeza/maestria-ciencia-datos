@@ -1,0 +1,1172 @@
+% ============================================================
+%  Basado en la plantilla de la Practica 7 (mismos colores/estilos)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage{amsmath,amssymb}
+\usepackage{needspace}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}
+\definecolor{cTealDeep}{HTML}{064B5A}
+\definecolor{cTeal}{HTML}{097289}
+\definecolor{cBlue}{HTML}{0FC5ED}
+\definecolor{cCyan}{HTML}{0FC5ED}
+\definecolor{cMint}{HTML}{44FFB1}
+\definecolor{cPurple}{HTML}{A277FF}
+\definecolor{cRed}{HTML}{E52E2E}
+\definecolor{cBg}{HTML}{EAF6F8}
+\definecolor{cText}{HTML}{01111E}
+\definecolor{cOutBg}{HTML}{F4F4F4}
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Unidad I -- Fundamentos Matemáticos: lista de ejercicios resuelta},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Unidad I -- Fundamentos Matemáticos}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------- Figura sin marco ----------
+\newcommand{\figuraMarcada}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#2\linewidth]{#1}
+    \caption{#3}
+  \end{figure}
+}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ---------- Bloques de código R y salida de consola ----------
+\lstdefinestyle{styleR}{
+  language=R,
+  backgroundcolor=\color{cBg},
+  basicstyle=\ttfamily\small\color{cText},
+  keywordstyle=\color{cTealDeep}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{cTeal},
+  numbers=none,
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cCyan},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=6pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\lstdefinestyle{styleOut}{
+  backgroundcolor=\color{cOutBg},
+  basicstyle=\ttfamily\scriptsize\color{cText},
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cTealDeep},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=2pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\newcommand{\codigoR}[1]{\lstinputlisting[style=styleR]{#1}}
+
+% ---------- Ejercicios ----------
+\usepackage{enumitem}
+\setlist{itemsep=1pt, topsep=3pt}
+\graphicspath{{img/}}
+\setlength{\parskip}{3pt}
+\newcommand{\R}{\mathbb{R}}
+
+\newtcolorbox{enunciado}[1][]{enhanced, breakable, colback=cBg, colframe=cTealDeep,
+  boxrule=0pt, leftrule=3pt, arc=2pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=cTealDeep,
+  title={Ejercicio #1}}
+\newtcolorbox{resultado}{enhanced, breakable, colback=cMint!12, colframe=cTealDeep,
+  boxrule=0.5pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt}
+
+\newif\ifinicioseccion
+\newcommand{\ejercicio}[2]{%
+  \ifinicioseccion\global\inicioseccionfalse\else\clearpage\fi
+  \phantomsection
+  \addcontentsline{toc}{subsection}{Ejercicio #1}%
+  \begin{enunciado}[#1]#2\end{enunciado}\noindent}
+% portada de sección: página completa con fondo oscuro
+\newif\ifanexo
+\newcommand{\seccion}[4]{%
+  \clearpage\newgeometry{margin=0cm}
+  \refstepcounter{section}\phantomsection
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}\protect\faIcon{#1}\ #2}%
+  \thispagestyle{empty}\noindent
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[cNavy] (current page.south west) rectangle (current page.north east);
+    \fill[cTealDeep, opacity=0.55] (current page.north west) ++(1.5,-1) circle (4.2);
+    \fill[cCyan, opacity=0.14] (current page.north west) ++(4.2,-0.4) circle (2.2);
+    \fill[cPurple, opacity=0.26] (current page.south east) ++(-1.2,1.4) circle (3.6);
+    \fill[cMint, opacity=0.13] (current page.south east) ++(-3.6,0.3) circle (2.0);
+    \draw[cCyan, opacity=0.25, line width=0.8pt] (current page.center) ++(5.2,4.6) circle (1.1);
+    \node[anchor=center] at ($(current page.center)+(0,5.2)$)
+      {\color{cTealDeep!80!cCyan}\bfseries\fontsize{150}{150}\selectfont \thesection};
+    \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.4cm] (ic)
+      at ($(current page.center)+(0,1.6)$) {};
+    \node at (ic) {\color{cMint}\fontsize{30}{30}\selectfont\faIcon{#1}};
+    \node[anchor=center] at ($(current page.center)+(0,-0.4)$)
+      {\color{cCyan}\bfseries\fontsize{11}{13}\selectfont \ifanexo A N E X O\else S E C C I Ó N\fi};
+    \node[anchor=north, text width=14cm, align=center] (tit) at ($(current page.center)+(0,-0.9)$)
+      {\hyphenpenalty=10000 {\color{white}\bfseries\fontsize{30}{36}\selectfont #3}};
+    \draw[cCyan, line width=1.4pt] ($(tit.south)+(-3.2,-0.3)$) -- ++(6.4,0);
+    \node[anchor=north] at ($(tit.south)+(0,-0.6)$)
+      {\color{cMint}\fontsize{13}{16}\selectfont #4};
+  \end{tikzpicture}%
+  \clearpage\restoregeometry}
+
+% figura a la izquierda y su código R a la derecha
+\newcommand{\figcod}[4]{%
+  \par\medskip\noindent
+  \begin{minipage}[c]{0.47\linewidth}\centering
+    \includegraphics[width=\linewidth]{#1}\captionof{figure}{#2}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.5\linewidth}
+    \lstinputlisting[style=styleR, basicstyle=\ttfamily\scriptsize\color{cText}, linerange={#3-#4}]{graficos.R}
+  \end{minipage}\par\medskip}
+
+% ============================================================
+\begin{document}
+
+% -------------------- PORTADA --------------------
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{28}{28}\selectfont\faIcon{square-root-alt}};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{36}{42}\selectfont Unidad I}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{20}{24}\selectfont \faIcon{square-root-alt}\ Fundamentos Matemáticos}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.55)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.4)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     Solución de la lista de ejercicios:\\
+     funciones, límites, derivadas, optimización, integración, vectores y matrices}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos -- UNSA \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Unidad: & \color{white} I -- Fundamentos Matemáticos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Carlos Antonio Abanto Valle \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 10 de octubre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+
+% ============================================================
+\seccion{project-diagram}{Funciones}{Funciones}{Ejercicios 1 -- 5}
+% ============================================================
+
+\ejercicio{1}{Para $f(x)=\sqrt{4-x^2}$ y $g(x)=\ln(x-1)$, determine el dominio y la imagen de cada
+función. Indique si son inyectivas en sus dominios.}
+
+\textbf{Función $f$:}
+\[
+4-x^2\ge0 \iff x^2\le4 \iff -2\le x\le2 \qquad\Rightarrow\qquad \operatorname{Dom}(f)=[-2,2]
+\]
+\[
+0\le x^2\le4 \;\Rightarrow\; 0\le 4-x^2\le4 \;\Rightarrow\; 0\le\sqrt{4-x^2}\le2
+\qquad\Rightarrow\qquad \operatorname{Im}(f)=[0,2]
+\]
+\[
+f(-1)=\sqrt3=f(1),\quad -1\neq1 \qquad\Rightarrow\qquad f \text{ no es inyectiva}
+\]
+
+\textbf{Función $g$:}
+\[
+x-1>0 \iff x>1 \qquad\Rightarrow\qquad \operatorname{Dom}(g)=(1,\infty)
+\]
+\[
+u=x-1\in(0,\infty),\quad \ln u\in\R \qquad\Rightarrow\qquad \operatorname{Im}(g)=\R
+\]
+\[
+g'(x)=\frac{1}{x-1}>0 \ \text{ en } (1,\infty) \qquad\Rightarrow\qquad g \text{ es estrictamente creciente, luego inyectiva}
+\]
+
+\figcod{ej01-f-y-g}{$f(x)=\sqrt{4-x^2}$ (arriba) y $g(x)=\ln(x-1)$ (abajo).}{19}{33}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $f$: dominio $[-2,2]$, imagen $[0,2]$, no inyectiva. \quad $g$: dominio $(1,\infty)$, imagen $\R$, inyectiva.
+\end{resultado}
+
+\ejercicio{2}{Considere $f(x)=x^2-4x+3$. Determine sus ceros, vértice, intervalos de crecimiento y
+decrecimiento, e imagen. Represente su gráfica.}
+
+\textbf{Ceros:}
+\[
+x^2-4x+3=(x-1)(x-3)=0 \quad\Rightarrow\quad x=1,\ x=3
+\]
+\textbf{Vértice:}
+\[
+f(x)=(x^2-4x+4)-1=(x-2)^2-1 \quad\Rightarrow\quad V=(2,-1)
+\]
+\textbf{Monotonía:}
+\[
+f'(x)=2x-4 \quad\Rightarrow\quad
+\begin{cases} f'(x)<0 & \text{si } x<2 \quad(\text{decrece})\\ f'(x)>0 & \text{si } x>2 \quad(\text{crece})\end{cases}
+\]
+\textbf{Imagen:}
+\[
+(x-2)^2\ge0 \;\Rightarrow\; f(x)\ge-1 \quad\Rightarrow\quad \operatorname{Im}(f)=[-1,\infty)
+\]
+
+\figcod{ej02-parabola}{Gráfica de $f(x)=x^2-4x+3$.}{36}{48}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Ceros $x=1$ y $x=3$; vértice $(2,-1)$; decrece en $(-\infty,2]$ y crece en $[2,\infty)$; imagen $[-1,\infty)$.
+\end{resultado}
+
+\ejercicio{3}{Sean $f(x)=\sqrt{x+2}$ y $g(x)=1/(x-1)$. Calcule $(f\circ g)(x)$ y $(g\circ f)(x)$,
+indicando sus respectivos dominios.}
+
+\textbf{$f\circ g$:}
+\[
+(f\circ g)(x)=\sqrt{\frac{1}{x-1}+2}=\sqrt{\frac{2x-1}{x-1}}
+\]
+\[
+x\neq1,\qquad \frac{2x-1}{x-1}\ge0
+\]
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+& $x\le\frac12$ & $\frac12<x<1$ & $x>1$ \\ \midrule
+$2x-1$ & $\le0$ & $+$ & $+$ \\
+$x-1$ & $-$ & $-$ & $+$ \\
+cociente & $\ge0$ & $<0$ & $>0$ \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+\operatorname{Dom}(f\circ g)=\left(-\infty,\tfrac12\right]\cup(1,\infty)
+\]
+
+\textbf{$g\circ f$:}
+\[
+(g\circ f)(x)=\frac{1}{\sqrt{x+2}-1}
+\]
+\[
+x+2\ge0,\qquad \sqrt{x+2}\neq1\iff x\neq-1
+\quad\Rightarrow\quad \operatorname{Dom}(g\circ f)=[-2,-1)\cup(-1,\infty)
+\]
+
+\figcod{ej03-composiciones}{$f\circ g$ (arriba) y $g\circ f$ (abajo).}{51}{68}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $(f\circ g)(x)=\sqrt{\frac{2x-1}{x-1}}$ en $(-\infty,\tfrac12]\cup(1,\infty)$; \quad $(g\circ f)(x)=\frac{1}{\sqrt{x+2}-1}$ en $[-2,-1)\cup(-1,\infty)$.
+\end{resultado}
+
+\ejercicio{4}{Determine si $f(x)=x^3+x$ es inyectiva y sobreyectiva como función de $\R$ en $\R$.
+¿Posee inversa? Justifique.}
+
+\textbf{Inyectividad:}
+\[
+f'(x)=3x^2+1\ge1>0 \quad\forall x\in\R \quad\Rightarrow\quad f \text{ estrictamente creciente} \quad\Rightarrow\quad f \text{ inyectiva}
+\]
+\textbf{Sobreyectividad:} $f$ es continua y
+\[
+\lim_{x\to-\infty}f(x)=-\infty,\qquad \lim_{x\to+\infty}f(x)=+\infty
+\]
+Por el teorema del valor intermedio, para todo $y\in\R$ existe $c$ con $f(c)=y$.
+
+\textbf{Inversa:} $f$ es biyectiva $\Rightarrow$ existe $f^{-1}:\R\to\R$.
+
+\figcod{ej04-inversa}{$f(x)=x^3+x$ y su inversa.}{71}{81}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $f$ es inyectiva y sobreyectiva, es decir biyectiva, así que sí tiene inversa $f^{-1}:\R\to\R$.
+\end{resultado}
+
+\ejercicio{5}{Para $s(x)=1/(1+e^{-x})$, $t(x)=\tanh(x)$ y $w(x)=x\,s(x)$, calcule $s(0)$, $t(0)$ y
+$w(0)$; determine sus límites cuando $x\to\pm\infty$ cuando existan y represente las tres funciones en
+$[-6,6]$.}
+
+\[
+s(0)=\frac{1}{1+e^{0}}=\frac12,\qquad t(0)=\frac{e^0-e^0}{e^0+e^0}=0,\qquad w(0)=0\cdot\frac12=0
+\]
+
+\textbf{Límites de $s$:}
+\[
+\lim_{x\to+\infty}\frac{1}{1+e^{-x}}=\frac{1}{1+0}=1,\qquad
+\lim_{x\to-\infty}\frac{1}{1+e^{-x}}=0
+\]
+\textbf{Límites de $t$:}
+\[
+\lim_{x\to+\infty}\frac{e^x-e^{-x}}{e^x+e^{-x}}=\lim_{x\to+\infty}\frac{1-e^{-2x}}{1+e^{-2x}}=1,\qquad
+\lim_{x\to-\infty}\frac{e^{2x}-1}{e^{2x}+1}=-1
+\]
+\textbf{Límites de $w$:}
+\[
+\lim_{x\to+\infty}x\,s(x)=+\infty
+\]
+\[
+\lim_{x\to-\infty}\frac{x}{1+e^{-x}}=\lim_{x\to-\infty}\frac{x\,e^{x}}{e^{x}+1}=\frac{0}{1}=0
+\qquad\left(\lim_{x\to-\infty}\frac{x}{e^{-x}}\overset{\text{L'H}}{=}\lim_{x\to-\infty}\frac{1}{-e^{-x}}=0\right)
+\]
+
+\figcod{ej05-activaciones}{$s(x)$, $t(x)$ y $w(x)$ en $[-6,6]$.}{84}{94}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $s(0)=\tfrac12$, $t(0)=0$, $w(0)=0$. Límites en $-\infty$ / $+\infty$: $s$: $0$ / $1$; \ $t$: $-1$ / $1$; \ $w$: $0$ / $+\infty$.
+\end{resultado}
+
+% ============================================================
+\seccion{infinity}{Límites y continuidad}{Límites y continuidad}{Ejercicios 6 -- 11}
+% ============================================================
+
+\ejercicio{6}{Calcule, si existen: (a) $\displaystyle\lim_{x\to2}\frac{x^2-4}{x-2}$;
+(b) $\displaystyle\lim_{x\to0}\frac{\sqrt{1+x}-1}{x}$; (c) $\displaystyle\lim_{x\to\infty}\frac{3x^2-x+1}{2x^2+5}$.}
+
+(a)
+\[
+\lim_{x\to2}\frac{x^2-4}{x-2}=\lim_{x\to2}\frac{(x-2)(x+2)}{x-2}=\lim_{x\to2}(x+2)=4
+\]
+(b)
+\[
+\lim_{x\to0}\frac{\sqrt{1+x}-1}{x}\cdot\frac{\sqrt{1+x}+1}{\sqrt{1+x}+1}
+=\lim_{x\to0}\frac{x}{x\left(\sqrt{1+x}+1\right)}
+=\lim_{x\to0}\frac{1}{\sqrt{1+x}+1}=\frac12
+\]
+(c)
+\[
+\lim_{x\to\infty}\frac{3x^2-x+1}{2x^2+5}=\lim_{x\to\infty}\frac{3-\frac1x+\frac{1}{x^2}}{2+\frac{5}{x^2}}=\frac32
+\]
+
+\figcod{ej06-hueco}{$y=\frac{x^2-4}{x-2}$.}{97}{104}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} (a) $4$ \qquad (b) $\tfrac12$ \qquad (c) $\tfrac32$
+\end{resultado}
+
+\ejercicio{7}{Para $f(x)=\begin{cases}x+1,&x<1,\\3-x,&x\ge1,\end{cases}$ calcule los límites laterales
+en $x=1$ y determine si $f$ es continua en ese punto.}
+
+\[
+\lim_{x\to1^-}f(x)=\lim_{x\to1^-}(x+1)=2,\qquad
+\lim_{x\to1^+}f(x)=\lim_{x\to1^+}(3-x)=2,\qquad
+f(1)=3-1=2
+\]
+\[
+\lim_{x\to1}f(x)=2=f(1) \quad\Rightarrow\quad f \text{ es continua en } x=1
+\]
+
+\figcod{ej07-trozos}{Gráfica de $f$.}{107}{116}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Ambos límites laterales valen $2=f(1)$, así que $f$ es continua en $x=1$.
+\end{resultado}
+
+\ejercicio{8}{Halle el valor de $c$ que hace continua en $x=2$ a la función
+$f(x)=\begin{cases}(x^2-4)/(x-2),&x\ne2,\\c,&x=2.\end{cases}$}
+
+\[
+\lim_{x\to2}\frac{x^2-4}{x-2}=\lim_{x\to2}(x+2)=4
+\]
+\[
+f(2)=\lim_{x\to2}f(x) \quad\Rightarrow\quad c=4
+\]
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $c=4$.
+\end{resultado}
+
+\ejercicio{9}{Demuestre mediante la definición $\varepsilon$--$\delta$ que $\lim_{x\to3}(2x-1)=5$.}
+
+Por demostrar: $\forall\varepsilon>0\ \exists\delta>0:\ 0<|x-3|<\delta \Rightarrow |(2x-1)-5|<\varepsilon$.
+\[
+|(2x-1)-5|=|2x-6|=2|x-3|<\varepsilon \iff |x-3|<\frac{\varepsilon}{2}
+\]
+Sea $\varepsilon>0$ y $\delta=\dfrac{\varepsilon}{2}$. Si $0<|x-3|<\delta$:
+\[
+|(2x-1)-5|=2|x-3|<2\delta=2\cdot\frac{\varepsilon}{2}=\varepsilon \qquad\blacksquare
+\]
+
+\figcod{ej09-epsilon-delta}{Franjas $\varepsilon$ y $\delta$ para $\varepsilon=1$, $\delta=\tfrac12$.}{119}{133}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Tomando $\delta=\varepsilon/2$ se cumple la definición, luego $\lim_{x\to3}(2x-1)=5$.
+\end{resultado}
+
+\ejercicio{10}{Calcule $\displaystyle\lim_{x\to0}\frac{\sin(3x)}{x}$ y
+$\displaystyle\lim_{x\to0}\frac{1-\cos x}{x^2}$, justificando los límites fundamentales utilizados.}
+
+\textbf{Límite fundamental.} En la circunferencia unitaria, para $0<|x|<\frac\pi2$:
+\[
+\frac{\sin x}{2}\le\frac{x}{2}\le\frac{\tan x}{2}
+\quad\Rightarrow\quad
+\cos x\le\frac{\sin x}{x}\le1
+\quad\Rightarrow\quad
+\lim_{x\to0}\frac{\sin x}{x}=1 \quad(\text{sándwich})
+\]
+
+\textbf{Primer límite} ($u=3x$):
+\[
+\lim_{x\to0}\frac{\sin 3x}{x}=\lim_{x\to0}3\cdot\frac{\sin 3x}{3x}=3\lim_{u\to0}\frac{\sin u}{u}=3
+\]
+\textbf{Segundo límite:}
+\[
+\lim_{x\to0}\frac{1-\cos x}{x^2}\cdot\frac{1+\cos x}{1+\cos x}
+=\lim_{x\to0}\frac{\sin^2x}{x^2(1+\cos x)}
+=\lim_{x\to0}\left(\frac{\sin x}{x}\right)^2\cdot\frac{1}{1+\cos x}
+=1\cdot\frac12=\frac12
+\]
+
+\figcod{ej10-trig}{$\frac{\sin 3x}{x}$ y $\frac{1-\cos x}{x^2}$ cerca de $x=0$.}{136}{145}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $\lim_{x\to0}\frac{\sin 3x}{x}=3$ \qquad y \qquad $\lim_{x\to0}\frac{1-\cos x}{x^2}=\frac12$.
+\end{resultado}
+
+\ejercicio{11}{Analice la continuidad de $f(x)=|x|/x$ en $x=0$, considerando que la función solo está
+definida para $x\ne0$. ¿Existe alguna extensión continua al origen?}
+
+\[
+f(x)=\frac{|x|}{x}=\begin{cases}1,&x>0\\-1,&x<0\end{cases}
+\]
+\[
+\lim_{x\to0^+}f(x)=1\neq-1=\lim_{x\to0^-}f(x) \quad\Rightarrow\quad \nexists\lim_{x\to0}f(x)
+\]
+Discontinuidad de salto en $x=0$. Una extensión continua $F$ exigiría $F(0)=\lim_{x\to0}f(x)$, que no
+existe $\Rightarrow$ no hay extensión continua.
+
+\figcod{ej11-signo}{Gráfica de $f(x)=|x|/x$.}{148}{156}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Discontinuidad de salto en $0$; no existe extensión continua al origen.
+\end{resultado}
+
+% ============================================================
+\seccion{chart-line}{Derivadas de una variable}{Derivadas de una variable}{Ejercicios 12 -- 17}
+% ============================================================
+
+\ejercicio{12}{Utilice la definición de derivada para obtener $f'(a)$ cuando $f(x)=x^2+2x$.}
+
+\begin{align*}
+f'(a)&=\lim_{h\to0}\frac{f(a+h)-f(a)}{h}
+=\lim_{h\to0}\frac{(a+h)^2+2(a+h)-(a^2+2a)}{h}\\
+&=\lim_{h\to0}\frac{a^2+2ah+h^2+2a+2h-a^2-2a}{h}
+=\lim_{h\to0}\frac{2ah+h^2+2h}{h}\\
+&=\lim_{h\to0}(2a+h+2)=2a+2
+\end{align*}
+
+\figcod{ej12-secantes}{Secantes y tangente en $a=1$.}{159}{175}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $f'(a)=2a+2$.
+\end{resultado}
+
+\ejercicio{13}{Calcule las derivadas de: (a) $x^3e^{-x}$; (b) $\ln(1+x^2)$; (c) $\sin(x^2)$;
+(d) $\sqrt{1+e^x}$.}
+
+\begin{align*}
+\text{(a)}\quad & \frac{d}{dx}\left(x^3e^{-x}\right)=3x^2e^{-x}+x^3(-e^{-x})=x^2e^{-x}(3-x)\\[1mm]
+\text{(b)}\quad & \frac{d}{dx}\ln(1+x^2)=\frac{1}{1+x^2}\cdot2x=\frac{2x}{1+x^2}\\[1mm]
+\text{(c)}\quad & \frac{d}{dx}\sin(x^2)=\cos(x^2)\cdot2x=2x\cos(x^2)\\[1mm]
+\text{(d)}\quad & \frac{d}{dx}(1+e^x)^{1/2}=\frac12(1+e^x)^{-1/2}\cdot e^x=\frac{e^x}{2\sqrt{1+e^x}}
+\end{align*}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} (a) $x^2e^{-x}(3-x)$ \quad (b) $\frac{2x}{1+x^2}$ \quad (c) $2x\cos(x^2)$ \quad (d) $\frac{e^x}{2\sqrt{1+e^x}}$
+\end{resultado}
+
+\ejercicio{14}{Para $f(x)=x^4-3x^2+2$, determine $f'(x)$ y $f''(x)$, encuentre sus puntos críticos y
+clasifíquelos. Obtenga la ecuación de la recta tangente en $x=1$.}
+
+\[
+f'(x)=4x^3-6x=2x(2x^2-3),\qquad f''(x)=12x^2-6
+\]
+\[
+f'(x)=0 \quad\Rightarrow\quad x=0,\qquad x=\pm\sqrt{\tfrac32}
+\]
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+$x$ & $f''(x)$ & $f(x)$ & Tipo \\ \midrule
+$0$ & $-6<0$ & $2$ & máximo local \\
+$\pm\sqrt{3/2}$ & $12>0$ & $-\frac14$ & mínimo local \\ \bottomrule
+\end{tabular}
+\end{center}
+\textbf{Recta tangente en $x=1$:}
+\[
+f(1)=0,\qquad f'(1)=4-6=-2
+\]
+\[
+y-0=-2(x-1)\quad\Rightarrow\quad y=-2x+2
+\]
+
+\figcod{ej14-criticos}{$f(x)=x^4-3x^2+2$, puntos críticos y tangente en $x=1$.}{178}{190}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Máximo local en $(0,2)$, mínimos en $\left(\pm\sqrt{3/2},-\tfrac14\right)$; tangente en $x=1$: $y=-2x+2$.
+\end{resultado}
+
+\ejercicio{15}{Para $f(x)=x^4-3x^2+2$, aproxime $f'(1)$ mediante diferencias hacia adelante y
+centradas con $h=10^{-1},10^{-2},10^{-3},10^{-4}$. Compare los errores absolutos con el valor exacto y
+grafique los resultados.}
+
+\[
+f'(1)=-2,\qquad
+D_+(h)=\frac{f(1+h)-f(1)}{h},\qquad
+D_c(h)=\frac{f(1+h)-f(1-h)}{2h}
+\]
+Con $f(1)=0$, $f(1+h)=-2h+3h^2+4h^3+h^4$ y $f(1-h)=2h+3h^2-4h^3+h^4$:
+\[
+D_+(h)=-2+3h+4h^2+h^3,\qquad D_c(h)=\frac{-4h+8h^3}{2h}=-2+4h^2
+\]
+\[
+|D_+(h)-f'(1)|=3h+4h^2+h^3=O(h),\qquad |D_c(h)-f'(1)|=4h^2=O(h^2)
+\]
+
+\codigoR{ej15.R}
+\lstinputlisting[style=styleOut]{ej15-salida.txt}
+
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+$h$ & $D_+(h)$ & error & $D_c(h)$ & error \\ \midrule
+$10^{-1}$ & $-1.659000$ & $3.41\times10^{-1}$ & $-1.960000$ & $4\times10^{-2}$ \\
+$10^{-2}$ & $-1.969599$ & $3.04\times10^{-2}$ & $-1.999600$ & $4\times10^{-4}$ \\
+$10^{-3}$ & $-1.996996$ & $3.00\times10^{-3}$ & $-1.999996$ & $4\times10^{-6}$ \\
+$10^{-4}$ & $-1.999700$ & $3.00\times10^{-4}$ & $-1.99999996$ & $4\times10^{-8}$ \\ \bottomrule
+\end{tabular}
+\end{center}
+
+\figcod{ej15-errores}{Errores absolutos en escala log-log.}{193}{207}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Error hacia adelante $\approx 3h$ (orden 1) y centrado $=4h^2$ (orden 2); con $h=10^{-4}$: $3\times10^{-4}$ frente a $4\times10^{-8}$.
+\end{resultado}
+
+\ejercicio{16}{Determine los intervalos de crecimiento, decrecimiento, concavidad y los puntos de
+inflexión de $f(x)=x^3-3x$.}
+
+\[
+f'(x)=3x^2-3=3(x-1)(x+1)=0 \quad\Rightarrow\quad x=\pm1
+\]
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+& $(-\infty,-1)$ & $(-1,1)$ & $(1,\infty)$ \\ \midrule
+$f'(x)$ & $+$ & $-$ & $+$ \\
+$f$ & crece & decrece & crece \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+f''(x)=6x=0\quad\Rightarrow\quad x=0
+\]
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+& $(-\infty,0)$ & $(0,\infty)$ \\ \midrule
+$f''(x)$ & $-$ & $+$ \\
+$f$ & cóncava hacia abajo & cóncava hacia arriba \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+f(0)=0 \quad\Rightarrow\quad \text{punto de inflexión } (0,0)
+\]
+
+\figcod{ej16-f-fp-fpp}{$f(x)=x^3-3x$, $f'(x)$ y $f''(x)$.}{210}{219}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Crece en $(-\infty,-1]\cup[1,\infty)$, decrece en $[-1,1]$; cóncava hacia abajo en $x<0$ y hacia arriba en $x>0$; inflexión en $(0,0)$.
+\end{resultado}
+
+\ejercicio{17}{Encuentre la aproximación lineal de $f(x)=\sqrt x$ alrededor de $x=4$ y úsela para
+aproximar $\sqrt{4.1}$. Compare con el valor numérico.}
+
+\[
+L(x)=f(4)+f'(4)(x-4),\qquad f(4)=2,\qquad f'(x)=\frac{1}{2\sqrt x}\Rightarrow f'(4)=\frac14
+\]
+\[
+L(x)=2+\frac{x-4}{4}
+\]
+\[
+\sqrt{4.1}\approx L(4.1)=2+\frac{0.1}{4}=2.025
+\]
+\[
+\sqrt{4.1}=2.0248457\ldots,\qquad |2.025-2.0248457|\approx1.54\times10^{-4}
+\]
+
+\figcod{ej17-lineal}{$\sqrt x$ y su aproximación lineal en $x=4$ (abajo: acercamiento).}{222}{236}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $L(x)=2+\frac{x-4}{4}$, \ $\sqrt{4.1}\approx2.025$ (valor real $2.024846$).
+\end{resultado}
+
+% ============================================================
+\seccion{mountain}{Derivadas multivariadas y optimización}{Derivadas multivariadas\\ y optimización}{Ejercicios 18 -- 23}
+% ============================================================
+
+\ejercicio{18}{Para $f(x,y)=x^2+xy+3y^2-2x$, calcule las derivadas parciales de primer y segundo orden,
+el gradiente y la matriz hessiana.}
+
+\[
+f_x=2x+y-2,\qquad f_y=x+6y
+\]
+\[
+f_{xx}=2,\qquad f_{xy}=f_{yx}=1,\qquad f_{yy}=6
+\]
+\[
+\nabla f(x,y)=\begin{pmatrix}2x+y-2\\x+6y\end{pmatrix},\qquad
+H=\begin{pmatrix}2&1\\1&6\end{pmatrix}
+\]
+
+\figcod{ej18-curvas-nivel}{Curvas de nivel de $f(x,y)=x^2+xy+3y^2-2x$.}{256}{261}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $\nabla f=(2x+y-2,\ x+6y)^\top$, \quad $H=\begin{pmatrix}2&1\\1&6\end{pmatrix}$.
+\end{resultado}
+
+\ejercicio{19}{Sea $f(x,y)=x^2+2y^2$. Calcule la derivada direccional en $(1,-1)$ en la dirección de
+$v=(3,4)$. Determine la dirección de máximo crecimiento y su tasa.}
+
+\[
+\nabla f=(2x,\,4y)\quad\Rightarrow\quad \nabla f(1,-1)=(2,-4)
+\]
+\[
+u=\frac{v}{\|v\|}=\frac{(3,4)}{5}=\left(\tfrac35,\tfrac45\right)
+\]
+\[
+D_uf(1,-1)=\nabla f(1,-1)\cdot u=2\cdot\frac35+(-4)\cdot\frac45=\frac{6-16}{5}=-2
+\]
+\textbf{Máximo crecimiento:}
+\[
+u^*=\frac{\nabla f(1,-1)}{\|\nabla f(1,-1)\|}=\frac{(2,-4)}{\sqrt{20}}=\left(\tfrac{1}{\sqrt5},-\tfrac{2}{\sqrt5}\right),
+\qquad \|\nabla f(1,-1)\|=\sqrt{20}=2\sqrt5\approx4.47
+\]
+
+\figcod{ej19-gradiente}{Curvas de nivel, gradiente en $(1,-1)$ y dirección $u$.}{246}{254}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $D_uf(1,-1)=-2$; máximo crecimiento en la dirección $(1,-2)/\sqrt5$ con tasa $2\sqrt5\approx4.47$.
+\end{resultado}
+
+\ejercicio{20}{Determine y clasifique todos los puntos estacionarios de $f(x,y)=x^2+2y^2-2x+4y$.
+¿Existe un mínimo global? Justifique.}
+
+\[
+\begin{cases}f_x=2x-2=0\\ f_y=4y+4=0\end{cases}\quad\Rightarrow\quad (x,y)=(1,-1)
+\]
+\[
+H=\begin{pmatrix}2&0\\0&4\end{pmatrix},\qquad f_{xx}=2>0,\qquad \det H=8>0 \quad\Rightarrow\quad \text{mínimo local}
+\]
+\[
+f(1,-1)=1+2-2-4=-3
+\]
+\textbf{Mínimo global:}
+\[
+f(x,y)=(x-1)^2+2(y+1)^2-3\ \ge\ -3 \quad\forall(x,y)\in\R^2
+\]
+
+\figcod{ej20-minimo}{Curvas de nivel de $f$ y mínimo en $(1,-1)$.}{263}{268}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Único punto estacionario $(1,-1)$: mínimo global con valor $-3$.
+\end{resultado}
+
+\ejercicio{21}{Analice los puntos estacionarios de $f(x,y)=x^2-y^2$ y de $g(x,y)=x^4+y^4$. Discuta qué
+permite concluir la prueba del hessiano en cada caso.}
+
+\textbf{Función $f$:}
+\[
+\nabla f=(2x,-2y)=(0,0)\quad\Rightarrow\quad(0,0)
+\]
+\[
+H_f=\begin{pmatrix}2&0\\0&-2\end{pmatrix},\qquad \det H_f=-4<0 \quad\Rightarrow\quad \text{punto de silla}
+\]
+\[
+f(x,0)=x^2>0,\qquad f(0,y)=-y^2<0
+\]
+
+\textbf{Función $g$:}
+\[
+\nabla g=(4x^3,4y^3)=(0,0)\quad\Rightarrow\quad(0,0)
+\]
+\[
+H_g=\begin{pmatrix}12x^2&0\\0&12y^2\end{pmatrix},\qquad H_g(0,0)=\begin{pmatrix}0&0\\0&0\end{pmatrix},\qquad \det H_g=0 \quad\Rightarrow\quad \text{no concluyente}
+\]
+\[
+g(x,y)=x^4+y^4\ge0=g(0,0) \quad\Rightarrow\quad (0,0) \text{ es mínimo global}
+\]
+
+\figcod{ej21-superficies}{Superficies de $f=x^2-y^2$ y $g=x^4+y^4$.}{270}{285}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $f$: silla en $(0,0)$ (el hessiano decide). \ $g$: hessiano nulo, prueba no concluyente; por análisis directo, mínimo global en $(0,0)$.
+\end{resultado}
+
+\ejercicio{22}{Obtenga el polinomio de Taylor de segundo orden de $f(x,y)=e^{x+y}$ alrededor de $(0,0)$
+y úselo para aproximar $f(0.1,-0.2)$.}
+
+\[
+P_2(x,y)=f(0,0)+f_x x+f_y y+\tfrac12\left(f_{xx}x^2+2f_{xy}xy+f_{yy}y^2\right)
+\]
+\[
+f=f_x=f_y=f_{xx}=f_{xy}=f_{yy}=e^{x+y}\quad\Rightarrow\quad \text{todas valen } 1 \text{ en } (0,0)
+\]
+\[
+P_2(x,y)=1+x+y+\tfrac12\left(x^2+2xy+y^2\right)=1+(x+y)+\tfrac12(x+y)^2
+\]
+\[
+f(0.1,-0.2)\approx P_2(0.1,-0.2)=1+(-0.1)+\tfrac12(0.01)=0.905
+\]
+\[
+e^{-0.1}=0.904837\ldots,\qquad |0.905-0.904837|\approx1.6\times10^{-4}
+\]
+
+\figcod{ej22-taylor}{$e^{t}$ y su polinomio de Taylor de orden 2, con $t=x+y$.}{287}{296}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $P_2(x,y)=1+(x+y)+\tfrac12(x+y)^2$, \ $f(0.1,-0.2)\approx0.905$ (real $0.904837$).
+\end{resultado}
+
+\ejercicio{23}{Considere $f(x,y)=3x^2+2xy+2y^2-6x-4y$. Encuentre el punto que minimiza $f$, compruebe la
+condición de segundo orden y calcule el valor mínimo.}
+
+\[
+\begin{cases}f_x=6x+2y-6=0\\ f_y=2x+4y-4=0\end{cases}
+\quad\Rightarrow\quad
+\begin{cases}3x+y=3\\ x+2y=2\end{cases}
+\]
+\[
+x=2-2y \;\Rightarrow\; 3(2-2y)+y=3 \;\Rightarrow\; y=\tfrac35,\quad x=\tfrac45
+\]
+\[
+H=\begin{pmatrix}6&2\\2&4\end{pmatrix},\qquad f_{xx}=6>0,\qquad \det H=24-4=20>0 \quad\Rightarrow\quad \text{mínimo}
+\]
+\[
+f\left(\tfrac45,\tfrac35\right)=\frac{48}{25}+\frac{24}{25}+\frac{18}{25}-\frac{24}{5}-\frac{12}{5}
+=\frac{90-180}{25}=-\frac{18}{5}
+\]
+
+\figcod{ej23-descenso}{Curvas de nivel de $f$ y descenso por gradiente hacia $\left(\tfrac45,\tfrac35\right)$.}{298}{308}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Mínimo en $\left(\tfrac45,\tfrac35\right)$, hessiana definida positiva, valor mínimo $-\tfrac{18}{5}=-3.6$.
+\end{resultado}
+
+% ============================================================
+\seccion{chart-area}{Integración}{Integración}{Ejercicios 24 -- 31}
+% ============================================================
+
+\ejercicio{24}{Interprete geométricamente y calcule $\int_0^2(2x+1)\,dx$. Indique el área correspondiente.}
+
+Área bajo $y=2x+1$ en $[0,2]$: trapecio con bases $f(0)=1$, $f(2)=5$ y altura $2$.
+\[
+A=\frac{(1+5)\cdot2}{2}=6
+\]
+\[
+\int_0^2(2x+1)\,dx=\left[x^2+x\right]_0^2=(4+2)-0=6
+\]
+
+\figcod{ej24-trapecio}{Región bajo $y=2x+1$ en $[0,2]$.}{311}{317}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $\int_0^2(2x+1)\,dx=6$, el área del trapecio.
+\end{resultado}
+
+\ejercicio{25}{Utilice sumas de Riemann con extremos derechos para demostrar que $\int_0^1x^2\,dx=1/3$.}
+
+\[
+\Delta x=\frac1n,\qquad x_i=\frac in,\quad i=1,\dots,n
+\]
+\begin{align*}
+R_n&=\sum_{i=1}^{n}f(x_i)\,\Delta x=\sum_{i=1}^{n}\left(\frac in\right)^2\frac1n=\frac{1}{n^3}\sum_{i=1}^{n}i^2\\
+&=\frac{1}{n^3}\cdot\frac{n(n+1)(2n+1)}{6}=\frac16\left(1+\frac1n\right)\left(2+\frac1n\right)
+\end{align*}
+\[
+\int_0^1x^2\,dx=\lim_{n\to\infty}R_n=\frac16\cdot1\cdot2=\frac13 \qquad\blacksquare
+\]
+
+\figcod{ej25-riemann}{Rectángulos de $R_{10}$ (arriba) y convergencia de $R_n$ a $\tfrac13$ (abajo).}{319}{332}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $R_n=\frac16\left(1+\frac1n\right)\left(2+\frac1n\right)\to\frac13$.
+\end{resultado}
+
+\ejercicio{26}{Calcule mediante el teorema fundamental del cálculo: (a) $\int_1^3(2x-1)\,dx$;
+(b) $\int_0^{\pi/2}\cos x\,dx$.}
+
+\begin{align*}
+\text{(a)}\quad & \int_1^3(2x-1)\,dx=\left[x^2-x\right]_1^3=(9-3)-(1-1)=6\\[1mm]
+\text{(b)}\quad & \int_0^{\pi/2}\cos x\,dx=\left[\sin x\right]_0^{\pi/2}=\sin\frac\pi2-\sin0=1
+\end{align*}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} (a) $6$ \qquad (b) $1$
+\end{resultado}
+
+\ejercicio{27}{Evalúe mediante sustitución: (a) $\int_0^1 2xe^{x^2}dx$; (b) $\int_0^1\frac{x}{1+x^2}\,dx$.}
+
+(a) $u=x^2$, $du=2x\,dx$; \ $x=0\to u=0$, $x=1\to u=1$:
+\[
+\int_0^1 2xe^{x^2}dx=\int_0^1e^u\,du=\left[e^u\right]_0^1=e-1
+\]
+(b) $u=1+x^2$, $du=2x\,dx$; \ $x=0\to u=1$, $x=1\to u=2$:
+\[
+\int_0^1\frac{x}{1+x^2}\,dx=\frac12\int_1^2\frac{du}{u}=\frac12\left[\ln u\right]_1^2=\frac12\ln2
+\]
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} (a) $e-1$ \qquad (b) $\tfrac12\ln2$
+\end{resultado}
+
+\ejercicio{28}{Evalúe mediante integración por partes: (a) $\int_0^1xe^x\,dx$; (b) $\int_1^e\ln x\,dx$.}
+
+(a) $u=x$, $dv=e^xdx$ $\Rightarrow$ $du=dx$, $v=e^x$:
+\[
+\int_0^1xe^x\,dx=\left[xe^x\right]_0^1-\int_0^1e^x\,dx=e-\left[e^x\right]_0^1=e-(e-1)=1
+\]
+(b) $u=\ln x$, $dv=dx$ $\Rightarrow$ $du=\frac{dx}{x}$, $v=x$:
+\[
+\int_1^e\ln x\,dx=\left[x\ln x\right]_1^e-\int_1^e x\cdot\frac1x\,dx=(e-0)-(e-1)=1
+\]
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} (a) $1$ \qquad (b) $1$
+\end{resultado}
+
+\ejercicio{29}{Determine la convergencia y, cuando corresponda, el valor de $\int_1^\infty x^{-p}\,dx$
+según $p>0$. Analice también $\int_0^1x^{-1/2}\,dx$.}
+
+\textbf{Caso $p\neq1$:}
+\[
+\int_1^\infty x^{-p}\,dx=\lim_{b\to\infty}\left[\frac{x^{1-p}}{1-p}\right]_1^b=\lim_{b\to\infty}\frac{b^{1-p}-1}{1-p}
+=\begin{cases}\dfrac{1}{p-1}, & p>1\\[2mm] \infty, & 0<p<1\end{cases}
+\]
+\textbf{Caso $p=1$:}
+\[
+\int_1^\infty\frac{dx}{x}=\lim_{b\to\infty}\ln b=\infty
+\]
+\textbf{Integral $\int_0^1x^{-1/2}dx$:}
+\[
+\int_0^1x^{-1/2}\,dx=\lim_{\varepsilon\to0^+}\left[2\sqrt x\right]_\varepsilon^1=\lim_{\varepsilon\to0^+}\left(2-2\sqrt\varepsilon\right)=2
+\]
+
+\figcod{ej29-impropias}{$x^{-p}$ en $[1,10]$ para $p=\tfrac12,\,1,\,2$.}{334}{342}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Converge a $\frac{1}{p-1}$ si $p>1$ y diverge si $0<p\le1$; \ $\int_0^1x^{-1/2}dx=2$.
+\end{resultado}
+
+\ejercicio{30}{Calcule $\int_0^1\int_0^2(x+2y)\,dy\,dx$ y verifique el resultado invirtiendo el orden de integración.}
+
+\textbf{Orden $dy\,dx$:}
+\[
+\int_0^1\!\!\int_0^2(x+2y)\,dy\,dx=\int_0^1\left[xy+y^2\right]_0^2dx=\int_0^1(2x+4)\,dx=\left[x^2+4x\right]_0^1=5
+\]
+\textbf{Orden $dx\,dy$:}
+\[
+\int_0^2\!\!\int_0^1(x+2y)\,dx\,dy=\int_0^2\left[\tfrac{x^2}{2}+2xy\right]_0^1dy=\int_0^2\left(\tfrac12+2y\right)dy=\left[\tfrac y2+y^2\right]_0^2=5
+\]
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Ambos órdenes de integración dan $5$.
+\end{resultado}
+
+\ejercicio{31}{Calcule $\iint_D(x+y)\,dA$, donde $D=\{(x,y):0\le x\le1,\ 0\le y\le x\}$, mediante una
+integral iterada.}
+
+\begin{align*}
+\iint_D(x+y)\,dA&=\int_0^1\!\!\int_0^x(x+y)\,dy\,dx=\int_0^1\left[xy+\frac{y^2}{2}\right]_0^x dx\\
+&=\int_0^1\left(x^2+\frac{x^2}{2}\right)dx=\int_0^1\frac32x^2\,dx=\left[\frac{x^3}{2}\right]_0^1=\frac12
+\end{align*}
+
+\figcod{ej31-region}{Región $D$.}{344}{353}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $\iint_D(x+y)\,dA=\tfrac12$.
+\end{resultado}
+
+% ============================================================
+\seccion{th}{Vectores y matrices}{Vectores y matrices}{Ejercicios 32 -- 40}
+% ============================================================
+
+\ejercicio{32}{Sean $u=(1,2,-1)^\top$ y $v=(2,-1,3)^\top$. Calcule $u+2v$, $u^\top v$, $\|u\|_2$, la
+distancia entre $u$ y $v$, y el ángulo entre ambos.}
+
+\begin{align*}
+u+2v&=(1,2,-1)^\top+(4,-2,6)^\top=(5,0,5)^\top\\
+u^\top v&=(1)(2)+(2)(-1)+(-1)(3)=-3\\
+\|u\|_2&=\sqrt{1^2+2^2+(-1)^2}=\sqrt6,\qquad \|v\|_2=\sqrt{4+1+9}=\sqrt{14}\\
+d(u,v)&=\|u-v\|_2=\|(-1,3,-4)^\top\|_2=\sqrt{1+9+16}=\sqrt{26}\\
+\cos\theta&=\frac{u^\top v}{\|u\|_2\|v\|_2}=\frac{-3}{\sqrt6\sqrt{14}}=\frac{-3}{\sqrt{84}}\approx-0.3273
+\;\Rightarrow\; \theta\approx1.904\text{ rad}\approx109.1^\circ
+\end{align*}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $u+2v=(5,0,5)^\top$, $u^\top v=-3$, $\|u\|_2=\sqrt6$, $d(u,v)=\sqrt{26}$, $\theta\approx109.1^\circ$.
+\end{resultado}
+
+\ejercicio{33}{Determine si los vectores $(1,0,1)^\top$, $(0,1,1)^\top$ y $(1,1,2)^\top$ son
+linealmente independientes. Halle el rango de la matriz que los tiene como columnas.}
+
+\[
+A=\begin{pmatrix}1&0&1\\0&1&1\\1&1&2\end{pmatrix},\qquad
+\det A=1(2-1)-0(0-1)+1(0-1)=0
+\]
+\[
+\begin{pmatrix}1&0&1\\0&1&1\\1&1&2\end{pmatrix}
+\xrightarrow{F_3-F_1}
+\begin{pmatrix}1&0&1\\0&1&1\\0&1&1\end{pmatrix}
+\xrightarrow{F_3-F_2}
+\begin{pmatrix}1&0&1\\0&1&1\\0&0&0\end{pmatrix}
+\]
+\[
+v_3=v_1+v_2 \quad\Rightarrow\quad \text{linealmente dependientes},\qquad \operatorname{rango}(A)=2
+\]
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} Son linealmente dependientes ($v_3=v_1+v_2$) y el rango es $2$.
+\end{resultado}
+
+\ejercicio{34}{Calcule la proyección ortogonal de $u=(2,1)^\top$ sobre la dirección de $v=(1,2)^\top$.
+Compruebe la ortogonalidad del residuo.}
+
+\[
+\operatorname{proy}_vu=\frac{u^\top v}{v^\top v}\,v=\frac{2+2}{1+4}\begin{pmatrix}1\\2\end{pmatrix}=\begin{pmatrix}4/5\\8/5\end{pmatrix}
+\]
+\[
+r=u-\operatorname{proy}_vu=\begin{pmatrix}2-4/5\\1-8/5\end{pmatrix}=\begin{pmatrix}6/5\\-3/5\end{pmatrix}
+\]
+\[
+r^\top v=\frac65(1)-\frac35(2)=0 \quad\Rightarrow\quad r\perp v
+\]
+
+\figcod{ej34-proyeccion}{Proyección de $u$ sobre $v$ y residuo $r$.}{355}{367}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $\operatorname{proy}_vu=\left(\tfrac45,\tfrac85\right)^\top$, residuo $\left(\tfrac65,-\tfrac35\right)^\top$ ortogonal a $v$.
+\end{resultado}
+
+\ejercicio{35}{Sean $A=\begin{pmatrix}1&2\\0&1\end{pmatrix}$ y $B=\begin{pmatrix}2&0\\1&3\end{pmatrix}$.
+Calcule $A+B$, $AB$, $BA$, $A^\top$ y $\det(A)$. ¿Conmutan $A$ y $B$?}
+
+\[
+A+B=\begin{pmatrix}3&2\\1&4\end{pmatrix}
+\]
+\[
+AB=\begin{pmatrix}1\cdot2+2\cdot1&1\cdot0+2\cdot3\\0\cdot2+1\cdot1&0\cdot0+1\cdot3\end{pmatrix}=\begin{pmatrix}4&6\\1&3\end{pmatrix},\qquad
+BA=\begin{pmatrix}2\cdot1+0\cdot0&2\cdot2+0\cdot1\\1\cdot1+3\cdot0&1\cdot2+3\cdot1\end{pmatrix}=\begin{pmatrix}2&4\\1&5\end{pmatrix}
+\]
+\[
+A^\top=\begin{pmatrix}1&0\\2&1\end{pmatrix},\qquad \det A=(1)(1)-(2)(0)=1
+\]
+\[
+AB\neq BA \quad\Rightarrow\quad A \text{ y } B \text{ no conmutan}
+\]
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $AB=\begin{pmatrix}4&6\\1&3\end{pmatrix}\neq BA=\begin{pmatrix}2&4\\1&5\end{pmatrix}$: no conmutan. $\det A=1$.
+\end{resultado}
+
+\ejercicio{36}{Resuelva el sistema $\begin{pmatrix}2&1\\1&3\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix}=\begin{pmatrix}5\\7\end{pmatrix}$.
+Determine si la matriz de coeficientes es invertible y definida positiva.}
+
+\[
+\det M=(2)(3)-(1)(1)=5\neq0 \quad\Rightarrow\quad M \text{ invertible}
+\]
+\[
+M^{-1}=\frac15\begin{pmatrix}3&-1\\-1&2\end{pmatrix},\qquad
+\begin{pmatrix}x\\y\end{pmatrix}=\frac15\begin{pmatrix}3&-1\\-1&2\end{pmatrix}\begin{pmatrix}5\\7\end{pmatrix}=\frac15\begin{pmatrix}8\\9\end{pmatrix}
+\]
+\textbf{Definida positiva} (Sylvester, $M=M^\top$):
+\[
+\Delta_1=2>0,\qquad \Delta_2=\det M=5>0
+\]
+\[
+\lambda^2-5\lambda+5=0 \quad\Rightarrow\quad \lambda=\frac{5\pm\sqrt5}{2}\approx3.62,\ 1.38>0
+\]
+
+\figcod{ej36-rectas}{Rectas $2x+y=5$ y $x+3y=7$.}{369}{377}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $x=\tfrac85$, $y=\tfrac95$; la matriz es invertible y definida positiva.
+\end{resultado}
+
+\ejercicio{37}{Para $A=\begin{pmatrix}1&2\\3&4\end{pmatrix}$ y $B=\begin{pmatrix}0&1\\2&3\end{pmatrix}$,
+calcule el producto de Hadamard $A\circ B$ y el producto de Kronecker $A\otimes B$. Indique las
+dimensiones de ambos.}
+
+\[
+A\circ B=\begin{pmatrix}1\cdot0&2\cdot1\\3\cdot2&4\cdot3\end{pmatrix}=\begin{pmatrix}0&2\\6&12\end{pmatrix}\qquad(2\times2)
+\]
+\[
+A\otimes B=\begin{pmatrix}1B&2B\\3B&4B\end{pmatrix}
+=\left(\begin{array}{cc|cc}0&1&0&2\\2&3&4&6\\\hline0&3&0&4\\6&9&8&12\end{array}\right)\qquad(4\times4)
+\]
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $A\circ B=\begin{pmatrix}0&2\\6&12\end{pmatrix}$ ($2\times2$) y $A\otimes B$ es $4\times4$.
+\end{resultado}
+
+\ejercicio{38}{Sea $X=\begin{pmatrix}1&0\\1&1\\1&2\end{pmatrix}$ e $y=(1,2,2)^\top$. Calcule $X^\top X$ y
+$X^\top y$. Determine el estimador de mínimos cuadrados y los residuos.}
+
+\[
+X^\top X=\begin{pmatrix}1&1&1\\0&1&2\end{pmatrix}\begin{pmatrix}1&0\\1&1\\1&2\end{pmatrix}=\begin{pmatrix}3&3\\3&5\end{pmatrix},\qquad
+X^\top y=\begin{pmatrix}1+2+2\\0+2+4\end{pmatrix}=\begin{pmatrix}5\\6\end{pmatrix}
+\]
+\[
+(X^\top X)^{-1}=\frac16\begin{pmatrix}5&-3\\-3&3\end{pmatrix}
+\]
+\[
+\hat\beta=(X^\top X)^{-1}X^\top y=\frac16\begin{pmatrix}25-18\\-15+18\end{pmatrix}=\begin{pmatrix}7/6\\1/2\end{pmatrix}
+\]
+\[
+\hat y=X\hat\beta=\begin{pmatrix}7/6\\5/3\\13/6\end{pmatrix},\qquad
+e=y-\hat y=\begin{pmatrix}-1/6\\1/3\\-1/6\end{pmatrix}
+\]
+\[
+X^\top e=\begin{pmatrix}-\frac16+\frac13-\frac16\\[1mm] 0+\frac13-\frac26\end{pmatrix}=\begin{pmatrix}0\\0\end{pmatrix}
+\]
+
+\figcod{ej38-mco}{Recta $\hat y=\tfrac76+\tfrac12x$ y residuos.}{379}{388}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $\hat\beta=\left(\tfrac76,\tfrac12\right)^\top$, residuos $\left(-\tfrac16,\tfrac13,-\tfrac16\right)^\top$.
+\end{resultado}
+
+\ejercicio{39}{Para la matriz de datos $X=\begin{pmatrix}1&2\\2&4\\3&6\end{pmatrix}$, determine el rango
+de $X$, la matriz $X^\top X$ y si esta última es invertible. Explique la consecuencia para las
+ecuaciones normales de mínimos cuadrados.}
+
+\[
+c_2=2c_1 \quad\Rightarrow\quad \operatorname{rango}(X)=1
+\]
+\[
+X^\top X=\begin{pmatrix}1+4+9&2+8+18\\2+8+18&4+16+36\end{pmatrix}=\begin{pmatrix}14&28\\28&56\end{pmatrix}
+\]
+\[
+\det(X^\top X)=(14)(56)-(28)^2=784-784=0 \quad\Rightarrow\quad X^\top X \text{ no invertible}
+\]
+\textbf{Ecuaciones normales} $X^\top X\beta=X^\top y$:
+\[
+\begin{cases}14\beta_1+28\beta_2=c_1^\top y\\ 28\beta_1+56\beta_2=2\,c_1^\top y\end{cases}
+\quad\Rightarrow\quad \beta_1+2\beta_2=\frac{c_1^\top y}{14}
+\]
+\[
+X\begin{pmatrix}2\\-1\end{pmatrix}=0 \quad\Rightarrow\quad \hat\beta+t\begin{pmatrix}2\\-1\end{pmatrix} \text{ también es solución } \forall t\in\R
+\]
+Infinitas soluciones: $\hat\beta$ no es único (multicolinealidad perfecta).
+
+\figcod{ej39-valle}{Suma de cuadrados de los residuos para $y=(1,2,2)^\top$: mínimo en toda la recta $\beta_1+2\beta_2=\tfrac{11}{14}$.}{390}{400}
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $\operatorname{rango}(X)=1$; $X^\top X$ es singular y las ecuaciones normales tienen infinitas soluciones.
+\end{resultado}
+
+\ejercicio{40}{Demuestre que para cualquier matriz real $X$ la matriz $X^\top X$ es simétrica y
+semidefinida positiva. ¿Bajo qué condición es definida positiva?}
+
+Sea $X\in\R^{n\times p}$.
+
+\textbf{Simetría:}
+\[
+(X^\top X)^\top=X^\top(X^\top)^\top=X^\top X
+\]
+\textbf{Semidefinida positiva:} para todo $z\in\R^p$,
+\[
+z^\top(X^\top X)z=(Xz)^\top(Xz)=\|Xz\|_2^2=\sum_{i=1}^{n}(Xz)_i^2\ \ge\ 0
+\]
+\textbf{Definida positiva:}
+\[
+z^\top X^\top Xz=\|Xz\|_2^2=0 \iff Xz=0
+\]
+\[
+X^\top X \text{ definida positiva} \iff \left(Xz=0\Rightarrow z=0\right) \iff \operatorname{rango}(X)=p \qquad\blacksquare
+\]
+
+\begin{resultado}
+\textbf{\color{cTealDeep}Resultado.} $X^\top X$ siempre es simétrica y semidefinida positiva; es definida positiva si y solo si $X$ tiene rango columna completo.
+\end{resultado}
+
+% ============================================================
+\newpage
+
+\end{document}
