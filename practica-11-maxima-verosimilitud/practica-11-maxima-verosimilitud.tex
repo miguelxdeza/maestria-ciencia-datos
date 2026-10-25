@@ -1,0 +1,653 @@
+% ============================================================
+%  Basado en la plantilla de la Practica 8 (mismos colores/estilos)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage{amsmath,amssymb}
+\usepackage{needspace}
+\usepackage{icomma}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}
+\definecolor{cTealDeep}{HTML}{064B5A}
+\definecolor{cTeal}{HTML}{097289}
+\definecolor{cBlue}{HTML}{0FC5ED}
+\definecolor{cCyan}{HTML}{0FC5ED}
+\definecolor{cMint}{HTML}{44FFB1}
+\definecolor{cPurple}{HTML}{A277FF}
+\definecolor{cRed}{HTML}{E52E2E}
+\definecolor{cBg}{HTML}{EAF6F8}
+\definecolor{cText}{HTML}{01111E}
+\definecolor{cOutBg}{HTML}{F4F4F4}
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Estimación por máxima verosimilitud: lista de ejercicios resuelta},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Estimación por Máxima Verosimilitud}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------- Figura sin marco ----------
+\newcommand{\figuraMarcada}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#2\linewidth]{#1}
+    \caption{#3}
+  \end{figure}
+}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ---------- Bloques de código R y salida de consola ----------
+\lstdefinestyle{styleR}{
+  language=R,
+  backgroundcolor=\color{cBg},
+  basicstyle=\ttfamily\small\color{cText},
+  keywordstyle=\color{cTealDeep}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{cTeal},
+  numbers=none,
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cCyan},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=6pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\lstdefinestyle{styleOut}{
+  backgroundcolor=\color{cOutBg},
+  basicstyle=\ttfamily\scriptsize\color{cText},
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cTealDeep},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=2pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\newcommand{\codigoR}[1]{\lstinputlisting[style=styleR]{#1}}
+
+% ---------- Ejercicios ----------
+\usepackage{enumitem}
+\setlist{itemsep=1pt, topsep=3pt}
+\graphicspath{{img/}}
+\setlength{\parskip}{3pt}
+\newcommand{\R}{\mathbb{R}}
+
+\newtcolorbox{enunciado}[1][]{enhanced, breakable, colback=cBg, colframe=cTealDeep,
+  boxrule=0pt, leftrule=3pt, arc=2pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=cTealDeep,
+  title={Ejercicio #1}}
+\newtcolorbox{resultado}{enhanced, breakable, colback=cMint!12, colframe=cTealDeep,
+  boxrule=0.5pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt}
+
+\newif\ifinicioseccion
+\newcommand{\ejercicio}[2]{%
+  \ifinicioseccion\global\inicioseccionfalse\else\clearpage\fi
+  \phantomsection
+  \addcontentsline{toc}{subsection}{Ejercicio #1}%
+  \begin{enunciado}[#1]#2\end{enunciado}\noindent}
+% portada de sección: página completa con fondo oscuro
+\newif\ifanexo
+\newcommand{\seccion}[4]{%
+  \clearpage\newgeometry{margin=0cm}
+  \refstepcounter{section}\phantomsection
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}\protect\faIcon{#1}\ #2}%
+  \thispagestyle{empty}\noindent
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[cNavy] (current page.south west) rectangle (current page.north east);
+    \fill[cTealDeep, opacity=0.55] (current page.north west) ++(1.5,-1) circle (4.2);
+    \fill[cCyan, opacity=0.14] (current page.north west) ++(4.2,-0.4) circle (2.2);
+    \fill[cPurple, opacity=0.26] (current page.south east) ++(-1.2,1.4) circle (3.6);
+    \fill[cMint, opacity=0.13] (current page.south east) ++(-3.6,0.3) circle (2.0);
+    \draw[cCyan, opacity=0.25, line width=0.8pt] (current page.center) ++(5.2,4.6) circle (1.1);
+    \node[anchor=center] at ($(current page.center)+(0,5.2)$)
+      {\color{cTealDeep!80!cCyan}\bfseries\fontsize{150}{150}\selectfont \thesection};
+    \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.4cm] (ic)
+      at ($(current page.center)+(0,1.6)$) {};
+    \node at (ic) {\color{cMint}\fontsize{30}{30}\selectfont\faIcon{#1}};
+    \node[anchor=center] at ($(current page.center)+(0,-0.4)$)
+      {\color{cCyan}\bfseries\fontsize{11}{13}\selectfont \ifanexo A N E X O\else S E C C I Ó N\fi};
+    \node[anchor=north, text width=14cm, align=center] (tit) at ($(current page.center)+(0,-0.9)$)
+      {\hyphenpenalty=10000 {\color{white}\bfseries\fontsize{30}{36}\selectfont #3}};
+    \draw[cCyan, line width=1.4pt] ($(tit.south)+(-3.2,-0.3)$) -- ++(6.4,0);
+    \node[anchor=north] at ($(tit.south)+(0,-0.6)$)
+      {\color{cMint}\fontsize{13}{16}\selectfont #4};
+  \end{tikzpicture}%
+  \clearpage\restoregeometry}
+
+% figura a la izquierda y su código R a la derecha
+% (las líneas de cada bloque se leen de rangos.tex, generado desde practica-11-maxima-verosimilitud.R)
+\input{rangos.tex}
+\newcommand{\figcod}[2]{%
+  \par\medskip\noindent
+  \begin{minipage}[c]{0.47\linewidth}\centering
+    \includegraphics[width=\linewidth]{#1}\captionof{figure}{#2}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.5\linewidth}
+    \edef\figopts{linerange={\csname r@#1\endcsname}}%
+    \expandafter\lstinputlisting\expandafter[\figopts, style=styleR, basicstyle=\ttfamily\scriptsize\color{cText}]{practica-11-maxima-verosimilitud.R}
+  \end{minipage}\par\medskip}
+\newcommand{\res}[1]{\begin{resultado}\textbf{\color{cTealDeep}Resultado.} #1\end{resultado}}
+
+% ============================================================
+\begin{document}
+
+% -------------------- PORTADA --------------------
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{28}{28}\selectfont\faIcon{bullseye}};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{32}{40}\selectfont Estimación por\\ Máxima Verosimilitud}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{20}{24}\selectfont \faIcon{bullseye}\ Ejercicios 5.2.1 -- 5.2.16}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.9)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.8)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     Solución de la lista de ejercicios:\\
+     EMV con muestras observadas, ajuste a datos agrupados,\\ soporte dependiente del parámetro y fórmulas generales}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos -- UNSA \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Unidad: & \color{white} I -- Fundamentos Matemáticos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Carlos Antonio Abanto Valle \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 25 de octubre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+
+% ============================================================
+\seccion{bullseye}{EMV con muestras observadas}{EMV con muestras\\ observadas}{Ejercicios 5.2.1 -- 5.2.7}
+% ============================================================
+
+\ejercicio{5.2.1}{Una muestra aleatoria de tamaño 8 --- $x_1=1$, $x_2=0$, $x_3=1$, $x_4=1$, $x_5=0$,
+$x_6=1$, $x_7=1$ y $x_8=0$ --- se toma de la función de probabilidad
+$p_X(k;\theta)=\theta^k(1-\theta)^{1-k}$, \ $k=0,1$, \ $0<\theta<1$. Encuentre el EMV para $\theta$.}
+
+\[
+L(\theta)=\prod_{i=1}^{8}\theta^{x_i}(1-\theta)^{1-x_i}=\theta^{\sum x_i}(1-\theta)^{8-\sum x_i},
+\qquad \sum_{i=1}^{8}x_i=5
+\]
+\[
+L(\theta)=\theta^5(1-\theta)^3 \quad\Rightarrow\quad \ln L(\theta)=5\ln\theta+3\ln(1-\theta)
+\]
+\[
+\frac{d\ln L}{d\theta}=\frac5\theta-\frac{3}{1-\theta}=0 \;\Rightarrow\; 5(1-\theta)=3\theta \;\Rightarrow\; \theta=\frac58
+\]
+\[
+\frac{d^2\ln L}{d\theta^2}=-\frac{5}{\theta^2}-\frac{3}{(1-\theta)^2}<0 \quad\Rightarrow\quad \text{máximo}
+\]
+
+\figcod{ej521-bernoulli}{Verosimilitud de la muestra Bernoulli.}
+
+\res{$\hat\theta=\dfrac58=0,625$ (la proporción muestral de unos).}
+
+\ejercicio{5.2.2}{El número de fichas rojas y blancas en una urna es desconocido, pero la proporción
+$p$ de fichas rojas es $1/3$ o $1/2$. Una muestra de tamaño 5, con reemplazo, produce: roja, blanca,
+blanca, roja, blanca. ¿Cuál es el EMV para $p$?}
+
+\[
+L(p)=p^2(1-p)^3,\qquad p\in\left\{\tfrac13,\tfrac12\right\}
+\]
+\[
+L\!\left(\tfrac13\right)=\left(\tfrac13\right)^2\left(\tfrac23\right)^3=\frac{8}{243}=0,03292
+\]
+\[
+L\!\left(\tfrac12\right)=\left(\tfrac12\right)^5=\frac{1}{32}=0,03125
+\]
+\[
+L\!\left(\tfrac13\right)>L\!\left(\tfrac12\right)\quad\Rightarrow\quad \hat p=\tfrac13
+\]
+
+\figcod{ej522-urna}{Verosimilitud evaluada solo en los dos valores admisibles.}
+
+\res{$\hat p=\dfrac13$.}
+
+\ejercicio{5.2.3}{Use la muestra $y_1=8,2$, $y_2=9,1$, $y_3=10,6$ y $y_4=4,9$ para calcular el EMV de
+$\lambda$ en la pdf exponencial $f_Y(y;\lambda)=\lambda e^{-\lambda y}$, \ $y\ge0$.}
+
+\[
+L(\lambda)=\prod_{i=1}^{n}\lambda e^{-\lambda y_i}=\lambda^n e^{-\lambda\sum y_i}
+\quad\Rightarrow\quad \ln L(\lambda)=n\ln\lambda-\lambda\sum y_i
+\]
+\[
+\frac{d\ln L}{d\lambda}=\frac n\lambda-\sum y_i=0 \;\Rightarrow\; \hat\lambda=\frac{n}{\sum y_i}=\frac1{\bar y}
+\]
+\[
+\sum y_i=8,2+9,1+10,6+4,9=32,8 \quad\Rightarrow\quad \hat\lambda=\frac{4}{32,8}=0,1220
+\]
+
+\figcod{ej523-exponencial}{Log-verosimilitud (arriba) y densidad ajustada con los datos (abajo).}
+
+\res{$\hat\lambda=\dfrac{1}{\bar y}=0,1220$.}
+
+\ejercicio{5.2.4}{Suponga que una muestra aleatoria de tamaño $n$ proviene del modelo
+$p_X(k;\theta)=\dfrac{\theta^{2k}e^{-\theta^2}}{k!}$, \ $k=0,1,2,\dots$ Encuentre una fórmula para el
+EMV $\hat\theta$.}
+
+\[
+L(\theta)=\prod_{i=1}^{n}\frac{\theta^{2k_i}e^{-\theta^2}}{k_i!}=\frac{\theta^{2\sum k_i}e^{-n\theta^2}}{\prod k_i!}
+\]
+\[
+\ln L(\theta)=2\ln\theta\sum k_i-n\theta^2-\sum\ln k_i!
+\]
+\[
+\frac{d\ln L}{d\theta}=\frac{2\sum k_i}{\theta}-2n\theta=0 \;\Rightarrow\; \theta^2=\frac{\sum k_i}{n}=\bar k
+\]
+\[
+\frac{d^2\ln L}{d\theta^2}=-\frac{2\sum k_i}{\theta^2}-2n<0
+\]
+
+\figcod{ej524-poisson-theta2}{Ilustración con una muestra simulada ($\theta^2=4$, $n=30$).}
+
+\res{$\hat\theta=\sqrt{\bar k}=\sqrt{\dfrac1n\sum_{i=1}^{n}k_i}$ \ (es una Poisson con media $\theta^2$).}
+
+\ejercicio{5.2.5}{Dado que $y_1=2,3$, $y_2=1,9$ y $y_3=4,6$ es una muestra aleatoria de
+$f_Y(y;\theta)=\dfrac{y^3e^{-y/\theta}}{6\theta^4}$, \ $y\ge0$, calcule el EMV para $\theta$.}
+
+\[
+L(\theta)=\prod_{i=1}^{n}\frac{y_i^3e^{-y_i/\theta}}{6\theta^4}=\frac{\left(\prod y_i\right)^3e^{-\sum y_i/\theta}}{6^n\theta^{4n}}
+\]
+\[
+\ln L(\theta)=3\sum\ln y_i-\frac{\sum y_i}{\theta}-n\ln6-4n\ln\theta
+\]
+\[
+\frac{d\ln L}{d\theta}=\frac{\sum y_i}{\theta^2}-\frac{4n}{\theta}=0 \;\Rightarrow\; \hat\theta=\frac{\sum y_i}{4n}=\frac{\bar y}{4}
+\]
+\[
+\sum y_i=2,3+1,9+4,6=8,8 \quad\Rightarrow\quad \hat\theta=\frac{8,8}{4(3)}=0,7333
+\]
+
+\figcod{ej525-gamma}{Log-verosimilitud (arriba) y densidad ajustada (abajo).}
+
+\res{$\hat\theta=\dfrac{\bar y}{4}=0,7333$.}
+
+\ejercicio{5.2.6}{Use el método de máxima verosimilitud para estimar $\theta$ en
+$f_Y(y;\theta)=\theta^2\sqrt y\,e^{-\theta\sqrt y}$, \ $y\ge0$. Evalúe $\hat\theta$ para la muestra
+$y_1=6,2$, $y_2=7,0$, $y_3=2,5$, $y_4=4,2$.}
+
+\[
+L(\theta)=\theta^{2n}\prod\sqrt{y_i}\;e^{-\theta\sum\sqrt{y_i}}
+\quad\Rightarrow\quad \ln L(\theta)=2n\ln\theta+\tfrac12\sum\ln y_i-\theta\sum\sqrt{y_i}
+\]
+\[
+\frac{d\ln L}{d\theta}=\frac{2n}{\theta}-\sum\sqrt{y_i}=0 \;\Rightarrow\; \hat\theta=\frac{2n}{\sum\sqrt{y_i}}
+\]
+\[
+\sum\sqrt{y_i}=2,4900+2,6458+1,5811+2,0494=8,7663
+\]
+\[
+\hat\theta=\frac{2(4)}{8,7663}=0,9126
+\]
+
+\figcod{ej526-raiz}{Log-verosimilitud (arriba) y densidad ajustada (abajo).}
+
+\res{$\hat\theta=\dfrac{2n}{\sum\sqrt{y_i}}=0,9126$.}
+
+\ejercicio{5.2.7}{Un ingeniero modela la proporción completada de las tareas con la pdf
+$f_Y(y;\theta)=\theta y^{\theta-1}$, \ $0\le y\le1$, \ $\theta>0$. Las proporciones completadas en su
+proyecto anterior fueron 0,77; 0,82; 0,92; 0,94 y 0,98. Estime $\theta$.}
+
+\[
+L(\theta)=\theta^n\prod y_i^{\theta-1}
+\quad\Rightarrow\quad \ln L(\theta)=n\ln\theta+(\theta-1)\sum\ln y_i
+\]
+\[
+\frac{d\ln L}{d\theta}=\frac n\theta+\sum\ln y_i=0 \;\Rightarrow\; \hat\theta=-\frac{n}{\sum\ln y_i}
+\]
+\begin{center}
+\begin{tabular}{cccccc|c}
+\toprule
+$y_i$ & 0,77 & 0,82 & 0,92 & 0,94 & 0,98 & $\Sigma$ \\ \midrule
+$\ln y_i$ & $-0,2614$ & $-0,1985$ & $-0,0834$ & $-0,0619$ & $-0,0202$ & $-0,6253$ \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+\hat\theta=-\frac{5}{-0,6253}=7,996
+\]
+
+\figcod{ej527-proporciones}{Log-verosimilitud (arriba) y densidad ajustada (abajo).}
+
+\res{$\hat\theta=-\dfrac{n}{\sum\ln y_i}=7,996$.}
+
+% ============================================================
+\seccion{chart-bar}{Ajuste a datos agrupados}{Ajuste a datos agrupados}{Ejercicios 5.2.8 -- 5.2.9}
+% ============================================================
+
+\ejercicio{5.2.8}{Los datos muestran el número de ocupantes en automóviles observados durante una hora
+en una intersección de Los Ángeles. Suponga una distribución geométrica
+$p_X(k;p)=(1-p)^{k-1}p$, \ $k=1,2,\dots$ Estime $p$ y compare las frecuencias observadas y esperadas.
+\begin{center}\small
+\begin{tabular}{c|cccccc}
+Ocupantes & 1 & 2 & 3 & 4 & 5 & 6+ \\ \hline
+Frecuencia & 678 & 227 & 56 & 28 & 8 & 14
+\end{tabular}
+\end{center}}
+
+$n=1011$. La clase 6+ solo informa $X\ge6$, con $P(X\ge6)=(1-p)^5$:
+\[
+L(p)=\prod_{k=1}^{5}\left[p(1-p)^{k-1}\right]^{n_k}\cdot\left[(1-p)^5\right]^{14}
+\]
+\[
+\ln L(p)=\Big(\sum_{k=1}^{5}n_k\Big)\ln p+\Big(\sum_{k=1}^{5}(k-1)n_k+5(14)\Big)\ln(1-p)=997\ln p+525\ln(1-p)
+\]
+\[
+\frac{997}{p}-\frac{525}{1-p}=0 \;\Rightarrow\; \hat p=\frac{997}{1522}=0,6551
+\]
+\textbf{Frecuencias esperadas} $E_k=1011\,\hat p(1-\hat p)^{k-1}$, \ $E_{6+}=1011(1-\hat p)^5$:
+\begin{center}
+\begin{tabular}{ccccccc|c}
+\toprule
+$k$ & 1 & 2 & 3 & 4 & 5 & 6+ & $\Sigma$ \\ \midrule
+Observada & 678 & 227 & 56 & 28 & 8 & 14 & 1011 \\
+Esperada & 662,3 & 228,4 & 78,8 & 27,2 & 9,4 & 4,9 & 1011 \\
+$(O-E)^2/E$ & 0,37 & 0,01 & 6,60 & 0,02 & 0,20 & 16,64 & 23,84 \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+\chi^2=23,84,\qquad gl=6-1-1=4,\qquad \text{valor-}p=0,00009
+\]
+\textbf{Comparación:} el ajuste es muy bueno para 1, 2, 4 y 5 ocupantes, pero hay menos autos con 3
+de lo esperado y casi el triple de autos con 6 o más (14 frente a 4,9): la cola real es más pesada
+que la geométrica.
+
+\textbf{Nota:} si se toma 6+ como exactamente 6, $\hat p=1/\bar k=1011/1536=0,6582$, casi igual.
+
+\figcod{ej528-ocupantes}{Frecuencias observadas y esperadas.}
+
+\res{$\hat p=0,6551$; la geométrica describe bien los autos con 1--2 ocupantes, pero subestima los de 6+ ($\chi^2=23,8$).}
+
+\ejercicio{5.2.9}{En las temporadas de Grandes Ligas de Béisbol desde 1950 hasta 2008, hubo 59 juegos
+de nueve entradas en los cuales un equipo no logró ningún hit. Suponga una distribución Poisson
+$p_X(k;\lambda)=e^{-\lambda}\lambda^k/k!$. (a) Estime $\lambda$ y compare las frecuencias observadas
+y esperadas. (b) ¿Le sorprende el acuerdo o desacuerdo observado? Explique.
+\begin{center}\small
+\begin{tabular}{c|ccccc}
+No-hitters & 0 & 1 & 2 & 3 & 4+ \\ \hline
+Frecuencia & 6 & 19 & 12 & 13 & 9
+\end{tabular}
+\end{center}}
+
+(a) $n=59$, clase 4+ censurada: \ $\ln L(\lambda)=\sum_{k=0}^{3}n_k\left(-\lambda+k\ln\lambda-\ln k!\right)+9\ln P(X\ge4)$
+\[
+\frac{d\ln L}{d\lambda}=\frac{\sum_{k\le3}k\,n_k}{\lambda}-50+9\,\frac{p_X(3;\lambda)}{P(X\ge4)}=0,
+\qquad \sum_{k\le3}k\,n_k=19+24+39=82
+\]
+\[
+\Rightarrow\; \hat\lambda=2,085 \ \ (\text{solución numérica})
+\]
+\begin{center}
+\begin{tabular}{cccccc|c}
+\toprule
+$k$ & 0 & 1 & 2 & 3 & 4+ & $\Sigma$ \\ \midrule
+Observada & 6 & 19 & 12 & 13 & 9 & 59 \\
+Esperada & 7,34 & 15,29 & 15,94 & 11,08 & 9,35 & 59 \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+\chi^2=2,46,\qquad gl=3,\qquad \text{valor-}p=0,48\qquad\left(\text{con 4+}=4:\ \hat\lambda=\tfrac{118}{59}=2,00\right)
+\]
+(b) \textbf{No sorprende el acuerdo.} Cada temporada tiene miles de partidos y cada uno tiene una
+probabilidad muy pequeña e independiente de ser no-hitter: eventos raros, donde la binomial se aproxima
+por una Poisson.
+
+\figcod{ej529-no-hitters}{Log-verosimilitud (arriba) y frecuencias observadas vs esperadas (abajo).}
+
+\res{$\hat\lambda=2,085$ ($\approx2$); buen acuerdo ($\chi^2=2,46$, valor-$p=0,48$), esperable para eventos raros.}
+
+% ============================================================
+\seccion{arrows-alt-h}{Soporte que depende del parámetro}{Soporte que depende\\ del parámetro}{Ejercicios 5.2.10 -- 5.2.12}
+% ============================================================
+
+\ejercicio{5.2.10}{(a) Con la muestra $Y_1=6,3$, $Y_2=1,8$, $Y_3=14,2$, $Y_4=7,6$, use máxima
+verosimilitud para estimar $\theta$ en la pdf uniforme $f_Y(y;\theta)=1/\theta$, \ $0\le y\le\theta$.
+(b) Si la muestra proviene de la uniforme $f_Y(y;\theta_1,\theta_2)=\dfrac{1}{\theta_2-\theta_1}$,
+\ $\theta_1\le y\le\theta_2$, encuentre los EMV de $\theta_1$ y $\theta_2$.}
+
+(a)
+\[
+L(\theta)=\prod_{i=1}^{4}\frac1\theta\,\mathbb 1(0\le y_i\le\theta)=
+\begin{cases}\theta^{-4} & \theta\ge y_{\max}\\ 0 & \theta<y_{\max}\end{cases}
+\]
+$\theta^{-4}$ es decreciente $\Rightarrow$ el máximo está en el menor $\theta$ admisible:
+\[
+\hat\theta=y_{\max}=\max(6,3;\ 1,8;\ 14,2;\ 7,6)=14,2
+\]
+(b)
+\[
+L(\theta_1,\theta_2)=\begin{cases}(\theta_2-\theta_1)^{-n} & \theta_1\le y_{\min},\ \theta_2\ge y_{\max}\\ 0 & \text{en otro caso}\end{cases}
+\]
+$L$ crece al reducir $\theta_2-\theta_1$ $\Rightarrow$ $\theta_1$ lo más grande y $\theta_2$ lo más pequeño posible:
+\[
+\hat\theta_1=y_{\min}=1,8,\qquad \hat\theta_2=y_{\max}=14,2
+\]
+
+\figcod{ej5210-uniforme}{Verosimilitud de la uniforme (arriba) y densidad ajustada de dos parámetros (abajo).}
+
+\res{(a) $\hat\theta=y_{\max}=14,2$. \ (b) $\hat\theta_1=y_{\min}=1,8$, \ $\hat\theta_2=y_{\max}=14,2$.}
+
+\ejercicio{5.2.11}{Encuentre el EMV de $\theta$ en $f_Y(y;\theta)=\dfrac{2y}{1-\theta^2}$, \
+$\theta\le y\le1$, si una muestra de tamaño 6 produjo: 0,70; 0,63; 0,92; 0,86; 0,43; 0,21.}
+
+\[
+L(\theta)=\frac{2^6\prod y_i}{(1-\theta^2)^6}\,\mathbb 1(\theta\le y_{\min})
+\]
+\[
+\frac{d}{d\theta}(1-\theta^2)^{-6}=\frac{12\,\theta}{(1-\theta^2)^7}>0 \quad (0<\theta<1)
+\quad\Rightarrow\quad L \text{ creciente en } \theta
+\]
+\[
+\theta\le y_{\min} \quad\Rightarrow\quad \hat\theta=y_{\min}=0,21
+\]
+
+\figcod{ej5211-soporte}{$L(\theta)$ crece hasta el borde $\theta=y_{\min}$.}
+
+\res{$\hat\theta=y_{\min}=0,21$.}
+
+\ejercicio{5.2.12}{Una muestra aleatoria de tamaño $n$ se toma de $f_Y(y;\theta)=\dfrac{2y}{\theta^2}$,
+\ $0\le y\le\theta$. Halle una expresión para el EMV $\hat\theta$.}
+
+\[
+L(\theta)=\prod_{i=1}^{n}\frac{2y_i}{\theta^2}\,\mathbb 1(y_i\le\theta)=\frac{2^n\prod y_i}{\theta^{2n}}\,\mathbb 1(\theta\ge y_{\max})
+\]
+\[
+\frac{d\ln L}{d\theta}=-\frac{2n}{\theta}<0 \quad\Rightarrow\quad L \text{ decreciente en } \theta\ge y_{\max}
+\]
+\[
+\hat\theta=y_{\max}=\max(Y_1,\dots,Y_n)
+\]
+
+\figcod{ej5212-triangular}{Ilustración con una muestra simulada ($\theta=3$, $n=10$).}
+
+\res{$\hat\theta=Y_{\max}$.}
+
+% ============================================================
+\seccion{square-root-alt}{Fórmulas generales del EMV}{Fórmulas generales del EMV}{Ejercicios 5.2.13 -- 5.2.16}
+% ============================================================
+
+\ejercicio{5.2.13}{Si $Y$ denota ingreso individual, la ley de Pareto afirma
+$P(Y\ge y)=\left(\dfrac ky\right)^\theta$, de donde $f_Y(y;\theta)=\theta k^\theta y^{-(\theta+1)}$,
+\ $y\ge k$, \ $\theta\ge1$. Suponga que $k$ es conocido. Encuentre el EMV de $\theta$ usando una
+muestra aleatoria de tamaño 25.}
+
+\[
+L(\theta)=\prod_{i=1}^{25}\theta k^\theta y_i^{-(\theta+1)}=\theta^{25}k^{25\theta}\Big(\prod y_i\Big)^{-(\theta+1)}
+\]
+\[
+\ln L(\theta)=25\ln\theta+25\,\theta\ln k-(\theta+1)\sum\ln y_i
+\]
+\[
+\frac{d\ln L}{d\theta}=\frac{25}{\theta}+25\ln k-\sum\ln y_i=0
+\;\Rightarrow\; \hat\theta=\frac{25}{\sum_{i=1}^{25}\ln y_i-25\ln k}=\frac{25}{\sum_{i=1}^{25}\ln(y_i/k)}
+\]
+\[
+\frac{d^2\ln L}{d\theta^2}=-\frac{25}{\theta^2}<0
+\]
+Con la restricción $\theta\ge1$: si el cociente resulta menor que 1, $\hat\theta=1$.
+
+\figcod{ej5213-pareto}{Ilustración con una muestra simulada ($k=1$, $\theta=2,5$, $n=25$).}
+
+\res{$\hat\theta=\dfrac{25}{\sum_{i=1}^{25}\ln(y_i/k)}$ \ (o $\hat\theta=1$ si ese valor es menor que 1).}
+
+\ejercicio{5.2.14}{Para la binomial negativa $p_X(k;p,r)=\dbinom{k+r-1}{k}(1-p)^kp^r$, encuentre el EMV
+de $p$ suponiendo $r$ conocido.}
+
+Muestra $k_1,\dots,k_n$:
+\[
+L(p)=\prod_{i=1}^{n}\binom{k_i+r-1}{k_i}(1-p)^{k_i}p^r
+\quad\Rightarrow\quad \ln L(p)=\sum\ln\binom{k_i+r-1}{k_i}+\Big(\sum k_i\Big)\ln(1-p)+nr\ln p
+\]
+\[
+\frac{d\ln L}{dp}=\frac{nr}{p}-\frac{\sum k_i}{1-p}=0 \;\Rightarrow\; nr(1-p)=p\sum k_i
+\]
+\[
+\hat p=\frac{nr}{nr+\sum k_i}=\frac{r}{r+\bar k}
+\]
+\[
+\frac{d^2\ln L}{dp^2}=-\frac{nr}{p^2}-\frac{\sum k_i}{(1-p)^2}<0
+\]
+
+\figcod{ej5214-binomial-negativa}{Ilustración con una muestra simulada ($r=3$, $p=0,4$, $n=40$).}
+
+\res{$\hat p=\dfrac{r}{r+\bar k}$ \ (para $n=1$: $\hat p=\dfrac{r}{r+k}$).}
+
+\ejercicio{5.2.15}{La pdf Weibull es $f_Y(y;\alpha,\beta)=\alpha\beta y^{\beta-1}e^{-\alpha y^\beta}$,
+\ $y\ge0$, $\alpha>0$, $\beta>0$. Encuentre el EMV de $\alpha$ suponiendo $\beta$ conocida.}
+
+\[
+L(\alpha)=\alpha^n\beta^n\Big(\prod y_i\Big)^{\beta-1}e^{-\alpha\sum y_i^\beta}
+\]
+\[
+\ln L(\alpha)=n\ln\alpha+n\ln\beta+(\beta-1)\sum\ln y_i-\alpha\sum y_i^\beta
+\]
+\[
+\frac{d\ln L}{d\alpha}=\frac n\alpha-\sum y_i^\beta=0 \;\Rightarrow\; \hat\alpha=\frac{n}{\sum_{i=1}^{n}y_i^\beta}
+\]
+\[
+\frac{d^2\ln L}{d\alpha^2}=-\frac{n}{\alpha^2}<0
+\]
+
+\figcod{ej5215-weibull}{Ilustración con una muestra simulada ($\beta=2$, $\alpha=0,5$, $n=50$).}
+
+\res{$\hat\alpha=\dfrac{n}{\sum_{i=1}^{n}y_i^\beta}$.}
+
+\ejercicio{5.2.16}{Suponga una muestra aleatoria de tamaño $n$ de una normal con media conocida $\mu$
+pero varianza desconocida $\sigma^2$. Use máxima verosimilitud para encontrar una fórmula para
+$\hat\sigma^2$. Compare con el EMV hallado en el Ejemplo 5.2.5.}
+
+\[
+L(\sigma^2)=\prod_{i=1}^{n}\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(y_i-\mu)^2}{2\sigma^2}}
+=(2\pi\sigma^2)^{-n/2}e^{-\frac{1}{2\sigma^2}\sum(y_i-\mu)^2}
+\]
+\[
+\ln L(\sigma^2)=-\frac n2\ln(2\pi)-\frac n2\ln\sigma^2-\frac{1}{2\sigma^2}\sum(y_i-\mu)^2
+\]
+\[
+\frac{d\ln L}{d\sigma^2}=-\frac{n}{2\sigma^2}+\frac{1}{2\sigma^4}\sum(y_i-\mu)^2=0
+\;\Rightarrow\; \hat\sigma^2=\frac1n\sum_{i=1}^{n}(y_i-\mu)^2
+\]
+\textbf{Comparación con el Ejemplo 5.2.5} ($\mu$ y $\sigma^2$ desconocidas):
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+& $\mu$ conocida & $\mu$ desconocida \\ \midrule
+EMV & $\dfrac1n\sum(y_i-\mu)^2$ & $\dfrac1n\sum(y_i-\bar y)^2$ \\[8pt]
+Esperanza & $\sigma^2$ \ (insesgado) & $\dfrac{n-1}{n}\sigma^2$ \ (sesgado) \\ \bottomrule
+\end{tabular}
+\end{center}
+Misma fórmula con $\bar y$ en lugar de $\mu$. Como $\sum(y_i-\bar y)^2\le\sum(y_i-\mu)^2$, estimar la
+media hace que el EMV subestime $\sigma^2$.
+
+\figcod{ej5216-varianza}{5000 muestras simuladas con $n=10$ y $\sigma^2=4$: medias 4,00 y 3,59.}
+
+\res{$\hat\sigma^2=\dfrac1n\sum(y_i-\mu)^2$ (insesgado); con $\mu$ desconocida se usa $\bar y$ y el EMV es sesgado: $E=\frac{n-1}{n}\sigma^2$.}
+
+\end{document}

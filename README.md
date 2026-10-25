@@ -34,8 +34,12 @@ Bachiller en Ciencias de la Computación (UNSA, 2025) · cursando la Maestría e
 | 05 | [Reglas de Asociación con Apriori](practica-05-reglas-asociacion/practica-05-reglas-asociacion.pdf) | Itemsets frecuentes y reglas de asociación (minsup ≥ 0.5, minconf ≥ 0.6) calculados a mano y verificados con Apriori en Weka | Weka |
 | 06 | [Reglas de Asociación en R](practica-06-reglas-asociacion-r/practica-06-reglas-asociacion.pdf) | Mismo dataset transaccional, minado con el paquete `arules` (Apriori) en R: EDA, generación y visualización de reglas (scatter, grafo, matriz agrupada) | R, arules, arulesViz |
 | 07 | [Algoritmos de Clasificación en R](practica-07-clasificacion-r/practica-07-clasificacion-r.pdf) · [diapositivas](practica-07-clasificacion-r/diapositivas-practica-07-clasificacion-r.pdf) | LDA, CART, kNN, SVM lineal y Random Forest con `caret` sobre el dataset [Obesity Levels](https://www.kaggle.com/datasets/fatemehmehrparvar/obesity-levels) de Kaggle (descargar como `obesidad.csv` para ejecutar el script); Random Forest obtuvo 96.9 % de accuracy en prueba | R, caret, randomForest |
+| 08 | [Fundamentos Matemáticos](practica-08-fundamentos-matematicos/practica-08-fundamentos-matematicos.pdf) | Lista resuelta de funciones, límites, derivadas, optimización, integración, vectores y matrices, con gráficos en R | LaTeX, R |
+| 09 | [Variables Aleatorias Discretas](practica-09-variables-aleatorias-discretas/practica-09-variables-aleatorias-discretas.pdf) · [código R](practica-09-variables-aleatorias-discretas/practica-09-variables-aleatorias-discretas.R) | Binomial, Poisson, geométrica, binomial negativa, hipergeométrica, multinomial y truncada (22 ejercicios) | LaTeX, R |
+| 10 | [Distribuciones Exponencial y Normal](practica-10-distribuciones-exponencial-normal/practica-10-distribuciones-exponencial-normal.pdf) · [código R](practica-10-distribuciones-exponencial-normal/practica-10-distribuciones-exponencial-normal.R) | Tiempos entre eventos, cuantiles, errores de modelos, estandarización y truncamiento (15 ejercicios) | LaTeX, R |
+| 11 | [Estimación por Máxima Verosimilitud](practica-11-maxima-verosimilitud/practica-11-maxima-verosimilitud.pdf) · [código R](practica-11-maxima-verosimilitud/practica-11-maxima-verosimilitud.R) | EMV en ejercicios 5.2.1–5.2.16: muestras observadas, datos agrupados con χ², soporte dependiente del parámetro y fórmulas generales | LaTeX, R |
 
-Todas corresponden al curso **Introducción a Ciencia de Datos**, salvo donde se indique otro docente.
+Las prácticas 01–07 corresponden al curso **Introducción a Ciencia de Datos**, salvo donde se indique otro docente; las 08–11, a la **Unidad I – Fundamentos Matemáticos** (docente: Carlos Antonio Abanto Valle).
 
 ## Plantilla de diapositivas
 

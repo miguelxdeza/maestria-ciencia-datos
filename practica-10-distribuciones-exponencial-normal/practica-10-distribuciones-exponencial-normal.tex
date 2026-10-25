@@ -1,0 +1,638 @@
+% ============================================================
+%  Basado en la plantilla de la Practica 8 (mismos colores/estilos)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage{amsmath,amssymb}
+\usepackage{needspace}
+\usepackage{icomma}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}
+\definecolor{cTealDeep}{HTML}{064B5A}
+\definecolor{cTeal}{HTML}{097289}
+\definecolor{cBlue}{HTML}{0FC5ED}
+\definecolor{cCyan}{HTML}{0FC5ED}
+\definecolor{cMint}{HTML}{44FFB1}
+\definecolor{cPurple}{HTML}{A277FF}
+\definecolor{cRed}{HTML}{E52E2E}
+\definecolor{cBg}{HTML}{EAF6F8}
+\definecolor{cText}{HTML}{01111E}
+\definecolor{cOutBg}{HTML}{F4F4F4}
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Distribuciones exponencial y normal: lista de ejercicios resuelta},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Distribuciones Exponencial y Normal}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------- Figura sin marco ----------
+\newcommand{\figuraMarcada}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#2\linewidth]{#1}
+    \caption{#3}
+  \end{figure}
+}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ---------- Bloques de código R y salida de consola ----------
+\lstdefinestyle{styleR}{
+  language=R,
+  backgroundcolor=\color{cBg},
+  basicstyle=\ttfamily\small\color{cText},
+  keywordstyle=\color{cTealDeep}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{cTeal},
+  numbers=none,
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cCyan},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=6pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\lstdefinestyle{styleOut}{
+  backgroundcolor=\color{cOutBg},
+  basicstyle=\ttfamily\scriptsize\color{cText},
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cTealDeep},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=2pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\newcommand{\codigoR}[1]{\lstinputlisting[style=styleR]{#1}}
+
+% ---------- Ejercicios ----------
+\usepackage{enumitem}
+\setlist{itemsep=1pt, topsep=3pt}
+\graphicspath{{img/}}
+\setlength{\parskip}{3pt}
+\newcommand{\R}{\mathbb{R}}
+
+\newtcolorbox{enunciado}[1][]{enhanced, breakable, colback=cBg, colframe=cTealDeep,
+  boxrule=0pt, leftrule=3pt, arc=2pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=cTealDeep,
+  title={Ejercicio #1}}
+\newtcolorbox{resultado}{enhanced, breakable, colback=cMint!12, colframe=cTealDeep,
+  boxrule=0.5pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt}
+
+\newif\ifinicioseccion
+\newcommand{\ejercicio}[2]{%
+  \ifinicioseccion\global\inicioseccionfalse\else\clearpage\fi
+  \phantomsection
+  \addcontentsline{toc}{subsection}{Ejercicio #1}%
+  \begin{enunciado}[#1]#2\end{enunciado}\noindent}
+% portada de sección: página completa con fondo oscuro
+\newif\ifanexo
+\newcommand{\seccion}[4]{%
+  \clearpage\newgeometry{margin=0cm}
+  \refstepcounter{section}\phantomsection
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}\protect\faIcon{#1}\ #2}%
+  \thispagestyle{empty}\noindent
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[cNavy] (current page.south west) rectangle (current page.north east);
+    \fill[cTealDeep, opacity=0.55] (current page.north west) ++(1.5,-1) circle (4.2);
+    \fill[cCyan, opacity=0.14] (current page.north west) ++(4.2,-0.4) circle (2.2);
+    \fill[cPurple, opacity=0.26] (current page.south east) ++(-1.2,1.4) circle (3.6);
+    \fill[cMint, opacity=0.13] (current page.south east) ++(-3.6,0.3) circle (2.0);
+    \draw[cCyan, opacity=0.25, line width=0.8pt] (current page.center) ++(5.2,4.6) circle (1.1);
+    \node[anchor=center] at ($(current page.center)+(0,5.2)$)
+      {\color{cTealDeep!80!cCyan}\bfseries\fontsize{150}{150}\selectfont \thesection};
+    \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.4cm] (ic)
+      at ($(current page.center)+(0,1.6)$) {};
+    \node at (ic) {\color{cMint}\fontsize{30}{30}\selectfont\faIcon{#1}};
+    \node[anchor=center] at ($(current page.center)+(0,-0.4)$)
+      {\color{cCyan}\bfseries\fontsize{11}{13}\selectfont \ifanexo A N E X O\else S E C C I Ó N\fi};
+    \node[anchor=north, text width=14cm, align=center] (tit) at ($(current page.center)+(0,-0.9)$)
+      {\hyphenpenalty=10000 {\color{white}\bfseries\fontsize{30}{36}\selectfont #3}};
+    \draw[cCyan, line width=1.4pt] ($(tit.south)+(-3.2,-0.3)$) -- ++(6.4,0);
+    \node[anchor=north] at ($(tit.south)+(0,-0.6)$)
+      {\color{cMint}\fontsize{13}{16}\selectfont #4};
+  \end{tikzpicture}%
+  \clearpage\restoregeometry}
+
+% figura a la izquierda y su código R a la derecha
+% (las líneas de cada bloque se leen de rangos.tex, generado desde practica-10-distribuciones-exponencial-normal.R)
+\input{rangos.tex}
+\newcommand{\figcod}[2]{%
+  \par\medskip\noindent
+  \begin{minipage}[c]{0.47\linewidth}\centering
+    \includegraphics[width=\linewidth]{#1}\captionof{figure}{#2}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.5\linewidth}
+    \edef\figopts{linerange={\csname r@#1\endcsname}}%
+    \expandafter\lstinputlisting\expandafter[\figopts, style=styleR, basicstyle=\ttfamily\scriptsize\color{cText}]{practica-10-distribuciones-exponencial-normal.R}
+  \end{minipage}\par\medskip}
+\newcommand{\res}[1]{\begin{resultado}\textbf{\color{cTealDeep}Resultado.} #1\end{resultado}}
+
+% ============================================================
+\begin{document}
+
+% -------------------- PORTADA --------------------
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{28}{28}\selectfont\faIcon{chart-area}};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{32}{40}\selectfont Distribuciones\\ Exponencial y Normal}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{20}{24}\selectfont \faIcon{chart-area}\ en Ciencia de Datos}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.9)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.8)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     Solución de la lista de ejercicios:\\
+     tiempos entre eventos, cuantiles, errores de modelos,\\ estandarización y truncamiento}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos -- UNSA \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Unidad: & \color{white} I -- Fundamentos Matemáticos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Carlos Antonio Abanto Valle \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 25 de octubre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+
+% ============================================================
+\seccion{hourglass-half}{Distribución exponencial}{Distribución exponencial}{Ejercicios E1 -- E6}
+% ============================================================
+
+\ejercicio{E1}{\textbf{Tiempo entre fallas de un servidor.} En un sistema cloud, el tiempo entre fallas
+críticas sigue una distribución exponencial con media de 8 horas. Sea $T$ el tiempo (en horas) hasta la
+próxima falla. (a) Determine el parámetro $\lambda$. (b) Calcule la probabilidad de que el sistema falle
+en menos de 5 horas. (c) Calcule la probabilidad de que \emph{no falle} en las próximas 12 horas.
+(d) Determine la mediana del sistema.}
+
+\[
+f(t)=\lambda e^{-\lambda t},\qquad F(t)=1-e^{-\lambda t},\qquad P(T>t)=e^{-\lambda t},\qquad t\ge0
+\]
+(a)
+\[
+E[T]=\frac1\lambda=8 \quad\Rightarrow\quad \lambda=\frac18=0,125\ \text{fallas/hora}
+\]
+(b)
+\[
+P(T<5)=1-e^{-5/8}=1-0,535261=0,4647
+\]
+(c)
+\[
+P(T>12)=e^{-12/8}=e^{-1,5}=0,2231
+\]
+(d)
+\[
+F(m)=\frac12 \;\Rightarrow\; e^{-m/8}=\frac12 \;\Rightarrow\; m=8\ln2=5,545\ \text{h}
+\]
+
+\figcod{ejE1-servidor}{Densidad de $T\sim\text{Exp}(1/8)$.}
+
+\res{$\lambda=0,125$; \ $P(T<5)=0,4647$; \ $P(T>12)=0,2231$; \ mediana $=5,545$ h.}
+
+\ejercicio{E2}{\textbf{Tiempo de respuesta de una API.} Una API tiene tiempos de respuesta $T$ (en
+segundos) con distribución exponencial de parámetro $\lambda=3$. (a) Calcule $P(T<0,1)$.
+(b) Calcule $P(T>0,5)$. (c) Determine un valor $t$ tal que $P(T>t)=0,01$.}
+
+(a)
+\[
+P(T<0,1)=1-e^{-3(0,1)}=1-e^{-0,3}=1-0,740818=0,2592
+\]
+(b)
+\[
+P(T>0,5)=e^{-3(0,5)}=e^{-1,5}=0,2231
+\]
+(c)
+\[
+e^{-3t}=0,01 \;\Rightarrow\; -3t=\ln0,01 \;\Rightarrow\; t=\frac{\ln100}{3}=\frac{4,605170}{3}=1,535\ \text{s}
+\]
+
+\figcod{ejE2-api}{Densidad de $T\sim\text{Exp}(3)$.}
+
+\res{$P(T<0,1)=0,2592$; \ $P(T>0,5)=0,2231$; \ $t=1,535$ s.}
+
+\ejercicio{E3}{\textbf{Duración de sesiones de usuario.} El tiempo (en minutos) que un usuario permanece
+en una plataforma sigue $T\sim\text{Exp}(\lambda=0,25)$. (a) Probabilidad de que una sesión dure más
+de 10 minutos. (b) Probabilidad de que dure entre 2 y 6 minutos. (c) Calcule $E[T]$ y
+$\operatorname{Var}(T)$. (d) Determine el cuantil 90\,\% del tiempo de sesión.}
+
+(a)
+\[
+P(T>10)=e^{-0,25(10)}=e^{-2,5}=0,0821
+\]
+(b)
+\[
+P(2<T<6)=e^{-0,25(2)}-e^{-0,25(6)}=e^{-0,5}-e^{-1,5}=0,606531-0,223130=0,3834
+\]
+(c)
+\[
+E[T]=\frac1\lambda=\frac{1}{0,25}=4\ \text{min},\qquad \operatorname{Var}(T)=\frac{1}{\lambda^2}=\frac{1}{0,0625}=16\ \text{min}^2
+\]
+(d)
+\[
+1-e^{-0,25\,q}=0,90 \;\Rightarrow\; e^{-0,25\,q}=0,10 \;\Rightarrow\; q_{0,90}=\frac{\ln10}{0,25}=9,210\ \text{min}
+\]
+
+\figcod{ejE3-sesiones}{Densidad (arriba) y función de distribución (abajo) de $T\sim\text{Exp}(0,25)$.}
+
+\res{$P(T>10)=0,0821$; \ $P(2<T<6)=0,3834$; \ $E[T]=4$, \ $\operatorname{Var}(T)=16$; \ $q_{0,90}=9,21$ min.}
+
+\ejercicio{E4}{\textbf{Detección de anomalías en IoT.} El tiempo entre eventos anómalos sigue una
+distribución exponencial con media 30 minutos. (a) Probabilidad de que transcurran dos horas sin
+anomalías. (b) Probabilidad de detectar una anomalía antes de 15 minutos. (c) Determine $t$ tal que la
+probabilidad de \emph{no anomalía} hasta $t$ minutos sea 0,20.}
+
+\[
+\lambda=\frac{1}{30}\ \text{por minuto}
+\]
+(a)
+\[
+P(T>120)=e^{-120/30}=e^{-4}=0,0183
+\]
+(b)
+\[
+P(T<15)=1-e^{-15/30}=1-e^{-0,5}=0,3935
+\]
+(c)
+\[
+P(T>t)=e^{-t/30}=0,20 \;\Rightarrow\; t=-30\ln0,20=30\ln5=48,28\ \text{min}
+\]
+
+\figcod{ejE4-iot}{Densidad (arriba) y supervivencia (abajo) de $T\sim\text{Exp}(1/30)$.}
+
+\res{$P(T>120)=0,0183$; \ $P(T<15)=0,3935$; \ $t=48,28$ min.}
+
+\ejercicio{E5}{\textbf{Modelo de abandono en call center.} El tiempo hasta que un usuario cuelga si nadie
+atiende es $T\sim\text{Exp}(\lambda=0,4)$ (en minutos). (a) Probabilidad de que abandone antes de 2
+minutos. (b) Probabilidad de que siga esperando más de 5 minutos. (c) Determine el percentil 75.}
+
+(a)
+\[
+P(T<2)=1-e^{-0,4(2)}=1-e^{-0,8}=1-0,449329=0,5507
+\]
+(b)
+\[
+P(T>5)=e^{-0,4(5)}=e^{-2}=0,1353
+\]
+(c)
+\[
+1-e^{-0,4\,q}=0,75 \;\Rightarrow\; q_{0,75}=\frac{\ln4}{0,4}=\frac{1,386294}{0,4}=3,466\ \text{min}
+\]
+
+\figcod{ejE5-call-center}{Densidad de $T\sim\text{Exp}(0,4)$.}
+
+\res{$P(T<2)=0,5507$; \ $P(T>5)=0,1353$; \ $P_{75}=3,466$ min.}
+
+\ejercicio{E6}{\textbf{Tiempo entre clics en una campaña.} Una campaña genera clics siguiendo un proceso de
+Poisson con tasa $\lambda=12$ clics por hora. El tiempo entre clics es exponencial (en minutos).
+(a) Probabilidad de que entre dos clics haya menos de 2 minutos. (b) Probabilidad de que pasen más de
+10 minutos sin clic. (c) Determine la mediana del tiempo entre clics.}
+
+\[
+\lambda=\frac{12}{60}=0,2\ \text{clics/min},\qquad T\sim\text{Exp}(0,2)
+\]
+(a)
+\[
+P(T<2)=1-e^{-0,4}=1-0,670320=0,3297
+\]
+(b)
+\[
+P(T>10)=e^{-2}=0,1353
+\]
+(c)
+\[
+e^{-0,2\,m}=\frac12 \;\Rightarrow\; m=\frac{\ln2}{0,2}=3,466\ \text{min}
+\]
+
+\figcod{ejE6-clics}{Densidad del tiempo entre clics.}
+
+\res{$P(T<2)=0,3297$; \ $P(T>10)=0,1353$; \ mediana $=3,466$ min.}
+
+% ============================================================
+\seccion{chart-area}{Distribución normal}{Distribución normal}{Ejercicios N1 -- N9}
+% ============================================================
+
+\ejercicio{N1}{\textbf{Error de predicción en un modelo de ML.} El error de un modelo de regresión sigue
+$E\sim N(0,2^2)$. (a) Probabilidad de un error mayor a 3. (b) Probabilidad de que el error esté entre
+$-1$ y 1. (c) Calcule el valor esperado de $|E|$.}
+
+\[
+Z=\frac{E-0}{2}\sim N(0,1)
+\]
+(a)
+\[
+P(E>3)=P\!\left(Z>\tfrac32\right)=1-\Phi(1,5)=1-0,933193=0,0668
+\]
+(b)
+\[
+P(-1<E<1)=P(-0,5<Z<0,5)=2\Phi(0,5)-1=2(0,691462)-1=0,3829
+\]
+(c)
+\[
+E|E|=2\int_0^{\infty}e\,\frac{1}{\sigma\sqrt{2\pi}}e^{-e^2/(2\sigma^2)}\,de
+=\frac{2}{\sigma\sqrt{2\pi}}\Big[-\sigma^2e^{-e^2/(2\sigma^2)}\Big]_0^{\infty}
+=\frac{2\sigma}{\sqrt{2\pi}}=\sigma\sqrt{\frac2\pi}
+\]
+\[
+E|E|=2\sqrt{\frac2\pi}=2(0,797885)=1,596
+\]
+
+\figcod{ejN1-error-ml}{Densidad de $E$ (arriba) y de $|E|$ (abajo).}
+
+\res{$P(E>3)=0,0668$; \ $P(-1<E<1)=0,3829$; \ $E|E|=1,596$.}
+
+\ejercicio{N2}{\textbf{Imputación de datos faltantes.} El salario mensual (en miles) sigue
+$X\sim N(5;\ 1,2^2)$. (a) Probabilidad de que un salario sea mayor a 7. (b) Probabilidad de que esté
+entre 4 y 6. (c) Determine el cuantil 95\,\% de $X$.}
+
+(a)
+\[
+P(X>7)=P\!\left(Z>\frac{7-5}{1,2}\right)=P(Z>1,667)=1-0,952210=0,0478
+\]
+(b)
+\[
+P(4<X<6)=P\!\left(\frac{4-5}{1,2}<Z<\frac{6-5}{1,2}\right)=P(-0,833<Z<0,833)=2(0,797672)-1=0,5953
+\]
+(c)
+\[
+x_{0,95}=\mu+z_{0,95}\,\sigma=5+1,6449(1,2)=6,974
+\]
+
+\figcod{ejN2-salario}{Densidad de $X\sim N(5;\ 1,2^2)$.}
+
+\res{$P(X>7)=0,0478$; \ $P(4<X<6)=0,5953$; \ $x_{0,95}=6,974$ mil.}
+
+\ejercicio{N3}{\textbf{Detección de outliers en sensores.} Un sensor mide temperatura con
+$T\sim N(50,4^2)$. (a) Probabilidad de una lectura mayor a 60. (b) Probabilidad de una lectura menor
+a 40. (c) Intervalo central al 90\,\%. (d) Umbral del percentil 99\,\%.}
+
+(a)
+\[
+P(T>60)=P\!\left(Z>\frac{60-50}{4}\right)=P(Z>2,5)=1-0,993790=0,0062
+\]
+(b)
+\[
+P(T<40)=P(Z<-2,5)=1-\Phi(2,5)=0,0062
+\]
+(c)
+\[
+50\pm z_{0,95}(4)=50\pm1,6449(4)=50\pm6,579 \;\Rightarrow\; [43,42;\ 56,58]
+\]
+(d)
+\[
+t_{0,99}=50+z_{0,99}(4)=50+2,3263(4)=59,31
+\]
+
+\figcod{ejN3-sensor}{Colas (arriba) e intervalo central al 90\,\% (abajo).}
+
+\res{$P(T>60)=P(T<40)=0,0062$; \ intervalo 90\,\%: $[43,42;\ 56,58]$; \ $P_{99}=59,31$.}
+
+\ejercicio{N4}{\textbf{Puntajes de un clasificador probabilístico.} El logit sigue
+$Z\sim N(1,5;\ 0,7^2)$ y $p=\dfrac{1}{1+e^{-Z}}$. (a) Probabilidad de que el puntaje sea negativo.
+(b) Probabilidad de que sea mayor que 2. (c) Use una aproximación de primer orden para estimar $E[p]$.}
+
+(a)
+\[
+P(Z<0)=P\!\left(U<\frac{0-1,5}{0,7}\right)=\Phi(-2,143)=0,0161,\qquad U\sim N(0,1)
+\]
+(b)
+\[
+P(Z>2)=P\!\left(U>\frac{2-1,5}{0,7}\right)=1-\Phi(0,714)=1-0,762475=0,2375
+\]
+(c) $\sigma(z)=\dfrac{1}{1+e^{-z}}$, \ Taylor alrededor de $\mu=1,5$:
+\[
+p=\sigma(Z)\approx\sigma(\mu)+\sigma'(\mu)(Z-\mu)
+\quad\Rightarrow\quad E[p]\approx\sigma(\mu)+\sigma'(\mu)\underbrace{E[Z-\mu]}_{0}=\sigma(1,5)
+\]
+\[
+E[p]\approx\frac{1}{1+e^{-1,5}}=\frac{1}{1+0,223130}=0,8176
+\]
+\textbf{Comparación:}
+\[
+\sigma''(\mu)=\sigma(1-\sigma)(1-2\sigma)=-0,094730
+\]
+\[
+E[p]\approx0,8176+\tfrac12(-0,094730)(0,49)=0,7944\ \ (\text{2.\textsuperscript{o} orden}),\qquad E[p]_{\text{exacto}}=0,7965
+\]
+
+\figcod{ejN4-logit}{Densidad del logit $Z$ (arriba) y de $p=\sigma(Z)$ (abajo).}
+
+\res{$P(Z<0)=0,0161$; \ $P(Z>2)=0,2375$; \ $E[p]\approx\sigma(1,5)=0,8176$ (exacto 0,7965).}
+
+\ejercicio{N5}{\textbf{Resultado de un algoritmo de clustering.} El clúster A tiene $X_A\sim N(20,3^2)$ y
+el clúster B tiene $X_B\sim N(27,2^2)$. (a) Probabilidad de que un usuario de A tenga valor mayor que
+25. (b) Probabilidad de que un usuario de B tenga valor menor que 25. (c) Si se observa un usuario con
+valor 23, ¿a qué clúster pertenece con mayor verosimilitud?}
+
+(a)
+\[
+P(X_A>25)=P\!\left(Z>\frac{25-20}{3}\right)=P(Z>1,667)=0,0478
+\]
+(b)
+\[
+P(X_B<25)=P\!\left(Z<\frac{25-27}{2}\right)=\Phi(-1)=0,1587
+\]
+(c)
+\[
+f_A(23)=\frac{1}{3\sqrt{2\pi}}e^{-\frac{(23-20)^2}{2(9)}}=\frac{\varphi(1)}{3}=\frac{0,241971}{3}=0,0807
+\]
+\[
+f_B(23)=\frac{1}{2\sqrt{2\pi}}e^{-\frac{(23-27)^2}{2(4)}}=\frac{\varphi(2)}{2}=\frac{0,053991}{2}=0,0270
+\]
+\[
+\frac{f_A(23)}{f_B(23)}=2,99>1 \quad\Rightarrow\quad A
+\]
+
+\figcod{ejN5-clustering}{Densidades de los clústeres A y B.}
+
+\res{$P(X_A>25)=0,0478$; \ $P(X_B<25)=0,1587$; \ el usuario con valor 23 pertenece al clúster A.}
+
+\ejercicio{N6}{\textbf{Normal estandarizada en ML (Batch Normalization).} Sea $X\sim N(\mu,\sigma^2)$ con
+$\mu=45$ y $\sigma=8$, y $Z=\dfrac{X-\mu}{\sigma}$. (a) Calcule $P(Z>2)$. (b) Calcule $P(-1<Z<1)$.
+(c) Determine el valor original $x$ del cuantil 97,5\,\%.}
+
+(a)
+\[
+P(Z>2)=1-\Phi(2)=1-0,977250=0,0228
+\]
+(b)
+\[
+P(-1<Z<1)=2\Phi(1)-1=2(0,841345)-1=0,6827
+\]
+(c)
+\[
+z_{0,975}=1,96 \;\Rightarrow\; x=\mu+z\,\sigma=45+1,96(8)=60,68
+\]
+
+\figcod{ejN6-batchnorm}{Normal estándar (arriba) y $X\sim N(45,8^2)$ (abajo).}
+
+\res{$P(Z>2)=0,0228$; \ $P(-1<Z<1)=0,6827$; \ $x_{0,975}=60,68$.}
+
+\ejercicio{N7}{\textbf{Ruido en señales de un auto autónomo.} El ruido en un sensor LIDAR es
+$R\sim N(0;\ 1,5^2)$. (a) Probabilidad de que el error supere 2 cm en valor absoluto.
+(b) Probabilidad de que esté entre $-1$ y 1 cm. (c) Calcule la desviación media $E[|R|]$.}
+
+(a)
+\[
+P(|R|>2)=2P\!\left(Z>\frac{2}{1,5}\right)=2\big(1-\Phi(1,333)\big)=2(0,091211)=0,1824
+\]
+(b)
+\[
+P(-1<R<1)=2\Phi\!\left(\frac{1}{1,5}\right)-1=2(0,747507)-1=0,4950
+\]
+(c)
+\[
+E|R|=\sigma\sqrt{\frac2\pi}=1,5(0,797885)=1,197\ \text{cm}
+\]
+
+\figcod{ejN7-lidar}{Densidad de $R$ (arriba) y de $|R|$ (abajo).}
+
+\res{$P(|R|>2)=0,1824$; \ $P(-1<R<1)=0,4950$; \ $E|R|=1,197$ cm.}
+
+\ejercicio{N8}{\textbf{Error de regresión múltiple.} Sea $\varepsilon\sim N(0,5^2)$. (a) Calcule
+$P(|\varepsilon|>7)$. (b) Calcule $P(-3<\varepsilon<3)$. (c) Determine los cuartiles $Q_1$ y $Q_3$.}
+
+(a)
+\[
+P(|\varepsilon|>7)=2\big(1-\Phi(1,4)\big)=2(1-0,919243)=0,1615
+\]
+(b)
+\[
+P(-3<\varepsilon<3)=2\Phi(0,6)-1=2(0,725747)-1=0,4515
+\]
+(c)
+\[
+z_{0,75}=0,6745 \;\Rightarrow\; Q_1=0-0,6745(5)=-3,372,\qquad Q_3=0+0,6745(5)=3,372
+\]
+\[
+\text{RIC}=Q_3-Q_1=6,745
+\]
+
+\figcod{ejN8-regresion}{Probabilidades (arriba) y cuartiles (abajo) de $\varepsilon\sim N(0,5^2)$.}
+
+\res{$P(|\varepsilon|>7)=0,1615$; \ $P(-3<\varepsilon<3)=0,4515$; \ $Q_1=-3,372$, \ $Q_3=3,372$.}
+
+\ejercicio{N9}{\textbf{Puntuaciones en un modelo de recomendación.} Las calificaciones predichas siguen
+$Y\sim N(3,8;\ 0,6^2)$. (a) Calcule $P(Y>5)$. (b) Calcule $P(3\le Y\le4)$. (c) Determine el percentil
+99\,\%. (d) Discuta cualitativamente el efecto de truncar $Y$ al intervalo $[1,5]$.}
+
+(a)
+\[
+P(Y>5)=P\!\left(Z>\frac{5-3,8}{0,6}\right)=P(Z>2)=0,0228
+\]
+(b)
+\[
+P(3\le Y\le4)=\Phi\!\left(\frac{4-3,8}{0,6}\right)-\Phi\!\left(\frac{3-3,8}{0,6}\right)
+\]
+\[
+=\Phi(0,333)-\Phi(-1,333)=0,630559-0,091211=0,5393
+\]
+(c)
+\[
+y_{0,99}=3,8+2,3263(0,6)=5,196>5
+\]
+(d) \textbf{Truncamiento en $[1,5]$:}
+\[
+P(1\le Y\le5)=\Phi(2)-\Phi(-4,667)=0,977248,\qquad
+f_T(y)=\frac{f(y)}{0,977248},\quad 1\le y\le5
+\]
+\[
+E[Y\mid1\le Y\le5]=3,8+0,6\,\frac{\varphi(-4,667)-\varphi(2)}{0,977248}=3,767,\qquad
+\sigma_T=0,565<0,6
+\]
+Se elimina el 2,28\,\% de masa sobre 5 (bajo 1 es $\approx10^{-6}$) y se reparte en $[1,5]$: la media
+baja de 3,80 a 3,77, la desviación de 0,600 a 0,565 y el $P_{99}$ pasa de 5,20 (fuera de escala) a 4,91.
+
+\figcod{ejN9-recomendacion}{Probabilidades (arriba) y densidad original frente a truncada (abajo).}
+
+\res{$P(Y>5)=0,0228$; \ $P(3\le Y\le4)=0,5393$; \ $P_{99}=5,196$; \ truncada: media 3,767, desv. 0,565.}
+
+\end{document}

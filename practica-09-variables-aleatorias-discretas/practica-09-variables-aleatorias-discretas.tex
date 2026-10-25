@@ -1,0 +1,760 @@
+% ============================================================
+%  Basado en la plantilla de la Practica 8 (mismos colores/estilos)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage{amsmath,amssymb}
+\usepackage{needspace}
+\usepackage{icomma}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}
+\definecolor{cTealDeep}{HTML}{064B5A}
+\definecolor{cTeal}{HTML}{097289}
+\definecolor{cBlue}{HTML}{0FC5ED}
+\definecolor{cCyan}{HTML}{0FC5ED}
+\definecolor{cMint}{HTML}{44FFB1}
+\definecolor{cPurple}{HTML}{A277FF}
+\definecolor{cRed}{HTML}{E52E2E}
+\definecolor{cBg}{HTML}{EAF6F8}
+\definecolor{cText}{HTML}{01111E}
+\definecolor{cOutBg}{HTML}{F4F4F4}
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Variables aleatorias discretas: lista de ejercicios resuelta},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Variables Aleatorias Discretas}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------- Figura sin marco ----------
+\newcommand{\figuraMarcada}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#2\linewidth]{#1}
+    \caption{#3}
+  \end{figure}
+}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ---------- Bloques de código R y salida de consola ----------
+\lstdefinestyle{styleR}{
+  language=R,
+  backgroundcolor=\color{cBg},
+  basicstyle=\ttfamily\small\color{cText},
+  keywordstyle=\color{cTealDeep}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{cTeal},
+  numbers=none,
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cCyan},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=6pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\lstdefinestyle{styleOut}{
+  backgroundcolor=\color{cOutBg},
+  basicstyle=\ttfamily\scriptsize\color{cText},
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cTealDeep},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=2pt, belowskip=6pt,
+  showstringspaces=false
+}
+
+\newcommand{\codigoR}[1]{\lstinputlisting[style=styleR]{#1}}
+
+% ---------- Ejercicios ----------
+\usepackage{enumitem}
+\setlist{itemsep=1pt, topsep=3pt}
+\graphicspath{{img/}}
+\setlength{\parskip}{3pt}
+\newcommand{\R}{\mathbb{R}}
+
+\newtcolorbox{enunciado}[1][]{enhanced, breakable, colback=cBg, colframe=cTealDeep,
+  boxrule=0pt, leftrule=3pt, arc=2pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=cTealDeep,
+  title={Ejercicio #1}}
+\newtcolorbox{resultado}{enhanced, breakable, colback=cMint!12, colframe=cTealDeep,
+  boxrule=0.5pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt}
+
+\newif\ifinicioseccion
+\newcommand{\ejercicio}[2]{%
+  \ifinicioseccion\global\inicioseccionfalse\else\clearpage\fi
+  \phantomsection
+  \addcontentsline{toc}{subsection}{Ejercicio #1}%
+  \begin{enunciado}[#1]#2\end{enunciado}\noindent}
+% portada de sección: página completa con fondo oscuro
+\newif\ifanexo
+\newcommand{\seccion}[4]{%
+  \clearpage\newgeometry{margin=0cm}
+  \refstepcounter{section}\phantomsection
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}\protect\faIcon{#1}\ #2}%
+  \thispagestyle{empty}\noindent
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[cNavy] (current page.south west) rectangle (current page.north east);
+    \fill[cTealDeep, opacity=0.55] (current page.north west) ++(1.5,-1) circle (4.2);
+    \fill[cCyan, opacity=0.14] (current page.north west) ++(4.2,-0.4) circle (2.2);
+    \fill[cPurple, opacity=0.26] (current page.south east) ++(-1.2,1.4) circle (3.6);
+    \fill[cMint, opacity=0.13] (current page.south east) ++(-3.6,0.3) circle (2.0);
+    \draw[cCyan, opacity=0.25, line width=0.8pt] (current page.center) ++(5.2,4.6) circle (1.1);
+    \node[anchor=center] at ($(current page.center)+(0,5.2)$)
+      {\color{cTealDeep!80!cCyan}\bfseries\fontsize{150}{150}\selectfont \thesection};
+    \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.4cm] (ic)
+      at ($(current page.center)+(0,1.6)$) {};
+    \node at (ic) {\color{cMint}\fontsize{30}{30}\selectfont\faIcon{#1}};
+    \node[anchor=center] at ($(current page.center)+(0,-0.4)$)
+      {\color{cCyan}\bfseries\fontsize{11}{13}\selectfont \ifanexo A N E X O\else S E C C I Ó N\fi};
+    \node[anchor=north, text width=14cm, align=center] (tit) at ($(current page.center)+(0,-0.9)$)
+      {\hyphenpenalty=10000 {\color{white}\bfseries\fontsize{30}{36}\selectfont #3}};
+    \draw[cCyan, line width=1.4pt] ($(tit.south)+(-3.2,-0.3)$) -- ++(6.4,0);
+    \node[anchor=north] at ($(tit.south)+(0,-0.6)$)
+      {\color{cMint}\fontsize{13}{16}\selectfont #4};
+  \end{tikzpicture}%
+  \clearpage\restoregeometry}
+
+% figura a la izquierda y su código R a la derecha
+% (las líneas de cada bloque se leen de rangos.tex, generado desde practica-09-variables-aleatorias-discretas.R)
+\input{rangos.tex}
+\newcommand{\figcod}[2]{%
+  \par\medskip\noindent
+  \begin{minipage}[c]{0.47\linewidth}\centering
+    \includegraphics[width=\linewidth]{#1}\captionof{figure}{#2}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.5\linewidth}
+    \edef\figopts{linerange={\csname r@#1\endcsname}}%
+    \expandafter\lstinputlisting\expandafter[\figopts, style=styleR, basicstyle=\ttfamily\scriptsize\color{cText}]{practica-09-variables-aleatorias-discretas.R}
+  \end{minipage}\par\medskip}
+\newcommand{\res}[1]{\begin{resultado}\textbf{\color{cTealDeep}Resultado.} #1\end{resultado}}
+
+% ============================================================
+\begin{document}
+
+% -------------------- PORTADA --------------------
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{28}{28}\selectfont\faIcon{dice}};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{32}{40}\selectfont Variables Aleatorias\\ Discretas}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{20}{24}\selectfont \faIcon{dice}\ Nivel intermedio}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.9)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.8)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     Solución de la lista de ejercicios:\\
+     binomial, Poisson, geométrica, binomial negativa,\\ hipergeométrica, multinomial y truncada}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos -- UNSA \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Unidad: & \color{white} I -- Fundamentos Matemáticos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Carlos Antonio Abanto Valle \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 25 de octubre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+
+% ============================================================
+\seccion{list-ol}{Ejercicios propuestos}{Ejercicios propuestos}{Ejercicios 1 -- 7}
+% ============================================================
+
+\ejercicio{1}{\textbf{Binomial -- Publicidad online.} Un anuncio tiene probabilidad $p=0,21$ de ser
+clickeado. En 12 impresiones para un usuario, sea $X\sim\text{Binomial}(12;\ 0,21)$.
+(a) Calcule $P(X=4)$. (b) Halle $P(X\ge2)$. (c) Calcule $E[X]$ y $\operatorname{Var}(X)$.}
+
+\[
+P(X=k)=\binom{12}{k}(0,21)^k(0,79)^{12-k},\qquad k=0,1,\dots,12
+\]
+(a)
+\[
+P(X=4)=\binom{12}{4}(0,21)^4(0,79)^8=495\,(0,00194481)(0,151710)=0,1460
+\]
+(b)
+\[
+P(X=0)=(0,79)^{12}=0,059092,\qquad P(X=1)=12\,(0,21)(0,79)^{11}=0,188494
+\]
+\[
+P(X\ge2)=1-P(X=0)-P(X=1)=1-0,059092-0,188494=0,7524
+\]
+(c)
+\[
+E[X]=np=12(0,21)=2,52,\qquad \operatorname{Var}(X)=np(1-p)=12(0,21)(0,79)=1,9908
+\]
+
+\figcod{ej01-binomial}{pmf de $X\sim\text{Binomial}(12;\ 0,21)$.}
+
+\res{$P(X=4)=0,1460$; \ $P(X\ge2)=0,7524$; \ $E[X]=2,52$, \ $\operatorname{Var}(X)=1,9908$.}
+
+\ejercicio{2}{\textbf{Poisson -- Errores de log en servidor.} En promedio ocurren 5 errores de log por
+hora. Sea $Y\sim\text{Poisson}(5)$. (a) Calcule $P(Y=2)$. (b) Calcule $P(Y\ge7)$. (c) Halle $E[Y]$ y
+$\operatorname{Var}(Y)$.}
+
+\[
+P(Y=k)=\frac{e^{-5}5^k}{k!},\qquad k=0,1,2,\dots
+\]
+(a)
+\[
+P(Y=2)=\frac{e^{-5}\,5^2}{2!}=12,5\,(0,0067379)=0,0842
+\]
+(b)
+\begin{center}
+\begin{tabular}{cccccccc}
+\toprule
+$k$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 \\ \midrule
+$P(Y=k)$ & 0,00674 & 0,03369 & 0,08422 & 0,14037 & 0,17547 & 0,17547 & 0,14622 \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+P(Y\ge7)=1-\sum_{k=0}^{6}P(Y=k)=1-0,762183=0,2378
+\]
+(c)
+\[
+E[Y]=\lambda=5,\qquad \operatorname{Var}(Y)=\lambda=5
+\]
+
+\figcod{ej02-poisson}{pmf de $Y\sim\text{Poisson}(5)$.}
+
+\res{$P(Y=2)=0,0842$; \ $P(Y\ge7)=0,2378$; \ $E[Y]=\operatorname{Var}(Y)=5$.}
+
+\ejercicio{3}{\textbf{Geométrica -- Tiempo hasta un evento.} Un fallo ocurre cada minuto con
+probabilidad $p=0,004$. Sea $T\sim\text{Geom}(0,004)$. (a) Calcule $P(T=15)$. (b) Calcule $P(T>50)$.}
+
+$T$ = minuto en que ocurre el primer fallo:
+\[
+P(T=t)=(1-p)^{t-1}p,\qquad P(T>t)=(1-p)^t,\qquad t=1,2,\dots
+\]
+(a)
+\[
+P(T=15)=(0,996)^{14}(0,004)=(0,945433)(0,004)=0,00378
+\]
+(b)
+\[
+P(T>50)=(0,996)^{50}=0,8184
+\]
+
+\figcod{ej03-geometrica}{pmf (arriba) y función de supervivencia (abajo) de $T$.}
+
+\res{$P(T=15)=0,00378$; \ $P(T>50)=0,8184$.}
+
+\ejercicio{4}{\textbf{Binomial negativa -- Paquetes perdidos en red.} La probabilidad de pérdida de un
+paquete es $p=0,10$. Sea $X$ el número de paquetes enviados hasta que se pierden $r=4$.
+(a) Calcule $P(X=10)$. (b) Halle $E[X]$.}
+
+\[
+P(X=x)=\binom{x-1}{r-1}p^r(1-p)^{x-r},\qquad x=r,r+1,\dots
+\]
+(a)
+\[
+P(X=10)=\binom{9}{3}(0,10)^4(0,90)^6=84\,(0,0001)(0,531441)=0,00446
+\]
+(b)
+\[
+E[X]=\frac{r}{p}=\frac{4}{0,10}=40
+\]
+
+\figcod{ej04-binomial-negativa}{pmf de la binomial negativa con $r=4$, $p=0,10$.}
+
+\res{$P(X=10)=0,00446$; \ $E[X]=40$ paquetes.}
+
+\ejercicio{5}{\textbf{Hipergeométrica -- Control de calidad.} En un lote de 200 piezas, 30 son
+defectuosas. Se elige una muestra de 12. Sea $X\sim\text{Hipergeom}(200,30,12)$.
+(a) Calcule $P(X=2)$. (b) Calcule $P(X\ge3)$.}
+
+\[
+P(X=k)=\frac{\binom{30}{k}\binom{170}{12-k}}{\binom{200}{12}},\qquad k=0,1,\dots,12
+\]
+(a)
+\[
+P(X=2)=\frac{\binom{30}{2}\binom{170}{10}}{\binom{200}{12}}
+=\frac{435\,(4,241922\times10^{15})}{6,107694\times10^{18}}=0,3021
+\]
+(b)
+\[
+P(X=0)=0,133853,\qquad P(X=1)=0,303064,\qquad P(X=2)=0,302117
+\]
+\[
+P(X\ge3)=1-(0,133853+0,303064+0,302117)=0,2610
+\]
+
+\figcod{ej05-hipergeometrica}{pmf de $X\sim\text{Hipergeom}(200,30,12)$.}
+
+\res{$P(X=2)=0,3021$; \ $P(X\ge3)=0,2610$.}
+
+\ejercicio{6}{\textbf{Distribución discreta -- Engagement de usuarios.} Sea una variable con
+$P(0)=0,05$, \ $P(1)=0,20$, \ $P(2)=0,35$, \ $P(3)=0,25$, \ $P(4)=0,10$, \ $P(5)=0,05$.
+(a) Halle $E[X]$. (b) Calcule $P(X\le2)$. (c) Calcule $P(X\ge4)$.}
+
+\textbf{Verificación:} $0,05+0,20+0,35+0,25+0,10+0,05=1$.
+
+(a)
+\begin{center}
+\begin{tabular}{ccccccc|c}
+\toprule
+$x$ & 0 & 1 & 2 & 3 & 4 & 5 & $\Sigma$ \\ \midrule
+$P(x)$ & 0,05 & 0,20 & 0,35 & 0,25 & 0,10 & 0,05 & 1 \\
+$x\,P(x)$ & 0 & 0,20 & 0,70 & 0,75 & 0,40 & 0,25 & 2,30 \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+E[X]=\sum x\,P(x)=2,3
+\]
+(b)
+\[
+P(X\le2)=0,05+0,20+0,35=0,60
+\]
+(c)
+\[
+P(X\ge4)=0,10+0,05=0,15
+\]
+
+\figcod{ej06-engagement}{Distribución del engagement.}
+
+\res{$E[X]=2,3$; \ $P(X\le2)=0,60$; \ $P(X\ge4)=0,15$.}
+
+\ejercicio{7}{\textbf{Binomial -- Clasificación de spam.} Un clasificador marca cada email como spam con
+probabilidad 0,14. Sea $X\sim\text{Binomial}(80;\ 0,14)$. (a) Calcule $P(X=12)$. (b) Halle $P(X>20)$.
+(c) Calcule $E[X]$ y $\operatorname{Var}(X)$.}
+
+(a)
+\[
+P(X=12)=\binom{80}{12}(0,14)^{12}(0,86)^{68}
+=0,1201
+\]
+(b)
+\[
+P(X>20)=1-\sum_{k=0}^{20}\binom{80}{k}(0,14)^k(0,86)^{80-k}=1-0,997215=0,00278
+\]
+(c)
+\[
+E[X]=80(0,14)=11,2,\qquad \operatorname{Var}(X)=80(0,14)(0,86)=9,632,\qquad \sigma=3,104
+\]
+\[
+\frac{20,5-11,2}{3,104}=3,00 \quad\Rightarrow\quad X>20 \text{ está a 3 desviaciones de la media}
+\]
+
+\figcod{ej07-spam}{pmf de $X\sim\text{Binomial}(80;\ 0,14)$.}
+
+\res{$P(X=12)=0,1201$; \ $P(X>20)=0,00278$; \ $E[X]=11,2$, \ $\operatorname{Var}(X)=9,632$.}
+
+% ============================================================
+\seccion{dice}{Ejercicios avanzados I}{Ejercicios avanzados I}{Ejercicios A1 -- A8}
+% ============================================================
+
+\ejercicio{A1}{\textbf{Poisson -- Sistema distribuido.} En un sistema de microservicios ocurren en promedio
+8 fallos por día. Sea $X\sim\text{Poisson}(8)$. (a) Calcule $P(X=5)$. (b) Calcule $P(6\le X\le12)$.
+(c) Halle $P(X>15)$.}
+
+(a)
+\[
+P(X=5)=\frac{e^{-8}\,8^5}{5!}=\frac{(0,00033546)(32768)}{120}=0,0916
+\]
+(b)
+\begin{center}
+\begin{tabular}{cccccccc|c}
+\toprule
+$k$ & 6 & 7 & 8 & 9 & 10 & 11 & 12 & $\Sigma$ \\ \midrule
+$P(X=k)$ & 0,1221 & 0,1396 & 0,1396 & 0,1241 & 0,0993 & 0,0722 & 0,0481 & 0,7450 \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+P(6\le X\le12)=F(12)-F(5)=0,936203-0,191236=0,7450
+\]
+(c)
+\[
+P(X>15)=1-F(15)=1-0,991769=0,00823
+\]
+
+\figcod{ejA1-poisson}{pmf de $X\sim\text{Poisson}(8)$.}
+
+\res{$P(X=5)=0,0916$; \ $P(6\le X\le12)=0,7450$; \ $P(X>15)=0,00823$.}
+
+\ejercicio{A2}{\textbf{Binomial -- Modelos de ML.} Un modelo de clasificación acierta cada predicción con
+probabilidad $p=0,87$. Para 100 predicciones, $X\sim\text{Binomial}(100;\ 0,87)$.
+(a) Calcule $P(X=90)$. (b) Calcule $P(X\ge85)$.}
+
+(a)
+\[
+P(X=90)=\binom{100}{90}(0,87)^{90}(0,13)^{10}=0,0860
+\]
+(b)
+\[
+P(X\ge85)=1-F(84)=1-\sum_{k=0}^{84}\binom{100}{k}(0,87)^k(0,13)^{100-k}=1-0,223589=0,7764
+\]
+\textbf{Comprobación (normal con corrección):} $\mu=87$, \ $\sigma=\sqrt{100(0,87)(0,13)}=3,363$
+\[
+P(X\ge85)\approx P\!\left(Z\ge\frac{84,5-87}{3,363}\right)=P(Z\ge-0,743)=0,7714
+\]
+
+\figcod{ejA2-binomial-ml}{pmf de $X\sim\text{Binomial}(100;\ 0,87)$.}
+
+\res{$P(X=90)=0,0860$; \ $P(X\ge85)=0,7764$.}
+
+\ejercicio{A3}{\textbf{Binomial negativa -- Reintentos en API.} Una llamada a API falla con probabilidad
+0,12. Sea $T$ el número de llamadas necesarias para lograr $r=5$ fallos. (a) Calcule $P(T=12)$.
+(b) Calcule $E[T]$.}
+
+(a)
+\[
+P(T=12)=\binom{11}{4}(0,12)^5(0,88)^7=330\,(2,48832\times10^{-5})(0,408676)=0,00336
+\]
+(b)
+\[
+E[T]=\frac{r}{p}=\frac{5}{0,12}=41,67
+\]
+
+\figcod{ejA3-reintentos}{pmf de $T$ con $r=5$, $p=0,12$.}
+
+\res{$P(T=12)=0,00336$; \ $E[T]=41,67$ llamadas.}
+
+\ejercicio{A4}{\textbf{Geométrica -- Tiempo hasta el primer clic.} Un usuario hace clic en cada impresión
+con probabilidad $p=0,03$; $T\sim\text{Geom}(0,03)$. (a) Calcule $P(T=20)$. (b) Calcule $P(T>40)$.}
+
+(a)
+\[
+P(T=20)=(0,97)^{19}(0,03)=(0,560613)(0,03)=0,0168
+\]
+(b)
+\[
+P(T>40)=(0,97)^{40}=0,2957
+\]
+
+\figcod{ejA4-primer-clic}{pmf (arriba) y supervivencia (abajo) de $T\sim\text{Geom}(0,03)$.}
+
+\res{$P(T=20)=0,0168$; \ $P(T>40)=0,2957$.}
+
+\ejercicio{A5}{\textbf{Hipergeométrica -- Tarjetas de crédito.} Base de datos: 10\,000 tarjetas, 720
+fraudulentas. Se auditan 50; $X\sim\text{Hipergeom}(10000,720,50)$. (a) Calcule $P(X=3)$.
+(b) Calcule $P(X\ge5)$.}
+
+\[
+P(X=k)=\frac{\binom{720}{k}\binom{9280}{50-k}}{\binom{10000}{50}}
+\]
+(a)
+\[
+P(X=3)=\frac{\binom{720}{3}\binom{9280}{47}}{\binom{10000}{50}}=0,2187
+\]
+(b)
+\begin{center}
+\begin{tabular}{cccccc|c}
+\toprule
+$k$ & 0 & 1 & 2 & 3 & 4 & $\Sigma$ \\ \midrule
+$P(X=k)$ & 0,0236 & 0,0921 & 0,1758 & 0,2187 & 0,1995 & 0,7097 \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+P(X\ge5)=1-0,709683=0,2903
+\]
+\textbf{Aproximación binomial} ($n/N=0,005$, \ $p=720/10000=0,072$):
+\[
+P(X=3)\approx\binom{50}{3}(0,072)^3(0,928)^{47}=0,2183,\qquad P(X\ge5)\approx0,2906
+\]
+
+\figcod{ejA5-fraude}{Hipergeométrica (barras) y aproximación binomial (cruces).}
+
+\res{$P(X=3)=0,2187$; \ $P(X\ge5)=0,2903$.}
+
+\ejercicio{A6}{\textbf{Poisson compuesto -- Análisis web.} Visitas por minuto: $\text{Poisson}(6)$. Cada
+visita produce una compra con $p=0,05$. Sea $Y$ el número de compras por minuto. (a) ¿Cuál es la
+distribución de $Y$? (b) Calcule $P(Y=2)$.}
+
+(a) $V\sim\text{Poisson}(6)$, \ $Y\mid V=n\sim\text{Binomial}(n;\ 0,05)$:
+\[
+P(Y=y)=\sum_{n\ge y}\frac{e^{-6}6^n}{n!}\binom{n}{y}(0,05)^y(0,95)^{n-y}
+=\frac{e^{-6}(6\cdot0,05)^y}{y!}\sum_{m=0}^{\infty}\frac{(6\cdot0,95)^m}{m!}
+\]
+\[
+=\frac{e^{-6}(0,3)^y}{y!}\,e^{5,7}=\frac{e^{-0,3}(0,3)^y}{y!}
+\quad\Rightarrow\quad Y\sim\text{Poisson}(\lambda p)=\text{Poisson}(0,3)
+\]
+(b)
+\[
+P(Y=2)=\frac{e^{-0,3}(0,3)^2}{2!}=\frac{(0,740818)(0,09)}{2}=0,0333
+\]
+
+\figcod{ejA6-compras}{Visitas (arriba) y compras (abajo) por minuto.}
+
+\res{$Y\sim\text{Poisson}(0,3)$; \ $P(Y=2)=0,0333$.}
+
+\ejercicio{A7}{\textbf{Mixta discreta -- Fallos en red.} $P(X=0)=0,40$, \ $P(X=1)=0,30$, \ $P(X=2)=0,20$,
+\ $P(X=3)=0,10$. (a) Calcule $E[X]$. (b) Calcule $\operatorname{Var}(X)$.}
+
+\begin{center}
+\begin{tabular}{ccccc|c}
+\toprule
+$x$ & 0 & 1 & 2 & 3 & $\Sigma$ \\ \midrule
+$P(x)$ & 0,40 & 0,30 & 0,20 & 0,10 & 1 \\
+$x\,P(x)$ & 0 & 0,30 & 0,40 & 0,30 & 1,00 \\
+$x^2P(x)$ & 0 & 0,30 & 0,80 & 0,90 & 2,00 \\ \bottomrule
+\end{tabular}
+\end{center}
+(a)
+\[
+E[X]=1
+\]
+(b)
+\[
+\operatorname{Var}(X)=E[X^2]-E[X]^2=2-1^2=1
+\]
+
+\figcod{ejA7-fallos}{Distribución de fallos en red.}
+
+\res{$E[X]=1$; \ $\operatorname{Var}(X)=1$.}
+
+\ejercicio{A8}{\textbf{Distribución truncada -- Data cleaning.} Sea $N\sim\text{Poisson}(10)$, pero se
+eliminan los casos $N>15$. Defina la nueva distribución truncada y calcule $P(N=12\mid N\le15)$.}
+
+\textbf{Distribución truncada:}
+\[
+P(N=k\mid N\le15)=\frac{P(N=k)}{P(N\le15)}=\frac{e^{-10}10^k/k!}{\sum_{j=0}^{15}e^{-10}10^j/j!},
+\qquad k=0,1,\dots,15
+\]
+\[
+P(N\le15)=0,951260
+\]
+\textbf{Probabilidad pedida:}
+\[
+P(N=12)=\frac{e^{-10}\,10^{12}}{12!}=0,094780
+\]
+\[
+P(N=12\mid N\le15)=\frac{0,094780}{0,951260}=0,0996
+\]
+
+\figcod{ejA8-truncada}{Poisson(10) original (arriba) y truncada en $N\le15$ (abajo).}
+
+\res{$P(N=k\mid N\le15)=\dfrac{e^{-10}10^k/k!}{0,951260}$ para $k=0,\dots,15$; \ $P(N=12\mid N\le15)=0,0996$.}
+
+% ============================================================
+\seccion{chart-bar}{Ejercicios avanzados II}{Ejercicios avanzados II}{Ejercicios A9 -- A15}
+% ============================================================
+
+\ejercicio{A9}{\textbf{Poisson -- A/B testing.} Clicks A: $\text{Poisson}(12)$. Clicks B:
+$\text{Poisson}(15)$. (a) Calcule $P(X_A>X_B)$. (b) Interprete el resultado.}
+
+(a) $X_A$ y $X_B$ independientes:
+\[
+P(X_A>X_B)=\sum_{k=0}^{\infty}P(X_B=k)\,P(X_A>k)
+=\sum_{k=0}^{\infty}\frac{e^{-15}15^k}{k!}\left(1-\sum_{j=0}^{k}\frac{e^{-12}12^j}{j!}\right)=0,2497
+\]
+\[
+P(X_A=X_B)=\sum_{k=0}^{\infty}\frac{e^{-12}12^k}{k!}\cdot\frac{e^{-15}15^k}{k!}=0,0655,
+\qquad P(X_A<X_B)=1-0,2497-0,0655=0,6848
+\]
+\[
+D=X_A-X_B:\qquad E[D]=12-15=-3,\qquad \operatorname{Var}(D)=12+15=27
+\]
+(b) \textbf{Interpretación:} en un mismo periodo, A supera a B solo en 1 de cada 4 casos y B gana en
+el 68\,\%. La diferencia de tasas ($-3$ clics) es pequeña frente a la dispersión
+($\sigma_D=\sqrt{27}=5,2$): una sola observación no basta para decidir entre A y B.
+
+\figcod{ejA9-ab-testing}{pmf de A y B (arriba) y de $D=X_A-X_B$ (abajo).}
+
+\res{$P(X_A>X_B)=0,2497$; B es mejor en promedio, pero A gana en el 25\,\% de los periodos.}
+
+\ejercicio{A10}{\textbf{Binomial -- Reconocimiento de voz.} Un sistema acierta cada palabra con
+probabilidad 0,92. Para 200 palabras, $X\sim\text{Binomial}(200;\ 0,92)$. (a) Calcule $P(X<180)$.
+(b) Calcule $P(X>190)$.}
+
+\[
+\mu=200(0,92)=184,\qquad \sigma=\sqrt{200(0,92)(0,08)}=3,837
+\]
+(a)
+\[
+P(X<180)=P(X\le179)=\sum_{k=0}^{179}\binom{200}{k}(0,92)^k(0,08)^{200-k}=0,1225
+\]
+(b)
+\[
+P(X>190)=\sum_{k=191}^{200}\binom{200}{k}(0,92)^k(0,08)^{200-k}=0,0374
+\]
+
+\figcod{ejA10-voz}{pmf de $X\sim\text{Binomial}(200;\ 0,92)$.}
+
+\res{$P(X<180)=0,1225$; \ $P(X>190)=0,0374$.}
+
+\ejercicio{A11}{\textbf{Geométrica -- CPU failures.} Cada segundo falla con probabilidad $p=0,0008$.
+(a) Calcule $P(T>500)$. (b) Calcule el tiempo esperado hasta el fallo.}
+
+(a)
+\[
+P(T>500)=(1-0,0008)^{500}=(0,9992)^{500}=0,6702
+\]
+(b)
+\[
+E[T]=\frac1p=\frac{1}{0,0008}=1250\ \text{s}\ \approx 20,8\ \text{min}
+\]
+
+\figcod{ejA11-cpu}{Supervivencia $P(T>t)=(0,9992)^t$.}
+
+\res{$P(T>500)=0,6702$; \ $E[T]=1250$ segundos.}
+
+\ejercicio{A12}{\textbf{Multinomial -- Clickstream.} Un usuario tiene 3 acciones: $P(A)=0,50$,
+$P(B)=0,30$, $P(C)=0,20$. En 20 interacciones, $(X_A,X_B,X_C)\sim\text{Multinomial}(20,p)$.
+(a) Calcule $P(X_A=12,X_B=6,X_C=2)$. (b) Calcule $E[X_A]$, $E[X_B]$, $E[X_C]$.}
+
+(a)
+\[
+P(12,6,2)=\frac{20!}{12!\,6!\,2!}(0,5)^{12}(0,3)^6(0,2)^2
+\]
+\[
+=3\,527\,160\,(2,441406\times10^{-4})(7,29\times10^{-4})(0,04)=3\,527\,160\,(7,119141\times10^{-9})=0,0251
+\]
+(b)
+\[
+E[X_i]=n\,p_i:\qquad E[X_A]=20(0,5)=10,\quad E[X_B]=20(0,3)=6,\quad E[X_C]=20(0,2)=4
+\]
+
+\figcod{ejA12-multinomial}{Conteos esperados frente al caso $(12,6,2)$.}
+
+\res{$P(X_A=12,X_B=6,X_C=2)=0,0251$; \ $E[X_A]=10$, \ $E[X_B]=6$, \ $E[X_C]=4$.}
+
+\ejercicio{A13}{\textbf{Poisson -- Rare events.} Eventos por día: $\text{Poisson}(0,8)$. Calcule
+$P(X=0)$, $P(X>2)$, $E[X]$.}
+
+\[
+P(X=0)=e^{-0,8}=0,4493
+\]
+\[
+P(X=1)=0,8\,e^{-0,8}=0,359463,\qquad P(X=2)=\frac{0,8^2}{2}e^{-0,8}=0,143785
+\]
+\[
+P(X>2)=1-(0,449329+0,359463+0,143785)=0,0474
+\]
+\[
+E[X]=\lambda=0,8
+\]
+
+\figcod{ejA13-raros}{pmf de $X\sim\text{Poisson}(0,8)$.}
+
+\res{$P(X=0)=0,4493$; \ $P(X>2)=0,0474$; \ $E[X]=0,8$ eventos por día.}
+
+\ejercicio{A14}{\textbf{Distribución discreta definida por regla.} Sea $P(X=k)=\dfrac{c}{k^2}$,
+$k=1,2,3,4,5$. (a) Determine $c$. (b) Calcule $E[X]$.}
+
+(a)
+\[
+\sum_{k=1}^{5}\frac{c}{k^2}=c\left(1+\frac14+\frac19+\frac1{16}+\frac1{25}\right)=c\,\frac{5269}{3600}=1
+\quad\Rightarrow\quad c=\frac{3600}{5269}=0,6832
+\]
+(b)
+\[
+E[X]=\sum_{k=1}^{5}k\,\frac{c}{k^2}=c\sum_{k=1}^{5}\frac1k=\frac{3600}{5269}\cdot\frac{137}{60}=\frac{8220}{5269}=1,5601
+\]
+\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+$k$ & 1 & 2 & 3 & 4 & 5 \\ \midrule
+$P(X=k)$ & 0,6832 & 0,1708 & 0,0759 & 0,0427 & 0,0273 \\ \bottomrule
+\end{tabular}
+\end{center}
+
+\figcod{ejA14-regla}{Distribución $P(X=k)=c/k^2$.}
+
+\res{$c=\dfrac{3600}{5269}=0,6832$; \ $E[X]=\dfrac{8220}{5269}=1,5601$.}
+
+\ejercicio{A15}{\textbf{Binomial -- Deep learning batch errors.} Una red neuronal tiene probabilidad de
+error 0,08 en cada mini-batch. Para 60 batches, $X\sim\text{Binomial}(60;\ 0,08)$.
+(a) Calcule $P(X=7)$. (b) Calcule $P(X\ge10)$.}
+
+(a)
+\[
+P(X=7)=\binom{60}{7}(0,08)^7(0,92)^{53}=386\,206\,920\,(2,097152\times10^{-8})(0,0120436)=0,0975
+\]
+(b)
+\[
+P(X\ge10)=1-\sum_{k=0}^{9}\binom{60}{k}(0,08)^k(0,92)^{60-k}=1-0,979987=0,0200
+\]
+
+\figcod{ejA15-batches}{pmf de $X\sim\text{Binomial}(60;\ 0,08)$.}
+
+\res{$P(X=7)=0,0975$; \ $P(X\ge10)=0,0200$.}
+
+\end{document}
