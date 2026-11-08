@@ -1,0 +1,15 @@
+\documentclass[11pt,a4paper]{article}
+\input{preambulo.tex}
+\hypersetup{pdftitle={Regresión logística binaria}}
+\begin{document}
+\portada{heartbeat}{Regresión Logística\\ Binaria}{Odds ratios, matriz de confusión y curva ROC}{Base de datos: Heart Disease (Cleveland, UCI)\\ Máxima verosimilitud, razón de verosimilitudes, ROC/AUC}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\vspace{1.2em}
+\noindent Todo el análisis está en \var{2_Regresion_Logistica_Binaria.R} (R 4.6.1; paquetes \var{lmtest} y \var{pROC}), que lee \var{heart.csv} (297 pacientes, sin valores faltantes). En cada pregunta muestro el bloque de código, su salida de consola y la interpretación.
+
+\clearpage
+\input{secciones/logistica}
+\end{document}

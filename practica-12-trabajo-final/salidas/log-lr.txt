@@ -1,0 +1,12 @@
+Likelihood ratio test
+
+Model 1: enf ~ 1
+Model 2: enf ~ edad + sexo + colesterol + presion_reposo + frecuencia_cardiaca_max + 
+    angina_ejercicio + depresion_st
+  #Df LogLik Df Chisq Pr(>Chisq)    
+1   1   -205                        
+2   8   -137  7   136     <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+R2_McFadden 
+     0.3312 

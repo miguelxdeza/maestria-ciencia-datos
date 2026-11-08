@@ -1,0 +1,19 @@
+[1]  85 142  70
+   edad presion_reposo colesterol frecuencia_cardiaca_max depresion_st
+1  0.51          -0.26      -0.36                   -1.03         0.72
+2 -0.63          -0.38      -0.21                    0.64        -0.52
+3  0.66           1.09       0.87                   -0.04         0.19
+  edad presion_reposo colesterol frecuencia_cardiaca_max depresion_st
+1 59.2          127.1      228.6                   125.9          1.9
+2 48.8          124.9      236.4                   164.3          0.4
+3 60.5          151.0      292.3                   148.6          1.3
+  R2_entre silueta_km 
+    0.3533     0.2276 
+    n edad presion_reposo colesterol frecuencia_cardiaca_max depresion_st pct_hombre
+1  85 59.2          127.1      228.6                   125.9          1.9       78.8
+2 142 48.8          124.9      236.4                   164.3          0.4       68.3
+3  70 60.5          151.0      292.3                   148.6          1.3       52.9
+  pct_angina pct_enfermo
+1       54.1        74.1
+2       16.2        23.2
+3       40.0        58.6

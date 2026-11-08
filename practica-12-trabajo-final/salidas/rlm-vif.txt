@@ -1,0 +1,4 @@
+                 edad        tiempo_estudio         inasistencias reprobaciones_previas 
+                1.145                 1.073                 1.072                 1.168 
+      educacion_madre       educacion_padre         internet_casa        apoyo_familiar 
+                1.737                 1.703                 1.066                 1.086 

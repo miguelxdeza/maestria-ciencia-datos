@@ -1,0 +1,15 @@
+\documentclass[11pt,a4paper]{article}
+\input{preambulo.tex}
+\hypersetup{pdftitle={Análisis de componentes principales}}
+\begin{document}
+\portada{project-diagram}{Análisis de\\ Componentes Principales}{Reducción de dimensionalidad con la matriz de correlaciones}{Base de datos: Student Performance (UCI)\\ Correlaciones, scree plot, cargas y regresión sobre componentes}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\vspace{1.2em}
+\noindent Todo el análisis está en \var{3_Componentes_Principales.R} (R 4.6.1; paquetes \var{corrplot} y \var{car}), que lee \var{student.csv} (395 estudiantes). En cada pregunta muestro el bloque de código, su salida de consola y la interpretación.
+
+\clearpage
+\input{secciones/cp}
+\end{document}

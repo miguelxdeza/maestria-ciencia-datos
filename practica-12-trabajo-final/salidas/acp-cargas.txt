@@ -1,0 +1,24 @@
+                         PC1    PC2    PC3    PC4
+edad                  -0.238 -0.222 -0.492  0.129
+tiempo_estudio         0.275 -0.040 -0.197  0.454
+inasistencias         -0.138  0.080 -0.608 -0.367
+reprobaciones_previas -0.302 -0.299 -0.052 -0.093
+educacion_madre        0.144  0.605 -0.155 -0.003
+educacion_padre        0.143  0.601 -0.068 -0.097
+salud                 -0.096  0.017  0.436 -0.502
+tiempo_libre          -0.265  0.128  0.359  0.388
+salidas_sociales      -0.374  0.203 -0.006  0.461
+alcohol_dias_semana   -0.480  0.191 -0.004 -0.072
+alcohol_fin_semana    -0.516  0.177 -0.006 -0.067
+                         PC1    PC2
+edad                  -0.363 -0.300
+tiempo_estudio         0.419 -0.055
+inasistencias         -0.210  0.109
+reprobaciones_previas -0.461 -0.404
+educacion_madre        0.220  0.817
+educacion_padre        0.218  0.813
+salud                 -0.147  0.023
+tiempo_libre          -0.404  0.174
+salidas_sociales      -0.571  0.274
+alcohol_dias_semana   -0.731  0.258
+alcohol_fin_semana    -0.787  0.239

@@ -1,0 +1,6 @@
+          edad presion_reposo colesterol frecuencia_cardiaca_max depresion_st
+media    54.54         131.69      247.3                  149.60         1.06
+desv_est  9.05          17.76       52.0                   22.94         1.17
+         edad presion_reposo colesterol frecuencia_cardiaca_max depresion_st
+media       0              0          0                       0            0
+desv_est    1              1          1                       1            1

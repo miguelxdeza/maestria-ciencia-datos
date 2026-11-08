@@ -1,0 +1,234 @@
+% ============================================================
+%  Basado en la plantilla de las Prácticas 8-11 (mismos colores/estilos)
+% ============================================================
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+
+% ---------- Tipografía y layout ----------
+\usepackage{lmodern}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{geometry}
+\geometry{a4paper, top=3.1cm, bottom=2.8cm, left=2.4cm, right=2.4cm, headheight=1.6cm}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\usepackage{caption}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage{amsmath,amssymb}
+\usepackage{needspace}
+\usepackage{icomma}
+
+% ---------- Paleta de colores (tema "coolnight" de tu terminal Kitty) ----------
+\definecolor{cNavy}{HTML}{011423}
+\definecolor{cTealDeep}{HTML}{064B5A}
+\definecolor{cTeal}{HTML}{097289}
+\definecolor{cBlue}{HTML}{0FC5ED}
+\definecolor{cCyan}{HTML}{0FC5ED}
+\definecolor{cMint}{HTML}{44FFB1}
+\definecolor{cPurple}{HTML}{A277FF}
+\definecolor{cRed}{HTML}{E52E2E}
+\definecolor{cBg}{HTML}{EAF6F8}
+\definecolor{cText}{HTML}{01111E}
+\definecolor{cOutBg}{HTML}{F4F4F4}
+
+\hypersetup{
+  linkcolor=cTealDeep,
+  citecolor=cTealDeep,
+  urlcolor=cBlue,
+  pdftitle={Trabajo final: regresión lineal y logística, componentes principales y conglomerados},
+  pdfauthor={Miguel Deza}
+}
+
+\color{cText}
+\emergencystretch=2.5em
+
+% ---------- Encabezado / pie de página ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{cTealDeep}\textbf{\faGraduationCap\ Maestría en Ciencia de Datos}}
+\fancyhead[R]{\small\color{cTeal}Estadística en Ciencia de Datos -- Trabajo final}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture]
+    \node[circle, fill=cTealDeep, minimum size=1.7em, inner sep=0pt] (pg) {\color{white}\small\thepage};
+  \end{tikzpicture}%
+}
+\renewcommand{\headrule}{{\color{cCyan}\hrule height 1.4pt}\vspace{1pt}{\color{cBlue}\hrule height 0.5pt}}
+
+% ---------- Estilo de secciones ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cTealDeep}}
+  {\tikz[baseline=-0.6ex]{\node[fill=cCyan, text=white, rounded corners=1.5pt, inner sep=3pt, font=\bfseries]{\thesection};}}
+  {0.6em}{}
+  [{\vspace{-0.3em}\color{cCyan}\titlerule[1.2pt]\vspace{0.3em}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{cTeal}}
+  {\color{cTeal}\thesubsection}{0.6em}{}
+
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+\captionsetup{labelfont={bf,color=cTealDeep}, font=small, textfont=it}
+
+% ---------- Bloques de código R y salida de consola ----------
+\lstdefinestyle{styleR}{
+  language=R,
+  backgroundcolor=\color{cBg},
+  basicstyle=\ttfamily\footnotesize\color{cText},
+  keywordstyle=\color{cTealDeep}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{cTeal},
+  numbers=none,
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cCyan},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=6pt, belowskip=6pt,
+  showstringspaces=false,
+  columns=fullflexible, keepspaces=true
+}
+
+\lstdefinestyle{styleOut}{
+  backgroundcolor=\color{cOutBg},
+  basicstyle=\ttfamily\scriptsize\color{cText},
+  breaklines=true,
+  frame=l,
+  framerule=2.2pt,
+  rulecolor=\color{cTealDeep},
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=2pt, belowskip=6pt,
+  showstringspaces=false,
+  columns=fullflexible, keepspaces=true
+}
+
+% ---------- Preguntas ----------
+\setlist{itemsep=1pt, topsep=3pt}
+\graphicspath{{img/}}
+\setlength{\parskip}{3pt}
+
+\newtcolorbox{enunciado}[1][]{enhanced, breakable, colback=cBg, colframe=cTealDeep,
+  boxrule=0pt, leftrule=3pt, arc=2pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=cTealDeep,
+  title={Pregunta #1}}
+\newtcolorbox{resultado}{enhanced, breakable, colback=cMint!12, colframe=cTealDeep,
+  boxrule=0.5pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt}
+
+% \pregunta{etiqueta}{texto del índice}{enunciado}
+\newcommand{\pregunta}[3]{%
+  \Needspace{12\baselineskip}\medskip
+  \phantomsection
+  \addcontentsline{toc}{subsection}{#1 \ #2}%
+  \begin{enunciado}[#1]#3\end{enunciado}\noindent}
+
+% portada de sección: página completa con fondo oscuro
+\newcommand{\seccion}[4]{%
+  \clearpage\newgeometry{margin=0cm}
+  \refstepcounter{section}\phantomsection
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}\protect\faIcon{#1}\ #2}%
+  \thispagestyle{empty}\noindent
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[cNavy] (current page.south west) rectangle (current page.north east);
+    \fill[cTealDeep, opacity=0.55] (current page.north west) ++(1.5,-1) circle (4.2);
+    \fill[cCyan, opacity=0.14] (current page.north west) ++(4.2,-0.4) circle (2.2);
+    \fill[cPurple, opacity=0.26] (current page.south east) ++(-1.2,1.4) circle (3.6);
+    \fill[cMint, opacity=0.13] (current page.south east) ++(-3.6,0.3) circle (2.0);
+    \draw[cCyan, opacity=0.25, line width=0.8pt] (current page.center) ++(5.2,4.6) circle (1.1);
+    \node[anchor=center] at ($(current page.center)+(0,5.2)$)
+      {\color{cTealDeep!80!cCyan}\bfseries\fontsize{150}{150}\selectfont \thesection};
+    \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.4cm] (ic)
+      at ($(current page.center)+(0,1.6)$) {};
+    \node at (ic) {\color{cMint}\fontsize{30}{30}\selectfont\faIcon{#1}};
+    \node[anchor=center] at ($(current page.center)+(0,-0.4)$)
+      {\color{cCyan}\bfseries\fontsize{11}{13}\selectfont S E C C I Ó N};
+    \node[anchor=north, text width=14cm, align=center] (tit) at ($(current page.center)+(0,-0.9)$)
+      {\hyphenpenalty=10000 {\color{white}\bfseries\fontsize{30}{36}\selectfont #3}};
+    \draw[cCyan, line width=1.4pt] ($(tit.south)+(-3.2,-0.3)$) -- ++(6.4,0);
+    \node[anchor=north, text width=14cm, align=center] at ($(tit.south)+(0,-0.6)$)
+      {\color{cMint}\fontsize{13}{16}\selectfont #4};
+  \end{tikzpicture}%
+  \clearpage\restoregeometry}
+
+% código y salidas: las líneas de cada bloque se leen de rangos.tex,
+% generado por generar-salidas.R desde RLM.R, Logistica.R, CP.R y Conglomerados.R
+\input{rangos.tex}
+\newcommand{\codigo}[1]{%
+  \edef\figopts{linerange={\csname r@#1\endcsname}}\edef\figfile{\csname s@#1\endcsname}%
+  \expandafter\lstinputlisting\expandafter[\figopts, style=styleR]{\figfile}}
+\newcommand{\salida}[1]{\lstinputlisting[style=styleOut]{salidas/#1.txt}}
+% figura a la izquierda y su código R a la derecha
+\newcommand{\figcod}[2]{%
+  \par\medskip\noindent
+  \begin{minipage}[c]{0.47\linewidth}\centering
+    \includegraphics[width=\linewidth]{#1}\captionof{figure}{#2}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.5\linewidth}
+    \edef\figopts{linerange={\csname r@#1\endcsname}}\edef\figfile{\csname s@#1\endcsname}%
+    \expandafter\lstinputlisting\expandafter[\figopts, style=styleR, basicstyle=\ttfamily\scriptsize\color{cText}]{\figfile}
+  \end{minipage}\par\medskip}
+\newcommand{\res}[1]{\begin{resultado}\textbf{\color{cTealDeep}Resultado.} #1\end{resultado}}
+\newcommand{\var}[1]{\texttt{\detokenize{#1}}}
+
+% ============================================================
+% portada: \portada{icono}{título}{subtítulo}{descripción}
+\newcommand{\portada}[4]{%
+\begin{titlepage}
+\newgeometry{margin=0cm}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[cNavy] (current page.south west) rectangle (current page.north east);
+  \fill[cPurple, opacity=0.28] (current page.north east) ++(-1,1) circle (3.2);
+  \fill[cCyan, opacity=0.22] (current page.north east) ++(-2.6,0.4) circle (2.1);
+  \fill[cTealDeep, opacity=0.55] (current page.south west) ++(1,-1) circle (4.0);
+  \fill[cMint, opacity=0.16] (current page.south west) ++(2.4,-0.2) circle (2.3);
+
+  \node[circle, fill=cTealDeep, draw=cCyan, line width=1.3pt, minimum size=2.5cm] (logo) at ($(current page.north)+(0,-2.9)$) {};
+  \node at (logo) {\color{cMint}\fontsize{28}{28}\selectfont\faIcon{#1}};
+
+  \node[anchor=north, text width=14cm, align=center] at ($(current page.north)+(0,-4.7)$) {
+    {\color{cCyan}\bfseries\fontsize{12}{14}\selectfont \faDatabase\ \ MAESTRÍA EN CIENCIA DE DATOS}
+  };
+
+  \node[anchor=center, text width=15cm, align=center] at ($(current page.center)+(0,1.2)$) {
+    {\color{white}\bfseries\fontsize{30}{38}\selectfont #2}\\[0.35em]
+    {\color{cMint}\bfseries\fontsize{17}{21}\selectfont \faIcon{#1}\ #3}
+  };
+
+  \draw[cCyan, line width=1.4pt] ($(current page.center)+(-3.6,-0.9)$) -- ++(7.2,0);
+
+  \node[anchor=center, text width=13cm, align=center] at ($(current page.center)+(0,-1.9)$) {
+    {\color{white!85!black}\fontsize{11}{14}\selectfont
+     #4}
+  };
+
+  \node[anchor=south, text width=14cm, align=center] at ($(current page.south)+(0,2.6)$) {
+    \begin{tabular}{r l}
+      \color{cCyan}\bfseries \faUser\ Elaborado por: & \color{white} Miguel Deza \\[3pt]
+      \color{cCyan}\bfseries \faGraduationCap\ Programa: & \color{white} Maestría en Ciencia de Datos -- UNSA \\[3pt]
+      \color{cCyan}\bfseries \faBook\ Curso: & \color{white} Estadística en Ciencia de Datos \\[3pt]
+      \color{cCyan}\bfseries \faChalkboardTeacher\ Docente: & \color{white} Carlos Antonio Abanto Valle \\[3pt]
+      \color{cCyan}\bfseries \faIcon{calendar-alt}\ Fecha: & \color{white} 7 de noviembre de 2026 \\
+    \end{tabular}
+  };
+\end{tikzpicture}
+\end{titlepage}
+\restoregeometry
+}

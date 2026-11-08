@@ -1,0 +1,15 @@
+\documentclass[11pt,a4paper]{article}
+\input{preambulo.tex}
+\hypersetup{pdftitle={Análisis de conglomerados}}
+\begin{document}
+\portada{object-group}{Análisis de\\ Conglomerados}{Ward.D2 y $k$-means}{Base de datos: Heart Disease (Cleveland, UCI)\\ Distancias euclidianas, dendrograma, centroides y perfiles de riesgo}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\vspace{1.2em}
+\noindent Todo el análisis está en \var{4_Analisis_de_Conglomerados.R} (R 4.6.1; paquete \var{cluster}), que lee \var{heart.csv} (297 pacientes, sin valores faltantes). En cada pregunta muestro el bloque de código, su salida de consola y la interpretación.
+
+\clearpage
+\input{secciones/conglomerados}
+\end{document}

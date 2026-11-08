@@ -1,0 +1,12 @@
+                      media desv_est min max
+edad                  16.70     1.28  15  22
+tiempo_estudio         2.04     0.84   1   4
+inasistencias          5.71     8.00   0  75
+reprobaciones_previas  0.33     0.74   0   3
+educacion_madre        2.75     1.09   0   4
+educacion_padre        2.52     1.09   0   4
+salud                  3.55     1.39   1   5
+tiempo_libre           3.24     1.00   1   5
+salidas_sociales       3.11     1.11   1   5
+alcohol_dias_semana    1.48     0.89   1   5
+alcohol_fin_semana     2.29     1.29   1   5

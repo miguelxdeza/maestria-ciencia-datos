@@ -1,0 +1,175 @@
+\section*{Datos y modelo}
+\[
+\log\frac{P(Y_i=1\mid x_i)}{1-P(Y_i=1\mid x_i)}=\beta_0+\beta_1\,\text{edad}_i+\beta_2\,\text{sexo}_i
++\beta_3\,\text{colesterol}_i+\beta_4\,\text{presion\_reposo}_i
+\]
+\[
++\,\beta_5\,\text{frecuencia\_cardiaca\_max}_i+\beta_6\,\text{angina\_ejercicio}_i+\beta_7\,\text{depresion\_st}_i
+\]
+con $Y_i=1$ si el paciente tiene enfermedad cardíaca. \var{sexo} (referencia: mujer) y
+\var{angina_ejercicio} (referencia: no) entran como factores.
+\codigo{log-datos}
+\salida{log-datos}
+Las clases están casi balanceadas: 137 enfermos (46,1\,\%) y 160 sanos.
+
+\paragraph{Justificación de las variables.} Antes de ajustar comparé cada covariable entre enfermos y sanos:
+\codigo{log-justifica}
+\salida{log-justifica}
+Seis de las siete variables difieren claramente entre grupos: los enfermos son mayores, con más presión,
+menor frecuencia cardíaca máxima, mayor depresión ST, más hombres (56\,\% vs.\ 26\,\% de enfermos) y más
+angina de esfuerzo (76\,\% vs.\ 32\,\%). El colesterol no difiere de forma marginal ($p=0,17$), pero lo
+mantengo porque es un factor de riesgo clásico y puede aportar ajustado por las demás. Todas son medidas
+clínicas baratas, disponibles antes de un cateterismo.
+
+\pregunta{a)}{Ajuste por máxima verosimilitud}{Ajuste el modelo de regresión logística binaria mediante el
+método de máxima verosimilitud.}
+\[
+\ln L(\boldsymbol\beta)=\sum_{i=1}^{n}\Big[y_i\,x_i^\top\boldsymbol\beta-\ln\!\big(1+e^{x_i^\top\boldsymbol\beta}\big)\Big],
+\qquad
+\frac{\partial\ln L}{\partial\boldsymbol\beta}=\sum_{i=1}^{n}x_i\,(y_i-\pi_i)=\mathbf 0
+\]
+No tiene solución cerrada: \var{glm()} la resuelve por Fisher scoring (IRLS), que convergió en 5 iteraciones.
+\codigo{log-ajuste}
+\salida{log-ajuste}
+
+\res{La devianza baja de 409,95 (modelo nulo) a 274,16 con 7 parámetros adicionales; AIC $=290,2$.}
+
+\pregunta{b)}{Tabla de estimación y significancia}{Presente la tabla de estimación de los parámetros e
+identifique las variables estadísticamente significativas al nivel $\alpha=0,05$.}
+\begin{center}\small
+\begin{tabular}{lrrrrc}
+\toprule
+Variable & $\hat\beta$ & EE & $z$ & $p$ & ¿Signif.? \\ \midrule
+Intercepto & $-2,383$ & 2,065 & $-1,15$ & 0,249 & no \\
+edad & 0,0199 & 0,0195 & 1,02 & 0,309 & no \\
+sexo (hombre) & 1,652 & 0,363 & 4,55 & $<0,001$ & \textbf{sí} \\
+colesterol & 0,0062 & 0,0030 & 2,04 & 0,041 & \textbf{sí} \\
+presion\_reposo & 0,0142 & 0,0091 & 1,56 & 0,118 & no \\
+frecuencia\_cardiaca\_max & $-0,0296$ & 0,0084 & $-3,54$ & $<0,001$ & \textbf{sí} \\
+angina\_ejercicio (sí) & 1,325 & 0,337 & 3,93 & $<0,001$ & \textbf{sí} \\
+depresion\_st & 0,583 & 0,148 & 3,94 & $<0,001$ & \textbf{sí} \\ \bottomrule
+\end{tabular}
+\end{center}
+Edad y presión en reposo sí diferían entre grupos por separado, pero dejan de ser significativas al
+ajustar: su información ya la cargan la frecuencia cardíaca máxima (que baja con la edad) y la depresión ST.
+
+\res{Significativas al 5\,\%: \textbf{sexo, colesterol, frecuencia\_cardiaca\_max, angina\_ejercicio y
+depresion\_st}.}
+
+\pregunta{c)}{Interpretación de edad, angina\_ejercicio y depresion\_st}{Interprete los coeficientes asociados
+a las variables edad, angina\_ejercicio y depresion\_st en términos de odds ratios.}
+\[
+OR_j=e^{\hat\beta_j}=\frac{\text{odds}(x_j+1)}{\text{odds}(x_j)}
+\]
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faUser] \textbf{edad}: $e^{0,0199}=1,020$. Cada año adicional multiplica los odds de
+  enfermedad por 1,02 (+2\,\%); en 10 años, $e^{10(0,0199)}=1,22$ (+22\,\%), con las demás variables fijas.
+  No es significativo ($p=0,31$).
+  \item[\color{cRed}\faHeartbeat] \textbf{angina\_ejercicio}: $e^{1,325}=3,76$. Un paciente con angina
+  inducida por ejercicio tiene odds de enfermedad 3,8 veces mayores que uno sin angina, a igualdad del resto.
+  \item[\color{cRed}\faChartLine] \textbf{depresion\_st}: $e^{0,583}=1,79$. Cada milímetro adicional de
+  depresión del segmento ST multiplica los odds por 1,79 (+79\,\%).
+\end{itemize}
+
+\pregunta{d)}{Odds ratios e IC 95\,\%}{Calcule e interprete los odds ratios y sus intervalos de confianza al
+95\,\%.}
+\codigo{log-or}
+\salida{log-or}
+Los intervalos son por verosimilitud perfil (\var{confint} de un \var{glm}), mejores que $e^{\hat\beta\pm1,96\,EE}$
+cuando la log-verosimilitud no es simétrica.
+\begin{center}\small
+\begin{tabular}{lrrl}
+\toprule
+Variable & OR & IC 95\,\% & Lectura \\ \midrule
+sexo (hombre) & 5,22 & [2,62 ; 10,93] & odds 5 veces mayores en hombres \\
+angina\_ejercicio (sí) & 3,76 & [1,96 ; 7,38] & odds casi 4 veces mayores \\
+depresion\_st & 1,79 & [1,35 ; 2,42] & +79\,\% por mm \\
+colesterol & 1,006 & [1,0003 ; 1,012] & +6,4\,\% cada 10 mg/dl \\
+frecuencia\_cardiaca\_max & 0,971 & [0,955 ; 0,986] & $-26$\,\% cada 10 lpm ($0,971^{10}=0,74$) \\
+presion\_reposo & 1,014 & [0,997 ; 1,033] & incluye 1: no concluyente \\
+edad & 1,020 & [0,982 ; 1,060] & incluye 1: no concluyente \\ \bottomrule
+\end{tabular}
+\end{center}
+
+\res{Los IC que no contienen al 1 coinciden con las variables significativas. Los factores de riesgo más
+fuertes son ser hombre y tener angina de esfuerzo; una frecuencia cardíaca máxima alta es protectora.}
+
+\pregunta{e)}{Calidad del ajuste: razón de verosimilitudes y matriz de confusión}{Evalúe la calidad del ajuste
+utilizando la razón de verosimilitudes, la matriz de confusión y la tasa de clasificación correcta (umbral
+0,5); interprete exactitud, sensibilidad y especificidad en el contexto del diagnóstico.}
+\codigo{log-lr}
+\salida{log-lr}
+\[
+G^2=-2\big[\ln L_0-\ln L_1\big]=409,95-274,16=135,8\;\sim\;\chi^2_7,\qquad p<2\times10^{-16}
+\]
+Rechazo $H_0:\beta_1=\dots=\beta_7=0$: el modelo explica significativamente más que solo la prevalencia.
+El $R^2$ de McFadden (0,33) está en el rango que se considera un buen ajuste (0,2--0,4).
+\codigo{log-confusion}
+\salida{log-confusion}
+\begin{center}\small
+\begin{tabular}{lcc}
+\toprule
+& \multicolumn{2}{c}{Clase predicha} \\ \cmidrule(lr){2-3}
+Clase real & No & Sí \\ \midrule
+No & VN $=133$ & FP $=27$ \\
+Sí & FN $=37$ & VP $=100$ \\ \bottomrule
+\end{tabular}
+\end{center}
+\[
+\text{Exactitud}=\frac{100+133}{297}=0,785
+\]
+\[
+\text{Sensibilidad}=\frac{100}{100+37}=0,730,\qquad
+\text{Especificidad}=\frac{133}{133+27}=0,831
+\]
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faCheck] \textbf{Exactitud 78,5\,\%}: clasifica bien a casi 4 de cada 5 pacientes
+  (la regla trivial ``todos sanos'' acertaría 53,9\,\%).
+  \item[\color{cRed}\faExclamationTriangle] \textbf{Sensibilidad 73,0\,\%}: detecta 100 de 137 enfermos;
+  \textbf{37 enfermos quedan como sanos}. En diagnóstico cardíaco este es el error caro, porque un enfermo
+  no detectado no recibe tratamiento.
+  \item[\color{cTeal}\faIcon{shield-alt}] \textbf{Especificidad 83,1\,\%}: 27 sanos serían derivados a pruebas
+  adicionales sin necesidad; es un costo, pero menor.
+\end{itemize}
+
+\res{El modelo ajusta significativamente ($G^2=135,8$) y clasifica bien el 78,5\,\%. Con umbral 0,5 es más
+específico que sensible; para tamizaje convendría bajar el umbral (ver pregunta f).}
+
+\pregunta{f)}{Curva ROC y AUC}{Analice la capacidad predictiva del modelo mediante la curva ROC e interprete el
+área bajo la curva (AUC).}
+\figcod{log-roc}{Curva ROC con el punto de Youden (arriba) y probabilidades estimadas por clase (abajo).}
+\codigo{log-roc}
+\salida{log-roc}
+$\text{AUC}=0,858$ (IC 95\,\% DeLong: 0,816--0,900): si tomo al azar un enfermo y un sano, en el 85,8\,\% de
+los casos el modelo le asigna mayor probabilidad al enfermo. Es una discriminación \emph{buena} (0,8--0,9) y el
+IC está lejos de 0,5. El umbral de Youden (0,443) sube la sensibilidad a 78,1\,\% con especificidad de 80\,\%,
+un mejor equilibrio para tamizaje que 0,5.
+
+\res{AUC $=0,858$: el modelo discrimina bien entre enfermos y sanos.}
+
+\pregunta{g)}{Limitaciones y extensiones}{Discuta las limitaciones del modelo y proponga posibles extensiones.}
+Todas las métricas anteriores se calcularon sobre los mismos 297 pacientes del ajuste, lo que las hace
+optimistas. Lo verifiqué con validación cruzada de 10 pliegues:
+\codigo{log-cv}
+\salida{log-cv}
+Fuera de muestra el AUC baja de 0,858 a 0,836 y la exactitud de 78,5\,\% a 76,1\,\%: hay algo de
+sobreajuste, pero el modelo generaliza razonablemente.
+
+\noindent\textbf{Limitaciones}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cRed}\faMinusCircle] Solo 297 pacientes de un único hospital (Cleveland): poca validez externa.
+  \item[\color{cRed}\faMinusCircle] Supone que el logit es lineal en cada variable continua (edad, colesterol,
+  frecuencia cardíaca, depresión ST) y no incluye interacciones (por ejemplo, sexo $\times$ edad).
+  \item[\color{cRed}\faMinusCircle] Deja fuera predictores muy informativos de la base: tipo de dolor torácico,
+  vasos coloreados por fluoroscopía, talasemia y pendiente ST.
+  \item[\color{cRed}\faMinusCircle] Es un estudio transversal: los OR son asociaciones, no efectos causales.
+\end{itemize}
+\noindent\textbf{Extensiones}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faPlusCircle] Agregar las variables omitidas y seleccionar con AIC/BIC o con
+  regularización (lasso).
+  \item[\color{cTeal}\faPlusCircle] Términos no lineales (splines en edad y frecuencia cardíaca) o un GAM.
+  \item[\color{cTeal}\faPlusCircle] Usar \var{diagnostico_original} (0--4) en un modelo logístico ordinal de
+  severidad.
+  \item[\color{cTeal}\faPlusCircle] Elegir el umbral según el costo relativo FN/FP y validar en una cohorte externa.
+\end{itemize}

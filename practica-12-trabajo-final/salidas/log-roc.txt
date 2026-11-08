@@ -1,0 +1,4 @@
+Area under the curve: 0.858
+95% CI: 0.816-0.9 (DeLong)
+  threshold sensitivity specificity
+1    0.4431       0.781         0.8

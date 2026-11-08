@@ -1,0 +1,9 @@
+                            OR  2.5 %  97.5 %
+(Intercept)             0.0923 0.0015  5.1629
+edad                    1.0201 0.9819  1.0603
+sexohombre              5.2152 2.6183 10.9252
+colesterol              1.0062 1.0003  1.0123
+presion_reposo          1.0143 0.9965  1.0329
+frecuencia_cardiaca_max 0.9708 0.9545  0.9864
+angina_ejerciciosi      3.7608 1.9572  7.3753
+depresion_st            1.7907 1.3534  2.4232

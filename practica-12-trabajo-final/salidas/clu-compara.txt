@@ -1,0 +1,7 @@
+    kmeans
+Ward  1  2  3
+   1 78 10 19
+   2  7 91  2
+   3  0 41 49
+           ARI    acuerdo_max   silueta_ward silueta_kmeans 
+        0.4014         0.7340         0.1457         0.2276 

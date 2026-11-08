@@ -1,0 +1,30 @@
+% ============================================================
+%  Trabajo final completo (las 4 partes). Cada parte también se compila sola:
+%  RLM.tex, Logistica.tex, CP.tex y Conglomerados.tex (mismo preámbulo y secciones/)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+\input{preambulo.tex}
+\begin{document}
+\portada{chart-line}{Trabajo Final\\ Estadística en Ciencia de Datos}{Modelos supervisados y no supervisados en R}{Regresión lineal múltiple y selección backward $\cdot$ Regresión logística binaria\\
+     Componentes principales $\cdot$ Conglomerados Ward.D2 y $k$-means\\[2pt]
+     Bases: Student Performance y Heart Disease (Cleveland), UCI}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\vspace{1.2em}
+\noindent El análisis está en cuatro scripts independientes, uno por ejercicio: \var{RLM.R},
+\var{Logistica.R}, \var{CP.R} y \var{Conglomerados.R} (R 4.6.1; paquetes \var{car}, \var{lmtest},
+\var{pROC}, \var{cluster} y \var{corrplot}). Las bases son \var{student.csv} (395 estudiantes) y
+\var{heart.csv} (297 pacientes, sin valores faltantes). En cada pregunta muestro el bloque de código, su
+salida de consola y la interpretación.
+
+\seccion{chart-line}{Regresión lineal múltiple y selección backward}{Regresión lineal\\ múltiple}{Student Performance $\cdot$ preguntas a -- e y método backward}
+\input{secciones/rlm}
+\seccion{heartbeat}{Regresión logística binaria}{Regresión logística\\ binaria}{Heart Disease (Cleveland) $\cdot$ preguntas a -- g}
+\input{secciones/logistica}
+\seccion{project-diagram}{Análisis de componentes principales}{Análisis de\\ componentes principales}{Student Performance $\cdot$ preguntas a -- g}
+\input{secciones/cp}
+\seccion{object-group}{Análisis de conglomerados}{Análisis de\\ conglomerados}{Heart Disease (Cleveland) $\cdot$ Ward.D2, $k$-means y comparación}
+\input{secciones/conglomerados}
+\end{document}

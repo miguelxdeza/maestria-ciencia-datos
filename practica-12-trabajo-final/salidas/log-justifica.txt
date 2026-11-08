@@ -1,0 +1,16 @@
+                        media_No media_Si       p_t
+edad                     52.6437   56.759 6.204e-05
+colesterol              243.4938  251.854 1.650e-01
+presion_reposo          129.1750  134.635 8.808e-03
+frecuencia_cardiaca_max 158.5813  139.109 6.108e-14
+depresion_st              0.5988    1.589 3.429e-13
+        
+             No     Si
+  mujer  0.7396 0.2604
+  hombre 0.4428 0.5572
+    
+         No     Si
+  no 0.6850 0.3150
+  si 0.2371 0.7629
+   p_sexo  p_angina 
+2.946e-06 9.511e-13 

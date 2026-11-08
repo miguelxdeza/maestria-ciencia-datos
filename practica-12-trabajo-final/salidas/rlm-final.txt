@@ -1,0 +1,36 @@
+
+Call:
+lm(formula = nota_final ~ edad + reprobaciones_previas + educacion_madre + 
+    apoyo_familiar, data = est)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-12.56  -2.04   0.21   3.04   9.10 
+
+Coefficients:
+                      Estimate Std. Error t value      Pr(>|t|)    
+(Intercept)             14.354      3.035    4.73 0.00000314207 ***
+edad                    -0.267      0.174   -1.54        0.1254    
+reprobaciones_previas   -1.924      0.301   -6.39 0.00000000048 ***
+educacion_madre          0.621      0.204    3.04        0.0025 ** 
+apoyo_familiaryes       -0.884      0.446   -1.98        0.0484 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 4.22 on 390 degrees of freedom
+Multiple R-squared:  0.16,	Adjusted R-squared:  0.152 
+F-statistic: 18.6 on 4 and 390 DF,  p-value: 4.94e-14
+
+AIC_completo AIC_reducido 
+        2270         2265 
+R2aj_completo R2aj_reducido 
+       0.1512        0.1519 
+Analysis of Variance Table
+
+Model 1: nota_final ~ edad + reprobaciones_previas + educacion_madre + 
+    apoyo_familiar
+Model 2: nota_final ~ edad + tiempo_estudio + inasistencias + reprobaciones_previas + 
+    educacion_madre + educacion_padre + internet_casa + apoyo_familiar
+  Res.Df  RSS Df Sum of Sq    F Pr(>F)
+1    390 6943                         
+2    386 6877  4      65.4 0.92   0.45

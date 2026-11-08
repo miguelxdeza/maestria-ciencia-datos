@@ -1,0 +1,11 @@
+g_hc
+  1   2   3 
+107 100  90 
+    n edad presion_reposo colesterol frecuencia_cardiaca_max depresion_st pct_hombre
+1 107 60.3          132.0      239.7                   131.5          2.0       76.6
+2 100 48.0          124.9      215.4                   163.1          0.5       72.0
+3  90 55.0          138.9      291.9                   156.0          0.6       52.2
+  pct_angina pct_enfermo
+1       51.4        72.9
+2       16.0        24.0
+3       28.9        38.9

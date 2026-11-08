@@ -1,0 +1,202 @@
+\section*{Datos y modelo}
+\begin{align*}
+\text{nota\_final}_i&=\beta_0+\beta_1\,\text{edad}_i+\beta_2\,\text{tiempo\_estudio}_i
++\beta_3\,\text{inasistencias}_i+\beta_4\,\text{reprobaciones\_previas}_i\\
+&\quad+\beta_5\,\text{educacion\_madre}_i+\beta_6\,\text{educacion\_padre}_i
++\beta_7\,\text{internet\_casa}_i\\
+&\quad+\beta_8\,\text{apoyo\_familiar}_i+\varepsilon_i,
+\qquad \varepsilon_i\sim N(0,\sigma^2)
+\end{align*}
+Las variables binarias \var{internet_casa} y \var{apoyo_familiar} entran como factores con nivel de
+referencia \textit{no}.
+\codigo{rlm-datos}
+\salida{rlm-datos}
+La nota va de 0 a 20 y hay \textbf{38 notas iguales a 0}. Las revisé: los 38 tienen 0 inasistencias,
+es decir, son alumnos que no rindieron la evaluación final (abandono), no notas bajas ``normales''.
+Las mantengo en el ajuste porque el enunciado pide el modelo sobre la base completa, pero este
+detalle explica casi todos los problemas de supuestos que aparecen después.
+
+\pregunta{a)}{Ajuste por MCO y variables significativas}{Ajuste el modelo de regresión lineal múltiple
+utilizando mínimos cuadrados ordinarios. Presente la tabla de estimación de los parámetros e identifique
+las variables estadísticamente significativas al nivel $\alpha=0,05$.}
+\codigo{rlm-ajuste}
+\salida{rlm-ajuste}
+
+\begin{center}\small
+\begin{tabular}{lrrrrc}
+\toprule
+Variable & $\hat\beta$ & EE & $t$ & $p$ & ¿Signif.? \\ \midrule
+Intercepto & 14,079 & 3,171 & 4,44 & $<0,001$ & sí \\
+edad & $-0,306$ & 0,178 & $-1,72$ & 0,087 & no \\
+tiempo\_estudio & 0,278 & 0,263 & 1,06 & 0,290 & no \\
+inasistencias & 0,032 & 0,028 & 1,17 & 0,242 & no \\
+reprobaciones\_previas & $-1,894$ & 0,309 & $-6,13$ & $<0,001$ & \textbf{sí} \\
+educacion\_madre & 0,584 & 0,256 & 2,28 & 0,023 & \textbf{sí} \\
+educacion\_padre & $-0,053$ & 0,255 & $-0,21$ & 0,834 & no \\
+internet\_casa (sí) & 0,552 & 0,588 & 0,94 & 0,348 & no \\
+apoyo\_familiar (sí) & $-0,984$ & 0,454 & $-2,17$ & 0,031 & \textbf{sí} \\ \bottomrule
+\end{tabular}
+\end{center}
+El test $F$ global ($F_{8,386}=9,77$, $p=2,2\times10^{-12}$) rechaza que todos los $\beta_j$ sean cero.
+
+\res{Al 5\,\% son significativas \textbf{reprobaciones\_previas}, \textbf{educacion\_madre} y
+\textbf{apoyo\_familiar}; edad queda al borde ($p=0,087$).}
+
+\pregunta{b)}{Interpretación de tiempo\_estudio, inasistencias y reprobaciones\_previas}{Interprete los coeficientes
+asociados a las variables tiempo\_estudio, inasistencias y reprobaciones\_previas, manteniendo constantes las
+demás covariables.}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faClock] \textbf{tiempo\_estudio} ($\hat\beta_2=0,278$): subir un nivel en la escala de
+  estudio semanal (1: $<2$\,h \dots\ 4: $>10$\,h) se asocia con 0,28 puntos más en la nota final, con lo demás
+  fijo. El efecto no es significativo ($p=0,29$): no puedo descartar que sea cero.
+  \item[\color{cTeal}\faIcon{calendar-times}] \textbf{inasistencias} ($\hat\beta_3=0,032$): cada falta adicional
+  se asocia con 0,03 puntos \emph{más}, también no significativo ($p=0,24$). El signo contraintuitivo viene de los
+  38 alumnos con nota 0 y 0 faltas: la base registra 0 inasistencias para quien abandonó, y eso arrastra la
+  pendiente hacia arriba.
+  \item[\color{cRed}\faTimesCircle] \textbf{reprobaciones\_previas} ($\hat\beta_4=-1,894$): cada curso
+  reprobado antes se asocia con 1,89 puntos menos en la nota final (casi 10\,\% de la escala), manteniendo
+  constantes las demás covariables. Es el efecto más fuerte y claro del modelo ($t=-6,13$).
+\end{itemize}
+
+\pregunta{c)}{$R^2$ y $R^2$ ajustado}{Reporte el coeficiente de determinación $R^2$ y el $R^2$ ajustado.
+Explique por qué el $R^2$ ajustado es más apropiado en este contexto.}
+\codigo{rlm-r2}
+\salida{rlm-r2}
+\[
+R^2=1-\frac{SCE}{SCT}=0,1684,\qquad
+R^2_{aj}=1-(1-R^2)\frac{n-1}{n-p-1}=1-(0,8316)\frac{394}{386}=0,1512
+\]
+El modelo explica cerca del 17\,\% de la variabilidad de la nota final. El $R^2$ nunca baja al agregar
+variables, aunque sean ruido; el $R^2_{aj}$ penaliza cada parámetro extra con $(n-1)/(n-p-1)$. Como aquí
+5 de las 8 covariables no son significativas, el $R^2_{aj}$ es el que permite comparar honestamente con
+modelos más pequeños (como el que sale del backward).
+
+\res{$R^2=0,168$ y $R^2_{aj}=0,151$: el modelo tiene poder explicativo bajo.}
+
+\pregunta{d)}{Supuestos del modelo}{Evalúe los principales supuestos del modelo lineal (linealidad,
+normalidad de los residuos y homocedasticidad), incluyendo gráficos de diagnóstico y comentarios.}
+\figcod{rlm-diag1}{Residuos vs.\ ajustados (arriba) y Q-Q normal (abajo).}
+\figcod{rlm-diag2}{Escala-localización (arriba) y distribución de la nota final (abajo).}
+\codigo{rlm-supuestos}
+\salida{rlm-supuestos}
+\begin{center}\small
+\begin{tabular}{llcc}
+\toprule
+Supuesto & Prueba & $p$ & Conclusión \\ \midrule
+Linealidad & RESET (potencias 2 y 3) & 0,020 & se rechaza al 5\,\% \\
+Normalidad & Shapiro-Wilk & $1\times10^{-8}$ & se rechaza \\
+Homocedasticidad & Breusch-Pagan & 0,020 & se rechaza al 5\,\% \\ \bottomrule
+\end{tabular}
+\end{center}
+En el gráfico de residuos vs.\ ajustados aparece una \textbf{banda diagonal} de puntos con residuos de
+$-5$ a $-13$: son los 38 ceros (residuo $=0-\hat y_i$). Esa banda inclina la curva LOESS (no linealidad),
+produce la cola izquierda pesada del Q-Q y hace que la dispersión cambie con $\hat y$. Fuera de ella la
+nube es bastante homogénea. Los estimadores MCO siguen siendo insesgados, pero los errores estándar y
+los valores $p$ deben leerse con cautela.
+
+\res{Ninguno de los tres supuestos se cumple al 5\,\%, y la causa principal es la masa de ceros en la
+respuesta.}
+
+\pregunta{e)}{Multicolinealidad (VIF)}{Analice la posible presencia de multicolinealidad utilizando el factor
+de inflación de la varianza (VIF).}
+\codigo{rlm-vif}
+\salida{rlm-vif}
+\[
+\text{VIF}_j=\frac{1}{1-R_j^2}
+\]
+Todos los VIF están entre 1,07 y 1,74, muy por debajo de los umbrales usuales (5 o 10). Los más altos son
+\var{educacion_madre} (1,74) y \var{educacion_padre} (1,70), que tienen correlación 0,62 entre sí; aun así
+la varianza de sus coeficientes solo se infla un 70\,\%.
+
+\res{No hay multicolinealidad preocupante. Que \var{educacion_padre} no sea significativa no se debe a
+colinealidad, sino a que su efecto ya lo recoge \var{educacion_madre}.}
+
+\pregunta{Backward a)}{Variables eliminadas y modelo final}{Aplique backward elimination con AIC partiendo
+del modelo completo. Indique qué variables son eliminadas y presente el modelo final seleccionado.}
+\codigo{rlm-backward}
+\salida{rlm-backward}
+\begin{center}\small
+\begin{tabular}{clc}
+\toprule
+Paso & Variable eliminada & AIC tras eliminarla \\ \midrule
+0 & (modelo completo) & 1146,5 \\
+1 & educacion\_padre & 1144,6 \\
+2 & internet\_casa & 1143,5 \\
+3 & tiempo\_estudio & 1142,8 \\
+4 & inasistencias & 1142,3 \\ \bottomrule
+\end{tabular}
+\end{center}
+En el paso 5 quitar cualquier variable sube el AIC (edad: 1143, apoyo\_familiar: 1144), así que el algoritmo
+se detiene. \var{step()} reporta el AIC sin las constantes de la verosimilitud (\var{extractAIC}); las
+diferencias son las mismas que con \var{AIC()}.
+\codigo{rlm-final}
+\salida{rlm-final}
+\[
+\begin{aligned}\widehat{\text{nota\_final}}&=14,354-0,267\,\text{edad}-1,924\,\text{reprobaciones\_previas}\\
+&\quad+0,621\,\text{educacion\_madre}-0,884\,\text{apoyo\_familiar}_{\text{sí}}\end{aligned}
+\]
+
+\res{Se eliminan educacion\_padre, internet\_casa, tiempo\_estudio e inasistencias. El modelo final conserva
+edad, reprobaciones\_previas, educacion\_madre y apoyo\_familiar.}
+
+\pregunta{Backward b)}{Comparación de AIC y parsimonia}{Compare el AIC del modelo completo con el del modelo reducido
+y comente si la reducción implica una mejora en términos de parsimonia.}
+\[
+\text{AIC}=-2\ln L+2k
+\]
+\[
+\text{AIC}_{\text{completo}}=2269,5\;(k=10),\qquad
+\text{AIC}_{\text{reducido}}=2265,2\;(k=6),\qquad \Delta=4,3
+\]
+Con 4 parámetros menos el AIC baja 4,3 unidades: el modelo reducido pierde muy poco ajuste (la SCE pasa de
+6877 a 6943) a cambio de ser más simple. El test $F$ parcial de las 4 variables eliminadas
+($F_{4,386}=0,92$, $p=0,45$) confirma que en conjunto no aportan.
+
+\res{Sí hay mejora en parsimonia: menor AIC con la mitad de covariables y sin pérdida significativa de ajuste.}
+
+\pregunta{Backward c)}{$R^2$ ajustado del modelo final}{Analice el coeficiente de determinación ajustado del modelo
+final y discuta los cambios respecto al modelo inicial.}
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+Modelo & covariables & $R^2$ & $R^2_{aj}$ \\ \midrule
+Completo & 8 & 0,1684 & 0,1512 \\
+Reducido (backward) & 4 & 0,1600 & 0,1519 \\ \bottomrule
+\end{tabular}
+\end{center}
+El $R^2$ baja (0,168 $\to$ 0,160) porque siempre baja al quitar variables, pero el $R^2_{aj}$ sube
+ligeramente (0,1512 $\to$ 0,1519): las variables eliminadas no compensaban los grados de libertad que
+consumían. Además, \var{edad} y \var{apoyo_familiar} quedan con errores estándar algo menores.
+
+\res{El $R^2_{aj}$ se mantiene (incluso sube un poco) con la mitad de variables; el modelo reducido explica lo
+mismo con menos.}
+
+\pregunta{Backward d)}{Supuestos del modelo seleccionado}{Evalúe los supuestos del modelo seleccionado e interprete
+los resultados.}
+\figcod{rlm-diag-final}{Diagnóstico del modelo reducido.}
+\codigo{rlm-final-sup}
+\salida{rlm-final-sup}
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+Prueba & Completo & Reducido & Conclusión (reducido) \\ \midrule
+RESET (linealidad) & 0,020 & 0,030 & se rechaza al 5\,\% \\
+Shapiro-Wilk (normalidad) & $1\times10^{-8}$ & $4\times10^{-9}$ & se rechaza \\
+Breusch-Pagan (homocedasticidad) & 0,020 & 0,50 & \textbf{se cumple} \\
+VIF máximo & 1,74 & 1,11 & sin multicolinealidad \\ \bottomrule
+\end{tabular}
+\end{center}
+Al quitar variables desaparece la heterocedasticidad, pero la banda de ceros sigue ahí y mantiene la falta de
+normalidad y el RESET significativo. Para comprobar que esa es la causa, reajusté el modelo final sin los 38
+ceros:
+\codigo{rlm-sensibilidad}
+\salida{rlm-sensibilidad}
+Sin los ceros los residuos pasan Shapiro-Wilk ($p=0,10$) y todos los signos se mantienen; el efecto de
+\var{reprobaciones_previas} baja de $-1,92$ a $-1,21$ porque parte de él era ``reprobar $\Rightarrow$
+abandonar''.
+
+\res{El modelo reducido cumple homocedasticidad y no tiene multicolinealidad; la no normalidad se debe a los
+alumnos que abandonaron. Concluyo que \textbf{reprobaciones previas} es el factor de mayor peso (negativo),
+seguido de la \textbf{educación de la madre} (positivo); el apoyo familiar tiene signo negativo, que leo como
+causalidad inversa (las familias apoyan más a quien ya va mal). Un modelo en dos partes (abandono sí/no + nota
+si rinde) trataría mejor los ceros.}

@@ -1,0 +1,122 @@
+\section*{Variables}
+Uso las 11 variables cuantitativas del enunciado, todas como numéricas:
+\codigo{acp-datos}
+\salida{acp-datos}
+
+\pregunta{a)}{Por qué estandarizar}{Explique por qué es necesario estandarizar las variables antes de aplicar el
+ACP en este contexto.}
+El ACP busca las direcciones de máxima varianza, así que una variable con varianza grande domina las
+primeras componentes solo por su escala. Aquí \var{inasistencias} va de 0 a 75 con $s=8,0$ ($s^2=64$),
+mientras que las escalas Likert 1--5 tienen $s\approx1$ y \var{reprobaciones_previas} $s=0,74$ ($s^2=0,55$).
+Sin estandarizar, la CP1 sería prácticamente ``inasistencias'' (64 de unas 76 unidades de varianza
+total, el 84\,\%). Además las unidades no son comparables (años, faltas, escalas ordinales). Con
+\[
+z_{ij}=\frac{x_{ij}-\bar x_j}{s_j}
+\]
+todas tienen varianza 1 y el ACP sobre $Z$ equivale a diagonalizar la matriz de correlaciones $R$.
+
+\res{Estandarizo para que cada variable pese lo mismo y las componentes reflejen correlaciones, no unidades.}
+
+\pregunta{b)}{Matriz de correlaciones}{Calcule la matriz de correlaciones entre las variables y comente
+brevemente la presencia de relaciones lineales relevantes.}
+\codigo{acp-cor}
+\salida{acp-cor}
+\figcod{acp-corplot}{Matriz de correlaciones (triángulo superior).}
+Relaciones más relevantes:
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faLink] \textbf{alcohol días de semana -- fin de semana}: $r=0,65$, la más fuerte.
+  \item[\color{cTeal}\faLink] \textbf{educación de la madre -- del padre}: $r=0,62$.
+  \item[\color{cTeal}\faLink] \textbf{salidas sociales} con alcohol fin de semana ($0,42$), tiempo libre ($0,29$)
+  y alcohol semana ($0,27$): un bloque de ``vida social''.
+  \item[\color{cRed}\faUnlink] \textbf{reprobaciones} con educación de los padres ($-0,24$, $-0,25$) y con
+  edad ($+0,24$); \textbf{tiempo de estudio} con alcohol fin de semana ($-0,25$).
+\end{itemize}
+El resto está por debajo de $|0,2|$ y \var{salud} casi no se relaciona con nada. El test de esfericidad de
+Bartlett ($\chi^2_{55}=701,3$, $p\approx10^{-113}$) rechaza $R=I$: hay correlación suficiente para que el ACP
+tenga sentido, aunque las correlaciones moderadas anticipan que la varianza se repartirá en varias componentes.
+
+\pregunta{c)}{ACP con la matriz de correlaciones}{Aplique el Análisis de Componentes Principales utilizando la
+matriz de correlaciones.}
+\[
+R\,\mathbf a_k=\lambda_k\,\mathbf a_k,\qquad \sum_{k=1}^{11}\lambda_k=\operatorname{tr}(R)=11,\qquad
+\text{CP}_k=Z\,\mathbf a_k
+\]
+\codigo{acp-pca}
+\salida{acp-pca}
+Con \var{prcomp(scale. = TRUE)} los autovalores son los de $R$ (suman 11) y los vectores \var{rotation}
+son las cargas $\mathbf a_k$.
+
+\pregunta{d)}{Scree plot y número de componentes}{Presente el scree plot e indique cuántos componentes deberían
+retenerse según la varianza explicada acumulada (80\,\% o 90\,\%).}
+\figcod{acp-scree}{Scree plot (arriba) y varianza acumulada con las líneas de 80\,\% y 90\,\% (abajo).}
+\begin{center}\small
+\begin{tabular}{lcc}
+\toprule
+Criterio & Componentes & Varianza retenida \\ \midrule
+Varianza acumulada $\ge$ 80\,\% & \textbf{7} & 81,9\,\% \\
+Varianza acumulada $\ge$ 90\,\% & 9 & 94,0\,\% \\
+Kaiser ($\lambda_k>1$) & 4 & 58,3\,\% \\
+Codo del scree plot & 3 & 48,8\,\% \\ \bottomrule
+\end{tabular}
+\end{center}
+Retengo \textbf{7 componentes} (criterio del 80\,\%): con 9 llegaría al 94\,\%, pero pasaría de 11 a 9
+variables, que casi no reduce la dimensión. La curva cae despacio después de CP2, consecuencia de las
+correlaciones bajas: este conjunto no se comprime bien en pocas componentes.
+
+\res{7 CP según el 80\,\% (81,9\,\%); 9 según el 90\,\%.}
+
+\pregunta{e)}{Interpretación de CP1 y CP2}{Interprete los dos primeros componentes en términos de las variables
+originales, analizando los signos y magnitudes de las cargas.}
+\codigo{acp-cargas}
+\salida{acp-cargas}
+\figcod{acp-cargas}{Cargas de las dos primeras componentes.}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faGlassCheers] \textbf{CP1 (21,1\,\%) -- ``estilo de vida social / riesgo''}: cargas
+  negativas grandes en alcohol fin de semana ($-0,52$), alcohol semana ($-0,48$), salidas sociales ($-0,37$),
+  reprobaciones ($-0,30$), tiempo libre ($-0,27$) y edad ($-0,24$), y positiva en tiempo de estudio ($+0,28$).
+  Un CP1 \emph{bajo} es un alumno que bebe, sale mucho, estudia poco, es mayor y ha reprobado; un CP1
+  \emph{alto} es el perfil estudioso. (El signo global es arbitrario.)
+  \item[\color{cTeal}\faUserGraduate] \textbf{CP2 (16,6\,\%) -- ``capital educativo familiar''}: dominada por
+  educación de la madre ($+0,61$) y del padre ($+0,60$), contra reprobaciones ($-0,30$) y edad ($-0,22$). Un
+  CP2 alto es un alumno de padres con educación superior y sin repitencia.
+\end{itemize}
+\var{salud} e \var{inasistencias} casi no cargan en ninguna de las dos; aparecen en CP3 (inasistencias
+$-0,61$, salud $+0,44$).
+
+\pregunta{f)}{Individuos en el plano CP1--CP2}{Represente gráficamente los individuos en el plano definido por
+los dos primeros componentes e identifique posibles patrones o agrupamientos.}
+\figcod{acp-individuos}{Puntajes de los 395 alumnos en CP1--CP2.}
+\figcod{acp-biplot}{Biplot: individuos (gris) y cargas (flechas).}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faEye] No hay grupos separados: la nube es continua y asimétrica, con una cola hacia
+  CP1 negativo.
+  \item[\color{cRed}\faEye] Esa cola son los alumnos con alto consumo de alcohol el fin de semana (rojo): su
+  CP1 medio es $-1,98$ frente a $0,50$ del resto. El biplot muestra las flechas de alcohol y salidas
+  apuntando justo hacia ella.
+  \item[\color{cTeal}\faEye] Por aprobación los puntos se mezclan, pero los aprobados están algo desplazados
+  hacia arriba y a la derecha (CP1 medio $0,23$ vs.\ $-0,47$; CP2 $0,15$ vs.\ $-0,30$): estudiar más, beber
+  menos y tener padres más educados va con aprobar.
+\end{itemize}
+
+\pregunta{g)}{CP como variables explicativas}{Discuta si los componentes principales obtenidos podrían ser
+utilizados posteriormente como variables explicativas en un modelo de regresión.}
+Sí: es la \emph{regresión sobre componentes principales}. Lo probé con las 7 CP retenidas para explicar la nota
+final:
+\codigo{acp-regresion}
+\salida{acp-regresion}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faPlusCircle] \textbf{Ventaja}: las CP son ortogonales (VIF $=1$ exacto), así que
+  eliminan cualquier multicolinealidad y cada coeficiente se estima de forma independiente.
+  \item[\color{cTeal}\faPlusCircle] CP1 y CP2 resultan significativas y con signo esperado: más ``estilo
+  estudioso'' y más capital educativo, mejor nota.
+  \item[\color{cRed}\faMinusCircle] \textbf{Desventaja 1}: las CP se eligen por varianza de las $X$, no por
+  su relación con $Y$. Aquí CP5 y CP7, de poca varianza, son significativas, y CP3--CP4 no aportan.
+  \item[\color{cRed}\faMinusCircle] \textbf{Desventaja 2}: interpretar ``+1 en CP7'' es difícil, y con 7 de
+  11 dimensiones se pierde algo de ajuste ($R^2_{aj}$: 0,137 frente a 0,153 con las 11 variables originales).
+  \item[\color{cRed}\faMinusCircle] En esta base la multicolinealidad no era un problema (en el ejercicio de regresión lineal
+  sobre esta base los VIF fueron $<1,8$), por lo que el beneficio principal del ACP no aplica.
+\end{itemize}
+
+\res{Se pueden usar y garantizan ortogonalidad, pero aquí convienen poco: las correlaciones son bajas, se pierde
+interpretabilidad y ajuste. Las CP serían útiles con muchas variables muy correlacionadas o con $p$ cercano a
+$n$; una alternativa es PLS, que elige componentes pensando en $Y$.}

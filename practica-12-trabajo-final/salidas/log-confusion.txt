@@ -1,0 +1,6 @@
+    Predicha
+Real  No  Si
+  No 133  27
+  Si  37 100
+    Exactitud  Sensibilidad Especificidad    Tasa_error 
+       0.7845        0.7299        0.8313        0.2155 

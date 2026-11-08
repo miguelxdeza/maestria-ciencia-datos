@@ -1,0 +1,27 @@
+
+Call:
+glm(formula = enf ~ edad + sexo + colesterol + presion_reposo + 
+    frecuencia_cardiaca_max + angina_ejercicio + depresion_st, 
+    family = binomial(link = "logit"), data = cor_df)
+
+Coefficients:
+                        Estimate Std. Error z value  Pr(>|z|)    
+(Intercept)             -2.38311    2.06517   -1.15    0.2485    
+edad                     0.01987    0.01952    1.02    0.3087    
+sexohombre               1.65158    0.36303    4.55 0.0000054 ***
+colesterol               0.00616    0.00301    2.04    0.0411 *  
+presion_reposo           0.01424    0.00911    1.56    0.1182    
+frecuencia_cardiaca_max -0.02960    0.00836   -3.54    0.0004 ***
+angina_ejerciciosi       1.32464    0.33709    3.93 0.0000851 ***
+depresion_st             0.58259    0.14784    3.94 0.0000813 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 409.95  on 296  degrees of freedom
+Residual deviance: 274.16  on 289  degrees of freedom
+AIC: 290.2
+
+Number of Fisher Scoring iterations: 5
+

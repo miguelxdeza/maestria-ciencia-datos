@@ -1,0 +1,20 @@
+
+	Shapiro-Wilk normality test
+
+data:  residuals(m_back)
+W = 0.96, p-value = 0.000000004
+
+
+	studentized Breusch-Pagan test
+
+data:  m_back
+BP = 3.7, df = 4, p-value = 0.5
+
+
+	RESET test
+
+data:  m_back
+RESET = 3.7, df1 = 2, df2 = 388, p-value = 0.03
+
+                 edad reprobaciones_previas       educacion_madre        apoyo_familiar 
+                1.091                 1.110                 1.102                 1.049 

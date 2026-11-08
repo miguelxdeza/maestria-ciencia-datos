@@ -1,0 +1,2 @@
+      AUC_cv Exactitud_cv 
+      0.8360       0.7609 

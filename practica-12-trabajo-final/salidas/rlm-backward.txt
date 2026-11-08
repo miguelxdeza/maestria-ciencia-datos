@@ -1,0 +1,64 @@
+Start:  AIC=1147
+nota_final ~ edad + tiempo_estudio + inasistencias + reprobaciones_previas + 
+    educacion_madre + educacion_padre + internet_casa + apoyo_familiar
+
+                        Df Sum of Sq  RSS  AIC
+- educacion_padre        1         1 6878 1145
+- internet_casa          1        16 6893 1145
+- tiempo_estudio         1        20 6897 1146
+- inasistencias          1        24 6902 1146
+<none>                               6877 1147
+- edad                   1        52 6930 1148
+- apoyo_familiar         1        84 6961 1149
+- educacion_madre        1        93 6970 1150
+- reprobaciones_previas  1       669 7547 1181
+
+Step:  AIC=1145
+nota_final ~ edad + tiempo_estudio + inasistencias + reprobaciones_previas + 
+    educacion_madre + internet_casa + apoyo_familiar
+
+                        Df Sum of Sq  RSS  AIC
+- internet_casa          1        16 6894 1143
+- tiempo_estudio         1        21 6899 1144
+- inasistencias          1        25 6903 1144
+<none>                               6878 1145
+- edad                   1        52 6930 1146
+- apoyo_familiar         1        86 6964 1148
+- educacion_madre        1       125 7003 1150
+- reprobaciones_previas  1       676 7554 1180
+
+Step:  AIC=1144
+nota_final ~ edad + tiempo_estudio + inasistencias + reprobaciones_previas + 
+    educacion_madre + apoyo_familiar
+
+                        Df Sum of Sq  RSS  AIC
+- tiempo_estudio         1        23 6917 1143
+- inasistencias          1        29 6923 1143
+<none>                               6894 1143
+- edad                   1        58 6952 1145
+- apoyo_familiar         1        83 6976 1146
+- educacion_madre        1       143 7037 1150
+- reprobaciones_previas  1       675 7569 1178
+
+Step:  AIC=1143
+nota_final ~ edad + inasistencias + reprobaciones_previas + educacion_madre + 
+    apoyo_familiar
+
+                        Df Sum of Sq  RSS  AIC
+- inasistencias          1        26 6943 1142
+<none>                               6917 1143
+- edad                   1        53 6970 1144
+- apoyo_familiar         1        72 6989 1145
+- educacion_madre        1       145 7062 1149
+- reprobaciones_previas  1       739 7655 1181
+
+Step:  AIC=1142
+nota_final ~ edad + reprobaciones_previas + educacion_madre + 
+    apoyo_familiar
+
+                        Df Sum of Sq  RSS  AIC
+<none>                               6943 1142
+- edad                   1        42 6985 1143
+- apoyo_familiar         1        70 7012 1144
+- educacion_madre        1       165 7108 1150
+- reprobaciones_previas  1       727 7669 1180

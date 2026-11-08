@@ -1,0 +1,17 @@
+   nota_final        edad      tiempo_estudio inasistencias   reprobaciones_previas
+ Min.   : 0.0   Min.   :15.0   Min.   :1.00   Min.   : 0.00   Min.   :0.000        
+ 1st Qu.: 8.0   1st Qu.:16.0   1st Qu.:1.00   1st Qu.: 0.00   1st Qu.:0.000        
+ Median :11.0   Median :17.0   Median :2.00   Median : 4.00   Median :0.000        
+ Mean   :10.4   Mean   :16.7   Mean   :2.04   Mean   : 5.71   Mean   :0.334        
+ 3rd Qu.:14.0   3rd Qu.:18.0   3rd Qu.:2.00   3rd Qu.: 8.00   3rd Qu.:0.000        
+ Max.   :20.0   Max.   :22.0   Max.   :4.00   Max.   :75.00   Max.   :3.000        
+ educacion_madre educacion_padre
+ Min.   :0.00    Min.   :0.00   
+ 1st Qu.:2.00    1st Qu.:2.00   
+ Median :3.00    Median :2.00   
+ Mean   :2.75    Mean   :2.52   
+ 3rd Qu.:4.00    3rd Qu.:3.00   
+ Max.   :4.00    Max.   :4.00   
+nota_final_cero
+FALSE  TRUE 
+  357    38 

@@ -1,0 +1,161 @@
+\section*{Variables}
+Uso \var{edad}, \var{presion_reposo}, \var{colesterol}, \var{frecuencia_cardiaca_max} y
+\var{depresion_st}, estandarizadas.
+\codigo{clu-datos}
+\salida{clu-datos}
+
+\pregunta{a)}{Por qué estandarizar}{Explique por qué es necesario estandarizar las variables antes de realizar
+un análisis de conglomerados en este contexto.}
+La distancia euclidiana $d(x_i,x_j)=\sqrt{\sum_k (x_{ik}-x_{jk})^2}$ suma diferencias en unidades
+originales. El colesterol tiene $s=52$ mg/dl y la depresión ST $s=1,17$ mm: una diferencia típica de
+colesterol pesa unas $(52/1,17)^2\approx 2000$ veces más que una de ST en $d^2$. Sin estandarizar, los grupos
+serían básicamente ``colesterol alto / bajo''. Lo comprobé: la correlación entre la distancia sin estandarizar
+y la diferencia de colesterol es 0,94 (figura de la pregunta b).
+
+\res{Estandarizo ($z=(x-\bar x)/s$) para que las cinco variables clínicas contribuyan por igual a la distancia.}
+
+\pregunta{b)}{Matriz de distancias euclidianas}{Calcule la matriz de distancias euclidianas entre los individuos
+a partir de las variables estandarizadas.}
+\codigo{clu-dist}
+\salida{clu-dist}
+La matriz es $297\times297$ simétrica con diagonal cero; tiene $\binom{297}{2}=43\,956$ distancias distintas.
+Muestro los 6 primeros pacientes: el 2 y el 4 son los más distintos ($d=5,40$) y el 1 y el 3 los más
+parecidos ($d=1,76$). La distancia mediana es 2,88.
+\figcod{clu-dist}{Distribución de distancias (arriba) y distancia estandarizada vs.\ sin estandarizar (abajo).}
+
+\pregunta{c)}{Ward.D2}{Aplique un análisis de conglomerados jerárquicos utilizando el método de Ward (ward.D2).}
+En cada paso Ward une los dos grupos que menos aumentan la suma de cuadrados dentro de grupos:
+\[
+\Delta(A,B)=\frac{n_An_B}{n_A+n_B}\,\lVert\bar z_A-\bar z_B\rVert^2
+\]
+\var{ward.D2} trabaja con las distancias euclidianas sin elevar (las eleva internamente), que es la
+implementación correcta del criterio de Ward.
+\codigo{clu-ward}
+\salida{clu-ward}
+
+\pregunta{d)}{Dendrograma y número de grupos}{Represente el dendrograma e indique el número de conglomerados
+que considera adecuado, justificando su elección.}
+\figcod{clu-dendro}{Dendrograma Ward.D2 (arriba) y altura de las últimas fusiones (abajo).}
+Elijo \textbf{$k=3$}:
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faCut] Las dos últimas fusiones son los saltos grandes: 23,4 (de 2 a 1 grupo) y 18,2 (de
+  3 a 2). Desde $k=4$ las fusiones bajan en pasos de apenas $\approx1,3$: el codo está en $k=3$.
+  \item[\color{cTeal}\faCut] En el dendrograma, un corte a altura $\approx 16$ cruza tres ramas largas y de
+  tamaño parecido (107, 100 y 90 pacientes).
+  \item[\color{cRed}\faCut] La silueta media favorece algo a $k=2$ (0,20 vs.\ 0,15). Aun así prefiero $k=3$
+  porque separa un perfil clínico más (el de presión y colesterol altos, ver pregunta e), que con $k=2$ se pierde.
+\end{itemize}
+
+\pregunta{e)}{Asignación y características de cada grupo}{Asigne cada individuo a un conglomerado y describa
+las principales características clínicas de cada grupo.}
+\codigo{clu-perfil-hc}
+\salida{clu-perfil-hc}
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+& \textbf{Grupo 1} & \textbf{Grupo 2} & \textbf{Grupo 3} \\ \midrule
+$n$ & 107 & 100 & 90 \\
+Edad (años) & 60,3 & 48,0 & 55,0 \\
+Presión reposo (mmHg) & 132,0 & 124,9 & \textbf{138,9} \\
+Colesterol (mg/dl) & 239,7 & 215,4 & \textbf{291,9} \\
+FC máxima (lpm) & \textbf{131,5} & 163,1 & 156,0 \\
+Depresión ST (mm) & \textbf{2,0} & 0,5 & 0,6 \\
+\% hombres & 76,6 & 72,0 & 52,2 \\
+\% angina de esfuerzo & 51,4 & 16,0 & 28,9 \\ \midrule
+\% con enfermedad & \textbf{72,9} & 24,0 & 38,9 \\ \bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cRed}\faHeartbeat] \textbf{Grupo 1 -- isquémico}: los mayores, con baja frecuencia cardíaca
+  máxima y depresión ST alta (signos de isquemia en la prueba de esfuerzo); la mitad tiene angina.
+  \item[\color{cTeal}\faRunning] \textbf{Grupo 2 -- joven y sano}: 48 años en promedio, buena capacidad
+  cardíaca (163 lpm), ST casi normal y los valores más bajos de presión y colesterol.
+  \item[\color{cPurple}\faTint] \textbf{Grupo 3 -- metabólico}: colesterol muy alto (292) y presión alta, pero
+  con prueba de esfuerzo casi normal; tiene la mayor proporción de mujeres.
+\end{itemize}
+
+\pregunta{f)}{$k$-means con $k=3$}{Aplique el método de $k$-means considerando el mismo número de conglomerados
+seleccionado en el método jerárquico.}
+$k$-means minimiza $\sum_{g=1}^{3}\sum_{i\in g}\lVert z_i-\bar z_g\rVert^2$. Uso 50 arranques aleatorios
+(\var{nstart = 50}) para no quedarme en un mínimo local, y reetiqueto los grupos para que el grupo $j$ sea el
+que más se parece al grupo $j$ de Ward.
+\codigo{clu-kmeans}
+\salida{clu-kmeans}
+Los tres grupos explican el 35,3\,\% de la variabilidad total ($SC_{entre}/SC_{total}$).
+
+\pregunta{g)}{Centroides y perfiles de riesgo}{Analice los centroides obtenidos e interprete los perfiles de cada
+grupo en términos de riesgo cardiovascular.}
+\figcod{clu-centroides}{Centroides de $k$-means en unidades $z$.}
+\begin{center}\small
+\begin{tabular}{lccccc|c}
+\toprule
+Grupo & Edad & Presión & Colest. & FC máx. & ST & \% enfermos \\ \midrule
+1 ($n=85$) & 59,2 & 127,1 & 228,6 & \textbf{125,9} & \textbf{1,9} & \textbf{74,1} \\
+2 ($n=142$) & 48,8 & 124,9 & 236,4 & 164,3 & 0,4 & 23,2 \\
+3 ($n=70$) & 60,5 & \textbf{151,0} & \textbf{292,3} & 148,6 & 1,3 & 58,6 \\ \bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cRed}\faExclamationTriangle] \textbf{Grupo 1 -- riesgo alto (isquémico)}: centroide con FC
+  máxima a $-1,03$ desviaciones y ST a $+0,72$. Es la respuesta anormal al esfuerzo típica de enfermedad
+  coronaria; 3 de cada 4 están enfermos.
+  \item[\color{cTeal}\faCheckCircle] \textbf{Grupo 2 -- riesgo bajo}: todos los valores por debajo de la media
+  salvo la FC máxima ($+0,64$). Jóvenes con buena reserva cardíaca; 23\,\% de enfermos.
+  \item[\color{cPurple}\faExclamationCircle] \textbf{Grupo 3 -- riesgo intermedio-alto (factores clásicos)}:
+  presión ($+1,09$) y colesterol ($+0,87$) altos y mayor edad. Aún sin daño evidente en la prueba de esfuerzo,
+  el 59\,\% ya está enfermo: es el grupo de prevención.
+\end{itemize}
+
+\pregunta{Comparación a)}{Ward.D2 vs.\ $k$-means}{Compare los conglomerados obtenidos mediante los métodos
+ward.D2 y $k$-means.}
+\codigo{clu-compara}
+\salida{clu-compara}
+\figcod{clu-plano}{Los dos agrupamientos en el plano de las dos primeras CP de las 5 variables.}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faCheck] Coinciden en el 73,4\,\% de los pacientes (78 + 91 + 49 de 297). El índice de
+  Rand ajustado es 0,40: acuerdo moderado.
+  \item[\color{cTeal}\faCheck] Los grupos 1 y 2 son casi los mismos (73\,\% y 91\,\% de coincidencia).
+  \item[\color{cRed}\faIcon{exchange-alt}] La diferencia está en el grupo 3: Ward lo forma con todo el colesterol
+  alto (90 pacientes); $k$-means pasa 41 de ellos al grupo 2 y se queda con
+  un grupo 3 más extremo (presión 151, colesterol 292). Por eso $k$-means queda con un grupo 2 más grande (142).
+  \item[\color{cTeal}\faBalanceScale] $k$-means logra grupos más compactos: silueta 0,23 frente a 0,15 de Ward.
+\end{itemize}
+
+\pregunta{Comparación b)}{Similitudes y diferencias entre enfoques}{Discuta las similitudes y diferencias entre ambos
+enfoques.}
+\begin{center}\small
+\begin{tabular}{p{3.3cm}p{5.4cm}p{5.4cm}}
+\toprule
+& \textbf{Ward.D2 (jerárquico)} & \textbf{$k$-means (no jerárquico)} \\ \midrule
+Criterio & Minimiza el aumento de SC dentro en cada fusión & Minimiza la SC dentro total \\
+Número de grupos & Se decide después, mirando el dendrograma & Hay que fijarlo antes \\
+Asignaciones & Definitivas: una fusión no se deshace & Se reasignan en cada iteración \\
+Resultado & Determinista & Depende del arranque (uso 50) \\
+Costo & $O(n^2)$ en memoria (matriz de distancias) & Lineal en $n$, escala a bases grandes \\
+Aquí & Silueta 0,15; grupos 107/100/90 & Silueta 0,23; grupos 85/142/70 \\ \bottomrule
+\end{tabular}
+\end{center}
+Ambos comparten la distancia euclidiana, las variables estandarizadas y la misma función objetivo (suma de
+cuadrados dentro), por eso llegan a perfiles parecidos. En la práctica son complementarios: Ward sirve para
+elegir $k$ y $k$-means para refinar las asignaciones.
+
+\pregunta{Comparación c)}{Relación con enfermedad\_cardiaca}{Analice la relación entre los conglomerados obtenidos y la
+variable enfermedad\_cardiaca.}
+\codigo{clu-enfermedad}
+\salida{clu-enfermedad}
+\figcod{clu-enfermedad}{Porcentaje de enfermos por grupo (línea roja: prevalencia global, 46,1\,\%).}
+\begin{itemize}[leftmargin=1.2em]
+  \item[\color{cTeal}\faCheck] La relación es fuerte en ambos métodos: $\chi^2_2=52$ (Ward) y $\chi^2_2=61$
+  ($k$-means), con $p<10^{-11}$. La V de Cramer de $k$-means es 0,45 (asociación moderada a fuerte).
+  \item[\color{cTeal}\faCheck] El grupo 1 tiene 73--74\,\% de enfermos y el grupo 2, 23--24\,\%: una diferencia
+  de 3 veces, sin haberle mostrado nunca la etiqueta al algoritmo.
+  \item[\color{cRed}\faIcon{exchange-alt}] En el grupo 3 los métodos difieren (39\,\% vs.\ 59\,\%): el grupo 3 más
+  extremo de $k$-means concentra más enfermos, por eso su asociación es más fuerte.
+  \item[\color{cTeal}\faBalanceScale] Comparado con la regresión logística sobre esta misma base (AUC 0,86), el enfoque no supervisado separa
+  menos, porque no usa sexo ni angina y no optimiza la predicción; a cambio entrega perfiles clínicos
+  interpretables (isquémico, sano, metabólico).
+\end{itemize}
+
+\res{Los conglomerados, construidos solo con 5 variables clínicas, recuperan buena parte de la estructura de
+la enfermedad: el perfil ``isquémico'' (baja FC máxima, ST alta) concentra a los enfermos y el perfil
+``joven sano'' a los sanos.}

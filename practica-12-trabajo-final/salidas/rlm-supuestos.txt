@@ -1,0 +1,18 @@
+
+	Shapiro-Wilk normality test
+
+data:  residuals(m_full)
+W = 0.96, p-value = 0.00000001
+
+
+	studentized Breusch-Pagan test
+
+data:  m_full
+BP = 19, df = 8, p-value = 0.02
+
+
+	RESET test
+
+data:  m_full
+RESET = 4.1, df1 = 2, df2 = 384, p-value = 0.02
+
